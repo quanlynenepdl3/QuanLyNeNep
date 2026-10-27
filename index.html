@@ -128,6 +128,10 @@
           <i class="fa-solid fa-right-to-bracket"></i>
           <span>VÀO HỆ THỐNG</span>
         </button>
+
+        <p class="text-center text-[11px] font-semibold text-slate-400">
+          Phiên bản v3.0 • Đồng bộ Cloud Trực Tiếp
+        </p>
       </div>
     </div>
   </div>
@@ -443,22 +447,22 @@
             </div>
             <div>
               <h2 class="font-extrabold text-base md:text-lg uppercase text-red-600 dark:text-red-400">
-                TRUNG TÂM ĐIỀU HÀNH & GIÁM SÁT QUẢN TRỊ VIÊN
+                TRUNG TÂM ĐIỀU HÀNH & GIÁM SÁT QUẢN TRỊ VIÊN (v3.0)
               </h2>
               <p class="text-xs text-slate-500 dark:text-slate-400">
-                Dữ liệu đồng bộ 2 chiều thời gian thực giữa Điện thoại • Máy tính • Google Sheet • Google Drive
+                Đồng bộ 2 chiều thời gian thực giữa Điện thoại • Máy tính • Google Sheet • Google Drive
               </p>
             </div>
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
-            <button type="button" onclick="testCloudConnection()"
-                    class="px-3.5 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 font-bold text-xs flex items-center gap-1.5 border border-emerald-200 dark:border-emerald-800">
-              <i class="fa-solid fa-plug-circle-check"></i> Kiểm tra kết nối Sheet & Drive
+            <button type="button" onclick="syncMembersConfigToCloud(true)"
+                    class="px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center gap-1.5 border border-blue-200 dark:border-blue-800">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Đẩy danh sách TK lên Cloud
             </button>
-            <button type="button" onclick="fetchAdminDataFromCloud(true)"
+            <button type="button" onclick="fetchAdminDataFromCloud(true, true)"
                     class="px-3.5 py-2 rounded-xl bg-red-50 dark:bg-red-950/60 hover:bg-red-100 text-red-600 dark:text-red-300 font-bold text-xs flex items-center gap-1.5 border border-red-200 dark:border-red-800">
-              <i class="fa-solid fa-arrows-rotate"></i> Tải dữ liệu mới nhất từ Sheet
+              <i class="fa-solid fa-arrows-rotate"></i> Làm mới từ Sheet
             </button>
           </div>
         </div>
@@ -713,13 +717,10 @@
       password: '123456'
     };
 
-    const DEFAULT_MEMBER_ACCOUNTS = [
-      'leducnhan',
-      'Thành viên 1', 'Thành viên 2', 'Thành viên 3', 'Thành viên 4', 'Thành viên 5'
-    ];
+    const DEFAULT_MEMBER_ACCOUNTS = ['leducnhan'];
 
     /*************************************************************************
-     * 3. KHO LƯU TRỮ OFFLINE INDEXED-DB (CHỨA ĐƯỢC CẢ VIDEO & ẢNH KHI MẤT MẠNG)
+     * 3. KHO LƯU TRỮ OFFLINE INDEXED-DB
      *************************************************************************/
     const IDB_NAME = 'DL3_Offline_Database';
     const IDB_STORE = 'offline_queue';
@@ -748,9 +749,7 @@
           tx.onerror = reject;
         });
         await refreshOfflineBadge();
-      } catch (err) {
-        console.error('Lỗi lưu IndexedDB:', err);
-      }
+      } catch (err) {}
     }
 
     async function getAllOfflineDB() {
@@ -815,7 +814,7 @@
     refreshOfflineBadge();
 
     /*************************************************************************
-     * 4. GỬI DỮ LIỆU CÓ XÁC NHẬN THẬT TỪ GOOGLE SHEET & DRIVE
+     * 4. GIAO TIẾP VỚI GOOGLE APPS SCRIPT QUA POST (ĐẢM BẢO 100% TRÊN MỌI ĐIỆN THOẠI)
      *************************************************************************/
     async function sendDirectToSheetVerified(payload) {
       const controller = new AbortController();
@@ -832,19 +831,14 @@
         clearTimeout(timeoutId);
 
         const text = await response.text();
-        try {
-          const json = JSON.parse(text);
-          if (json && (json.status === 'success' || json.status === 'synced' || json.status === 'logged')) {
-            return { ok: true, data: json };
-          }
-          return { ok: false, error: (json && json.message) || 'Apps Script trả về lỗi' };
-        } catch (parseErr) {
-          if (response.ok) return { ok: true, data: {} };
-          return { ok: false, error: 'Phản hồi không hợp lệ từ Apps Script' };
+        const json = JSON.parse(text);
+        if (json && (json.status === 'success' || json.status === 'ok' || json.status === 'synced' || json.status === 'logged')) {
+          return { ok: true, data: json };
         }
+        return { ok: false, error: (json && json.message) || 'Apps Script báo lỗi' };
       } catch (err) {
         clearTimeout(timeoutId);
-        return { ok: false, error: err.message || 'Mất kết nối mạng' };
+        return { ok: false, error: err.message || 'Lỗi kết nối tới Apps Script' };
       }
     }
 
@@ -879,24 +873,12 @@
       }
     }
 
-    async function testCloudConnection() {
-      showToast('Đang kiểm tra kết nối tới Google Sheet & Drive...');
-      const res = await sendDirectToSheetVerified({ action: 'pingTest' });
-      if (res.ok && res.data && res.data.sheetName) {
-        showToast(`Kết nối chuẩn! Sheet: "${res.data.sheetName}" | Drive: "${res.data.folderName}"`);
-      } else if (res.ok) {
-        showToast('Kết nối Sheet thành công!');
-      } else {
-        showToast('Chưa kết nối được: ' + (res.error || 'Hãy kiểm tra lại Apps Script!'), false);
-      }
-    }
-
     /*************************************************************************
      * 5. QUẢN LÝ ĐĂNG NHẬP & ĐỒNG BỘ 2 CHIỀU ĐIỆN THOẠI <-> MÁY TÍNH
      *************************************************************************/
     let selectedLoginRole = 'member';
     let currentUserSession = null;
-    let lastMemberModifyTimestamp = 0; // Tránh ghi đè khi Quản trị viên vừa bấm Cấp/Xóa
+    let lastMemberModifyTimestamp = 0;
 
     function getMaxMemberLimit() {
       return parseInt(localStorage.getItem('dl3_max_member_limit') || '30', 10);
@@ -906,7 +888,7 @@
       const num = Math.max(1, parseInt(val || '30', 10));
       localStorage.setItem('dl3_max_member_limit', String(num));
       renderMemberAccountsAdmin();
-      await syncMembersConfigToCloud();
+      await syncMembersConfigToCloud(false);
       showToast(`Đã đặt giới hạn tối đa ${num} thành viên!`);
     }
 
@@ -981,14 +963,19 @@
       showToast('Đã xóa lịch sử cảnh báo thiết bị!');
     }
 
-    async function syncMembersConfigToCloud() {
+    async function syncMembersConfigToCloud(showMsg = false) {
       lastMemberModifyTimestamp = Date.now();
-      return await sendDirectToSheetVerified({
+      const res = await sendDirectToSheetVerified({
         action: 'syncMembers',
         members: getMemberAccounts(),
         bindings: getDeviceBindings(),
         maxLimit: getMaxMemberLimit()
       });
+      if (showMsg) {
+        if (res.ok) showToast('Đã đẩy danh sách tài khoản lên Cloud thành công!');
+        else showToast('Lỗi đẩy lên Cloud: Hãy chắc chắn bạn đã chọn "Phiên bản mới" trong Apps Script!', false);
+      }
+      return res;
     }
 
     function switchLoginRole(role) {
@@ -1021,7 +1008,7 @@
       }
     }
 
-    // HÀM ĐĂNG NHẬP ĐÃ SỬA: TỰ ĐỘNG HỎI GOOGLE SHEET DANH SÁCH MỚI NHẤT TRƯỚC KHI KIỂM TRA
+    // ĐĂNG NHẬP THÔNG MINH QUA POST (ĐỒNG BỘ TỨC THÌ TỪ GOOGLE CLOUD)
     async function handleLogin() {
       const rawUser = document.getElementById('loginUsername').value.trim();
       const rawPass = document.getElementById('loginPassword').value.trim();
@@ -1057,10 +1044,9 @@
           loginTime: getFullDateTimeString()
         };
       } else {
-        // Luôn tải danh sách tài khoản mới nhất từ Google Sheet trước khi đối chiếu
         if (navigator.onLine) {
           btnSubmit.disabled = true;
-          btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>ĐANG KIỂM TRA TÀI KHOẢN...</span>';
+          btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>ĐANG ĐỒNG BỘ TÀI KHOẢN TỪ CLOUD...</span>';
           await fetchAdminDataFromCloud(false, true);
           btnSubmit.disabled = false;
           btnSubmit.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>VÀO HỆ THỐNG</span>';
@@ -1070,7 +1056,7 @@
         const matchedMember = allowedMembers.find(m => String(m).trim().toLowerCase() === rawUser.toLowerCase());
 
         if (!matchedMember) {
-          errEl.textContent = 'Tài khoản này chưa được Quản trị viên cấp phép hoặc đã bị thu hồi!';
+          errEl.innerHTML = `Tài khoản <b>"${rawUser}"</b> chưa có trên Cloud! <br/>(Hãy bấm nút <b>"Đẩy danh sách TK lên Cloud"</b> trên máy tính Quản trị rồi thử lại).`;
           errEl.classList.remove('hidden');
           return;
         }
@@ -1099,7 +1085,7 @@
             boundAt: getFullDateTimeString()
           };
           saveDeviceBindings(bindings);
-          await syncMembersConfigToCloud();
+          await syncMembersConfigToCloud(false);
         }
 
         currentUserSession = {
@@ -1137,7 +1123,7 @@
         renderMemberAccountsAdmin();
         renderSecurityLogsAdmin();
         renderAdminActivityTable();
-        fetchAdminDataFromCloud(false);
+        fetchAdminDataFromCloud(false, false);
       } else {
         adminSection.classList.add('hidden');
       }
@@ -1167,7 +1153,7 @@
       if (navigator.onLine) {
         syncOfflineQueue(false);
         if (currentUserSession && currentUserSession.role === 'admin') {
-          fetchAdminDataFromCloud(false);
+          fetchAdminDataFromCloud(false, false);
         }
       }
     }, 15000);
@@ -1241,7 +1227,7 @@
     });
 
     /*************************************************************************
-     * 7. XỬ LÝ ẢNH / VIDEO MINH CHỨNG (TỰ ĐỘNG NÉN ẢNH ĐỂ GỬI NHANH KHI MẠNG YẾU)
+     * 7. XỬ LÝ ẢNH / VIDEO MINH CHỨNG
      *************************************************************************/
     let studentEvidenceFiles = [];
     let classEvidenceFiles = [];
@@ -1333,10 +1319,6 @@
               });
               continue;
             }
-          }
-
-          if (f.size > 25 * 1024 * 1024) {
-            showToast(`Video "${f.name}" khá nặng (>25MB), khuyến nghị quay clip ngắn dưới 15 giây!`, false);
           }
 
           const base64Data = await rawFileToBase64(f);
@@ -1515,7 +1497,7 @@
           showToast('Đã đồng bộ thành công lên Google Sheet & Drive!');
           syncOfflineQueue(false);
           if (currentUserSession && currentUserSession.role === 'admin') {
-            fetchAdminDataFromCloud(false);
+            fetchAdminDataFromCloud(false, false);
           }
           return;
         }
@@ -1616,7 +1598,7 @@
     }
 
     /*************************************************************************
-     * 9. BẢNG QUẢN TRỊ & ĐỒNG BỘ TÀI KHOẢN THÀNH VIÊN LÊN GOOGLE SHEET
+     * 9. BẢNG QUẢN TRỊ & ĐỒNG BỘ TÀI KHOẢN THÀNH VIÊN QUA POST
      *************************************************************************/
     async function addMemberAccount() {
       const input = document.getElementById('newMemberAccountInput');
@@ -1631,28 +1613,29 @@
         return showToast(`Đã đạt giới hạn tối đa ${maxLimit} thành viên!`, false);
       }
       if (list.some(m => String(m).trim().toLowerCase() === rawName.toLowerCase())) {
-        return showToast(`Tài khoản "${rawName}" đã tồn tại!`, false);
+        return showToast(`Tài khoản "${rawName}" đã có trong danh sách! Đang đồng bộ lại lên Cloud...`, true);
+      } else {
+        list.unshift(rawName);
+        saveMemberAccounts(list);
       }
 
-      list.unshift(rawName);
-      saveMemberAccounts(list);
       renderMemberAccountsAdmin();
       input.value = '';
 
       if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu Cloud...';
       }
-      const res = await syncMembersConfigToCloud();
+      const res = await syncMembersConfigToCloud(false);
       if (btn) {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Cấp Tài Khoản';
       }
 
       if (res.ok) {
-        showToast(`Đã cấp & đồng bộ tài khoản "${rawName}" lên Sheet thành công!`);
+        showToast(`Đã cấp & đồng bộ tài khoản "${rawName}" lên Cloud thành công!`);
       } else {
-        showToast(`Đã lưu "${rawName}" tại máy, nhưng chưa đồng bộ được lên Sheet!`, false);
+        showToast(`Chưa đẩy được lên Cloud! Hãy kiểm tra lại bước chọn "Phiên bản mới" trong Apps Script.`, false);
       }
     }
 
@@ -1663,7 +1646,7 @@
       saveMemberAccounts(list);
       saveDeviceBindings(bindings);
       renderMemberAccountsAdmin();
-      await syncMembersConfigToCloud();
+      await syncMembersConfigToCloud(false);
       showToast(`Đã xóa tài khoản: ${name}`);
     }
 
@@ -1673,7 +1656,7 @@
       const activeOnly = list.filter(name => Boolean(bindings[name.toLowerCase()]));
       saveMemberAccounts(activeOnly);
       renderMemberAccountsAdmin();
-      await syncMembersConfigToCloud();
+      await syncMembersConfigToCloud(false);
       showToast('Đã dọn các tài khoản chưa kích hoạt!');
     }
 
@@ -1682,7 +1665,7 @@
       delete bindings[name.toLowerCase()];
       saveDeviceBindings(bindings);
       renderMemberAccountsAdmin();
-      await syncMembersConfigToCloud();
+      await syncMembersConfigToCloud(false);
       showToast(`Đã mở khóa thiết bị cho: ${name}`);
     }
 
@@ -1801,35 +1784,35 @@
       }).join('');
     }
 
+    // LẤY DỮ LIỆU TỪ CLOUD QUA LỆNH POST (KHÔNG LO BỊ CHẶN TRÊN ĐIỆN THOẠI)
     async function fetchAdminDataFromCloud(showMsg = false, forcePullMembers = false) {
       try {
-        const res = await fetch(APPS_SCRIPT_URL + '?action=getAdminData&t=' + Date.now(), {
-          method: 'GET',
-          redirect: 'follow'
-        });
-        if (!res.ok) return;
-        const data = await res.json();
-        if (data && Array.isArray(data.logs)) {
+        const res = await sendDirectToSheetVerified({ action: 'getAdminData' });
+        if (!res.ok || !res.data) {
+          if (showMsg) showToast('Chưa tải được từ Cloud! Hãy cập nhật Phiên bản mới trong Apps Script.', false);
+          return;
+        }
+        const data = res.data;
+        if (Array.isArray(data.logs)) {
           localStorage.setItem('dl3_activity_logs', JSON.stringify(data.logs));
         }
-        // Không ghi đè danh sách nếu Quản trị viên vừa bấm Cấp/Xóa trong vòng 8 giây qua (trừ khi điện thoại đang đăng nhập)
         if (forcePullMembers || (Date.now() - lastMemberModifyTimestamp > 8000)) {
-          if (data && Array.isArray(data.members)) {
+          if (Array.isArray(data.members)) {
             saveMemberAccounts(data.members);
           }
-          if (data && data.bindings) {
+          if (data.bindings) {
             saveDeviceBindings(data.bindings);
           }
         }
-        if (data && Array.isArray(data.securityLogs)) {
+        if (Array.isArray(data.securityLogs)) {
           localStorage.setItem('dl3_security_logs', JSON.stringify(data.securityLogs));
         }
         renderMemberAccountsAdmin();
         renderSecurityLogsAdmin();
         renderAdminActivityTable();
-        if (showMsg) showToast('Đã tải dữ liệu mới nhất từ Google Sheet!');
+        if (showMsg) showToast('Đã đồng bộ dữ liệu mới nhất từ Cloud!');
       } catch (e) {
-        if (showMsg) showToast('Chưa tải được từ Sheet!', false);
+        if (showMsg) showToast('Lỗi tải dữ liệu Cloud!', false);
       }
     }
 
