@@ -89,7 +89,9 @@
             <span class="w-10 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
               <i class="fa-solid fa-id-badge"></i>
             </span>
-            <input type="text" id="loginUsername" placeholder="Nhập tên tài khoản được cấp..."
+            <input type="text" id="loginUsername"
+                   onkeydown="if(event.key==='Enter') handleLogin()"
+                   placeholder="Nhập tên tài khoản được cấp..."
                    class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-semibold text-sm" />
           </div>
         </div>
@@ -102,7 +104,9 @@
             <span class="w-10 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
               <i class="fa-solid fa-lock"></i>
             </span>
-            <input type="password" id="loginPassword" placeholder="Nhập mật khẩu quản trị..."
+            <input type="password" id="loginPassword"
+                   onkeydown="if(event.key==='Enter') handleLogin()"
+                   placeholder="Nhập mật khẩu quản trị..."
                    class="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-semibold text-sm" />
             <button type="button" onclick="togglePassVisibility()" class="w-10 h-full absolute right-0 top-0 flex items-center justify-center text-slate-400 hover:text-slate-600">
               <i id="passEyeIcon" class="fa-regular fa-eye"></i>
@@ -146,7 +150,6 @@
       </div>
 
       <div class="flex items-center gap-1.5 sm:gap-2">
-        <!-- Trạng thái Mạng trực tiếp -->
         <span id="networkStatusPill" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/25 border border-emerald-300/40 text-[11px] font-bold">
           <span class="w-2 h-2 rounded-full bg-emerald-300"></span> Online
         </span>
@@ -184,7 +187,7 @@
           <i id="themeToggleIcon" class="fa-solid fa-moon text-yellow-200 text-sm"></i>
         </button>
 
-        <!-- Báo hàng đợi Offline (IndexedDB) -->
+        <!-- Báo hàng đợi Offline -->
         <button type="button" id="offlineQueueBadge" onclick="syncOfflineQueue(true)"
                 class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-extrabold shadow-sm">
           <i class="fa-solid fa-cloud-arrow-up animate-bounce"></i>
@@ -519,7 +522,7 @@
                        onkeydown="if(event.key==='Enter') addMemberAccount()"
                        placeholder="Nhập tên tài khoản thành viên mới để cấp..."
                        class="flex-1 min-w-[200px] px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-900 text-xs font-semibold outline-none focus:border-red-500" />
-                <button type="button" onclick="addMemberAccount()"
+                <button type="button" id="btnGrantMember" onclick="addMemberAccount()"
                         class="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs shrink-0 flex items-center gap-1.5 shadow-sm">
                   <i class="fa-solid fa-user-plus"></i> Cấp Tài Khoản
                 </button>
@@ -585,7 +588,6 @@
                   <th class="py-3 px-3">Học sinh vi phạm</th>
                   <th class="py-3 px-3">Lớp</th>
                   <th class="py-3 px-3">Lỗi vi phạm</th>
-                  <th class="py-3 px-3">Minh chứng (Drive)</th>
                 </tr>
               </thead>
               <tbody id="adminActivityTableBody" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
@@ -707,15 +709,13 @@
 
     const ADMIN_CREDENTIALS = {
       username: 'Nguyễn Phúc Nguyên',
-      altUsername: 'thptdl3',
-      password: 'The song(200th)'
+      altUsername: 'admin',
+      password: '123456'
     };
 
     const DEFAULT_MEMBER_ACCOUNTS = [
-      'Thành viên 1', 'Thành viên 2', 'Thành viên 3', 'Thành viên 4', 'Thành viên 5',
-      'Thành viên 6', 'Thành viên 7', 'Thành viên 8', 'Thành viên 9', 'Thành viên 10',
-      'Thành viên 11', 'Thành viên 12', 'Thành viên 13', 'Thành viên 14', 'Thành viên 15',
-      'Thành viên 16', 'Thành viên 17', 'Thành viên 18', 'Thành viên 19', 'Thành viên 20'
+      'leducnhan',
+      'Thành viên 1', 'Thành viên 2', 'Thành viên 3', 'Thành viên 4', 'Thành viên 5'
     ];
 
     /*************************************************************************
@@ -815,11 +815,10 @@
     refreshOfflineBadge();
 
     /*************************************************************************
-     * 4. GỬI DỮ LIỆU CÓ XÁC NHẬN THẬT TỪ GOOGLE SHEET & DRIVE (CÓ TIMEOUT CHO MẠNG YẾU)
+     * 4. GỬI DỮ LIỆU CÓ XÁC NHẬN THẬT TỪ GOOGLE SHEET & DRIVE
      *************************************************************************/
     async function sendDirectToSheetVerified(payload) {
       const controller = new AbortController();
-      // Nếu mạng quá yếu treo quá 25 giây thì tự ngắt để cất vào kho Offline
       const timeoutId = setTimeout(() => controller.abort(), 25000);
 
       try {
@@ -840,7 +839,6 @@
           }
           return { ok: false, error: (json && json.message) || 'Apps Script trả về lỗi' };
         } catch (parseErr) {
-          // Trường hợp Apps Script chưa cập nhật bản mới nhưng vẫn nhận HTTP 200
           if (response.ok) return { ok: true, data: {} };
           return { ok: false, error: 'Phản hồi không hợp lệ từ Apps Script' };
         }
@@ -868,7 +866,7 @@
           await deleteFromOfflineDB(item.id);
           syncedCount++;
         } else {
-          break; // Nếu mạng vẫn rớt thì dừng chờ lần sau
+          break;
         }
       }
 
@@ -881,16 +879,15 @@
       }
     }
 
-    // Kiểm tra kết nối trực tiếp cho Quản trị viên
     async function testCloudConnection() {
       showToast('Đang kiểm tra kết nối tới Google Sheet & Drive...');
       const res = await sendDirectToSheetVerified({ action: 'pingTest' });
       if (res.ok && res.data && res.data.sheetName) {
         showToast(`Kết nối chuẩn! Sheet: "${res.data.sheetName}" | Drive: "${res.data.folderName}"`);
       } else if (res.ok) {
-        showToast('Kết nối Sheet thành công, nhưng bạn cần bấm "Phiên bản mới (New version)" trong Apps Script để bật đủ tính năng Drive & Máy tính!', false);
+        showToast('Kết nối Sheet thành công!');
       } else {
-        showToast('Chưa kết nối được: ' + (res.error || 'Hãy kiểm tra lại quyền Drive trong Apps Script!'), false);
+        showToast('Chưa kết nối được: ' + (res.error || 'Hãy kiểm tra lại Apps Script!'), false);
       }
     }
 
@@ -899,16 +896,17 @@
      *************************************************************************/
     let selectedLoginRole = 'member';
     let currentUserSession = null;
+    let lastMemberModifyTimestamp = 0; // Tránh ghi đè khi Quản trị viên vừa bấm Cấp/Xóa
 
     function getMaxMemberLimit() {
       return parseInt(localStorage.getItem('dl3_max_member_limit') || '30', 10);
     }
 
-    function updateMaxMemberLimit(val) {
+    async function updateMaxMemberLimit(val) {
       const num = Math.max(1, parseInt(val || '30', 10));
       localStorage.setItem('dl3_max_member_limit', String(num));
       renderMemberAccountsAdmin();
-      syncMembersConfigToCloud();
+      await syncMembersConfigToCloud();
       showToast(`Đã đặt giới hạn tối đa ${num} thành viên!`);
     }
 
@@ -983,8 +981,9 @@
       showToast('Đã xóa lịch sử cảnh báo thiết bị!');
     }
 
-    function syncMembersConfigToCloud() {
-      sendDirectToSheetVerified({
+    async function syncMembersConfigToCloud() {
+      lastMemberModifyTimestamp = Date.now();
+      return await sendDirectToSheetVerified({
         action: 'syncMembers',
         members: getMemberAccounts(),
         bindings: getDeviceBindings(),
@@ -1022,10 +1021,12 @@
       }
     }
 
+    // HÀM ĐĂNG NHẬP ĐÃ SỬA: TỰ ĐỘNG HỎI GOOGLE SHEET DANH SÁCH MỚI NHẤT TRƯỚC KHI KIỂM TRA
     async function handleLogin() {
       const rawUser = document.getElementById('loginUsername').value.trim();
       const rawPass = document.getElementById('loginPassword').value.trim();
       const errEl = document.getElementById('loginErrorMsg');
+      const btnSubmit = document.getElementById('btnLoginSubmit');
       errEl.classList.add('hidden');
 
       if (!rawUser) {
@@ -1056,8 +1057,17 @@
           loginTime: getFullDateTimeString()
         };
       } else {
+        // Luôn tải danh sách tài khoản mới nhất từ Google Sheet trước khi đối chiếu
+        if (navigator.onLine) {
+          btnSubmit.disabled = true;
+          btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>ĐANG KIỂM TRA TÀI KHOẢN...</span>';
+          await fetchAdminDataFromCloud(false, true);
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>VÀO HỆ THỐNG</span>';
+        }
+
         const allowedMembers = getMemberAccounts();
-        const matchedMember = allowedMembers.find(m => m.toLowerCase() === rawUser.toLowerCase());
+        const matchedMember = allowedMembers.find(m => String(m).trim().toLowerCase() === rawUser.toLowerCase());
 
         if (!matchedMember) {
           errEl.textContent = 'Tài khoản này chưa được Quản trị viên cấp phép hoặc đã bị thu hồi!';
@@ -1066,7 +1076,7 @@
         }
 
         const bindings = getDeviceBindings();
-        const key = matchedMember.toLowerCase();
+        const key = matchedMember.trim().toLowerCase();
 
         if (bindings[key] && bindings[key].deviceId !== myDeviceId) {
           addSecurityLog({
@@ -1089,7 +1099,7 @@
             boundAt: getFullDateTimeString()
           };
           saveDeviceBindings(bindings);
-          syncMembersConfigToCloud();
+          await syncMembersConfigToCloud();
         }
 
         currentUserSession = {
@@ -1153,7 +1163,6 @@
       } catch (e) {}
     })();
 
-    // Tự động đồng bộ dữ liệu trên máy tính Quản trị viên mỗi 15 giây
     setInterval(() => {
       if (navigator.onLine) {
         syncOfflineQueue(false);
@@ -1251,7 +1260,6 @@
       document.getElementById('QuickUploadInput').click();
     }
 
-    // Tự động nén ảnh chụp từ điện thoại xuống chuẩn HD (giảm 90% dung lượng, gửi cực nhanh)
     function compressImageFileToBase64(file) {
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -1327,9 +1335,8 @@
             }
           }
 
-          // Đối với Video: lưu ý Apps Script giới hạn khoảng 25MB mỗi lần truyền
           if (f.size > 25 * 1024 * 1024) {
-            showToast(`Video "${f.name}" khá nặng (>25MB), khuyến nghị quay clip ngắn dưới 15 giây để tải lên Drive nhanh nhất!`, false);
+            showToast(`Video "${f.name}" khá nặng (>25MB), khuyến nghị quay clip ngắn dưới 15 giây!`, false);
           }
 
           const base64Data = await rawFileToBase64(f);
@@ -1480,7 +1487,6 @@
     }
 
     function saveLocalActivityLog(item) {
-      // Lưu bản nhẹ (không chứa chuỗi base64 nặng) vào lịch sử hiển thị
       const lightCopy = {
         tt: item.tt || '',
         ngay: item.ngay,
@@ -1489,8 +1495,7 @@
         hoVaTen: item.hoVaTen,
         lop: item.lop,
         loiViPham: item.loiViPham,
-        nguoiGhiLoi: item.nguoiGhiLoi,
-        minhChung: item.minhChung || (item.evidenceFiles && item.evidenceFiles.length > 0 ? `Đang tải (${item.evidenceFiles.length} tệp)` : '')
+        nguoiGhiLoi: item.nguoiGhiLoi
       };
       const logs = getLocalActivityLogs();
       logs.unshift(lightCopy);
@@ -1506,7 +1511,6 @@
         const res = await sendDirectToSheetVerified(payload);
         if (res.ok) {
           payload.tt = res.data?.tt || '';
-          payload.minhChung = res.data?.minhChung || '';
           saveLocalActivityLog(payload);
           showToast('Đã đồng bộ thành công lên Google Sheet & Drive!');
           syncOfflineQueue(false);
@@ -1517,7 +1521,6 @@
         }
       }
 
-      // Khi mất mạng hoặc mạng quá yếu bị ngắt: lưu vào IndexedDB
       await addToOfflineDB(payload);
       saveLocalActivityLog(payload);
       showToast('Mạng yếu / Mất mạng! Đã lưu an toàn vào máy, sẽ tự đẩy lên Sheet & Drive khi có mạng.', false);
@@ -1594,7 +1597,7 @@
         ngay: ngayThang,
         gioChiTiet: gioChiTiet,
         thoiGianChiTiet: `${ngayThang} - ${gioChiTiet}`,
-        hoVaTen: '', // Để trống Họ tên cho lỗi riêng của lớp
+        hoVaTen: '',
         lop: lop,
         loiViPham: loiViPham,
         diemTru: '',
@@ -1613,10 +1616,11 @@
     }
 
     /*************************************************************************
-     * 9. BẢNG QUẢN TRỊ & TẢI DỮ LIỆU TỪ GOOGLE SHEET VỀ MÁY TÍNH
+     * 9. BẢNG QUẢN TRỊ & ĐỒNG BỘ TÀI KHOẢN THÀNH VIÊN LÊN GOOGLE SHEET
      *************************************************************************/
-    function addMemberAccount() {
+    async function addMemberAccount() {
       const input = document.getElementById('newMemberAccountInput');
+      const btn = document.getElementById('btnGrantMember');
       const rawName = input.value.trim();
       if (!rawName) return showToast('Vui lòng nhập tên tài khoản cần cấp!', false);
 
@@ -1626,45 +1630,59 @@
       if (list.length >= maxLimit) {
         return showToast(`Đã đạt giới hạn tối đa ${maxLimit} thành viên!`, false);
       }
-      if (list.some(m => m.toLowerCase() === rawName.toLowerCase())) {
+      if (list.some(m => String(m).trim().toLowerCase() === rawName.toLowerCase())) {
         return showToast(`Tài khoản "${rawName}" đã tồn tại!`, false);
       }
 
       list.unshift(rawName);
       saveMemberAccounts(list);
       renderMemberAccountsAdmin();
-      syncMembersConfigToCloud();
       input.value = '';
-      showToast(`Đã cấp tài khoản: ${rawName}`);
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...';
+      }
+      const res = await syncMembersConfigToCloud();
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Cấp Tài Khoản';
+      }
+
+      if (res.ok) {
+        showToast(`Đã cấp & đồng bộ tài khoản "${rawName}" lên Sheet thành công!`);
+      } else {
+        showToast(`Đã lưu "${rawName}" tại máy, nhưng chưa đồng bộ được lên Sheet!`, false);
+      }
     }
 
-    function removeMemberAccount(name) {
+    async function removeMemberAccount(name) {
       const list = getMemberAccounts().filter(m => m !== name);
       const bindings = getDeviceBindings();
       delete bindings[name.toLowerCase()];
       saveMemberAccounts(list);
       saveDeviceBindings(bindings);
       renderMemberAccountsAdmin();
-      syncMembersConfigToCloud();
+      await syncMembersConfigToCloud();
       showToast(`Đã xóa tài khoản: ${name}`);
     }
 
-    function deleteAllUnboundMembers() {
+    async function deleteAllUnboundMembers() {
       const list = getMemberAccounts();
       const bindings = getDeviceBindings();
       const activeOnly = list.filter(name => Boolean(bindings[name.toLowerCase()]));
       saveMemberAccounts(activeOnly);
       renderMemberAccountsAdmin();
-      syncMembersConfigToCloud();
+      await syncMembersConfigToCloud();
       showToast('Đã dọn các tài khoản chưa kích hoạt!');
     }
 
-    function resetDeviceBinding(name) {
+    async function resetDeviceBinding(name) {
       const bindings = getDeviceBindings();
       delete bindings[name.toLowerCase()];
       saveDeviceBindings(bindings);
       renderMemberAccountsAdmin();
-      syncMembersConfigToCloud();
+      await syncMembersConfigToCloud();
       showToast(`Đã mở khóa thiết bị cho: ${name}`);
     }
 
@@ -1759,7 +1777,7 @@
       document.getElementById('statTotalViolations').textContent = logs.length;
 
       if (logs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="py-6 text-center text-slate-400 italic">Chưa có dữ liệu hoạt động nào trên Google Sheet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400 italic">Chưa có dữ liệu hoạt động nào trên Google Sheet.</td></tr>`;
         return;
       }
 
@@ -1778,15 +1796,12 @@
             <td class="py-2.5 px-3 font-semibold">${item.hoVaTen || '<span class="text-slate-400 italic">(Trống - Lỗi Lớp)</span>'}</td>
             <td class="py-2.5 px-3 font-extrabold text-red-600">${item.lop || ''}</td>
             <td class="py-2.5 px-3">${item.loiViPham || ''}</td>
-            <td class="py-2.5 px-3 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 max-w-[220px] truncate" title="${item.minhChung || ''}">
-              ${item.minhChung ? item.minhChung : '<span class="text-slate-400">Không đính kèm</span>'}
-            </td>
           </tr>
         `;
       }).join('');
     }
 
-    async function fetchAdminDataFromCloud(showMsg = false) {
+    async function fetchAdminDataFromCloud(showMsg = false, forcePullMembers = false) {
       try {
         const res = await fetch(APPS_SCRIPT_URL + '?action=getAdminData&t=' + Date.now(), {
           method: 'GET',
@@ -1797,13 +1812,16 @@
         if (data && Array.isArray(data.logs)) {
           localStorage.setItem('dl3_activity_logs', JSON.stringify(data.logs));
         }
-        if (data && Array.isArray(data.members) && data.members.length > 0) {
-          saveMemberAccounts(data.members);
+        // Không ghi đè danh sách nếu Quản trị viên vừa bấm Cấp/Xóa trong vòng 8 giây qua (trừ khi điện thoại đang đăng nhập)
+        if (forcePullMembers || (Date.now() - lastMemberModifyTimestamp > 8000)) {
+          if (data && Array.isArray(data.members)) {
+            saveMemberAccounts(data.members);
+          }
+          if (data && data.bindings) {
+            saveDeviceBindings(data.bindings);
+          }
         }
-        if (data && data.bindings) {
-          saveDeviceBindings(data.bindings);
-        }
-        if (data && Array.isArray(data.securityLogs) && data.securityLogs.length > 0) {
+        if (data && Array.isArray(data.securityLogs)) {
           localStorage.setItem('dl3_security_logs', JSON.stringify(data.securityLogs));
         }
         renderMemberAccountsAdmin();
@@ -1811,11 +1829,11 @@
         renderAdminActivityTable();
         if (showMsg) showToast('Đã tải dữ liệu mới nhất từ Google Sheet!');
       } catch (e) {
-        if (showMsg) showToast('Chưa tải được từ Sheet. Hãy chắc chắn bạn đã cập nhật Phiên bản mới trong Apps Script!', false);
+        if (showMsg) showToast('Chưa tải được từ Sheet!', false);
       }
     }
 
-    fetchAdminDataFromCloud(false);
+    fetchAdminDataFromCloud(false, true);
   </script>
 </body>
 </html>
