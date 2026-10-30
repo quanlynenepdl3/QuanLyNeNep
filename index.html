@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Hệ thống Ghi Lỗi Vi Phạm - THPT Đô Lương 3</title>
-  <link id="faviconLink" rel="icon" type="image/jpeg" href="logo.jpg" />
+  <link rel="icon" type="image/jpeg" href="logo.jpg" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = { darkMode: 'class' };
@@ -31,11 +31,11 @@
       background: linear-gradient(90deg, #7f1d1d 0%, #991b1b 55%, #b91c1c 100%);
     }
     .glass-card {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(10px);
     }
     html.dark .glass-card {
-      background: rgba(30, 41, 59, 0.95);
+      background: rgba(30, 41, 59, 0.96);
       border-color: rgba(71, 85, 105, 0.6);
     }
     .chip-btn {
@@ -44,22 +44,38 @@
     .chip-btn:active {
       transform: scale(0.95);
     }
+    /* Hiệu ứng Spotlight cho Bot hướng dẫn kiểu Game */
+    #tutorialSpotlight {
+      position: fixed;
+      z-index: 90;
+      pointer-events: none;
+      border-radius: 16px;
+      box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.78), 0 0 25px 4px rgba(239, 68, 68, 0.85);
+      border: 2.5px solid #facc15;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #tutorialBotCard {
+      position: fixed;
+      z-index: 95;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
   </style>
 </head>
-<body class="min-h-screen text-slate-800 dark:text-slate-100 pb-14">
+<body class="min-h-screen flex flex-col justify-between text-slate-800 dark:text-slate-100">
 
   <!-- INPUT FILE ẨN -->
   <input type="file" id="QuickPhotoInput" accept="image/*" capture="environment" class="hidden" />
   <input type="file" id="QuickVideoInput" accept="video/*" capture="environment" class="hidden" />
   <input type="file" id="QuickUploadInput" accept="image/*,video/*" multiple class="hidden" />
   <input type="file" id="CustomBgFileInput" accept="image/*" class="hidden" />
+  <input type="file" id="AvatarFileInput" accept="image/*" class="hidden" />
 
   <!-- ==================== MÀN HÌNH ĐĂNG NHẬP ==================== -->
   <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/75 backdrop-blur-md">
     <div class="glass-card w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
       <div class="header-gradient p-6 text-center text-white">
         <div class="w-20 h-20 rounded-full bg-white p-1 mx-auto shadow-lg flex items-center justify-center overflow-hidden">
-          <img id="loginLogoImg" src="logo.jpg" onerror="this.src=window.DEFAULT_LOGO_DATA_URI" alt="Logo THPT Đô Lương 3" class="w-full h-full object-contain rounded-full" />
+          <img src="logo.jpg" alt="Logo THPT Đô Lương 3" class="w-full h-full object-contain rounded-full" />
         </div>
         <p class="text-[11px] font-bold tracking-widest uppercase text-red-100 mt-3">
           SỞ GD&ĐT NGHỆ AN • THPT ĐÔ LƯƠNG 3
@@ -69,7 +85,7 @@
         </h2>
       </div>
 
-      <div class="p-6 space-y-5">
+      <div class="p-6 space-y-4">
         <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl">
           <button type="button" id="tabRoleMember" onclick="switchLoginRole('member')"
                   class="py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-red-600 text-white shadow transition">
@@ -83,7 +99,7 @@
 
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
-            TÊN TÀI KHOẢN ĐƯỢC CẤP <span class="text-red-500">*</span>
+            TÊN TÀI KHOẢN <span class="text-red-500">*</span>
           </label>
           <div class="relative">
             <span class="w-10 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
@@ -91,14 +107,14 @@
             </span>
             <input type="text" id="loginUsername"
                    onkeydown="if(event.key==='Enter') handleLogin()"
-                   placeholder="Nhập tên tài khoản được cấp..."
+                   placeholder="Nhập tên tài khoản..."
                    class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-semibold text-sm" />
           </div>
         </div>
 
-        <div id="adminPasswordGroup" class="hidden">
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
-            MẬT KHẨU QUẢN TRỊ <span class="text-red-500">*</span>
+        <div>
+          <label id="loginPasswordLabel" class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
+            MẬT KHẨU TÀI KHOẢN <span class="text-red-500">*</span>
           </label>
           <div class="relative">
             <span class="w-10 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
@@ -106,9 +122,9 @@
             </span>
             <input type="password" id="loginPassword"
                    onkeydown="if(event.key==='Enter') handleLogin()"
-                   placeholder="Nhập mật khẩu quản trị..."
+                   placeholder="Nhập mật khẩu..."
                    class="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-semibold text-sm" />
-            <button type="button" onclick="togglePassVisibility()" class="w-10 h-full absolute right-0 top-0 flex items-center justify-center text-slate-400 hover:text-slate-600">
+            <button type="button" onclick="togglePassVisibility('loginPassword', 'passEyeIcon')" class="w-10 h-full absolute right-0 top-0 flex items-center justify-center text-slate-400 hover:text-slate-600">
               <i id="passEyeIcon" class="fa-regular fa-eye"></i>
             </button>
           </div>
@@ -116,7 +132,7 @@
 
         <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 px-3.5 py-2.5 rounded-xl border border-slate-200/60 dark:border-slate-700">
           <span class="flex items-center gap-1.5 font-medium">
-            <i class="fa-solid fa-shield-halved text-red-500"></i> Tự động lưu & khóa cố định trên thiết bị này
+            <i class="fa-solid fa-shield-halved text-red-500"></i> Tự động lưu & nhận diện theo Thiết bị / IP
           </span>
           <span class="font-bold text-emerald-600 dark:text-emerald-400">Đã bật</span>
         </div>
@@ -128,480 +144,671 @@
           <i class="fa-solid fa-right-to-bracket"></i>
           <span>VÀO HỆ THỐNG</span>
         </button>
-
-        <p class="text-center text-[11px] font-semibold text-slate-400">
-          Phiên bản v3.0 • Đồng bộ Cloud Trực Tiếp
-        </p>
       </div>
     </div>
   </div>
 
-  <!-- ==================== HEADER CHÍNH ==================== -->
-  <header class="header-gradient text-white shadow-md sticky top-0 z-40">
-    <div class="max-w-6xl mx-auto px-3 sm:px-4 py-3 flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-3">
-        <div class="w-11 h-11 rounded-full bg-white p-0.5 flex items-center justify-center shadow-md overflow-hidden shrink-0">
-          <img id="headerLogoImg" src="logo.jpg" onerror="this.src=window.DEFAULT_LOGO_DATA_URI" alt="Logo THPT Đô Lương 3" class="w-full h-full object-contain rounded-full" />
-        </div>
-        <div>
-          <p class="text-[10px] font-bold tracking-wider uppercase text-red-100">
-            SỞ GD&ĐT NGHỆ AN • THPT ĐÔ LƯƠNG 3
-          </p>
-          <h1 class="text-sm sm:text-base md:text-lg font-extrabold tracking-tight uppercase leading-tight">
-            HỆ THỐNG GHI LỖI VI PHẠM
-          </h1>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-1.5 sm:gap-2">
-        <span id="networkStatusPill" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/25 border border-emerald-300/40 text-[11px] font-bold">
-          <span class="w-2 h-2 rounded-full bg-emerald-300"></span> Online
-        </span>
-
-        <!-- 1. Máy ảnh -->
-        <button type="button" onclick="openMediaCapture('photo')" title="Chụp ảnh minh chứng"
-                class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
-          <i class="fa-solid fa-camera text-yellow-300 text-sm"></i>
-          <span class="hidden md:inline">Máy ảnh</span>
-        </button>
-
-        <!-- 2. Máy quay -->
-        <button type="button" onclick="openMediaCapture('video')" title="Quay video minh chứng"
-                class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
-          <i class="fa-solid fa-video text-emerald-300 text-sm"></i>
-          <span class="hidden md:inline">Máy quay</span>
-        </button>
-
-        <!-- 3. Tải lên -->
-        <button type="button" onclick="openMediaCapture('upload')" title="Tải ảnh hoặc video minh chứng lên"
-                class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
-          <i class="fa-solid fa-cloud-arrow-up text-sky-200 text-sm"></i>
-          <span class="hidden md:inline">Tải lên</span>
-        </button>
-
-        <!-- 4. Nền cá nhân -->
-        <button type="button" onclick="openBgCustomizerModal()" title="Tùy chỉnh hình nền cá nhân"
-                class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center justify-center transition">
-          <i class="fa-solid fa-palette text-pink-200 text-sm"></i>
-        </button>
-
-        <!-- 5. Sáng / Tối -->
-        <button type="button" onclick="toggleDarkMode()" title="Đổi giao diện Sáng / Tối"
-                class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center justify-center transition">
-          <i id="themeToggleIcon" class="fa-solid fa-moon text-yellow-200 text-sm"></i>
-        </button>
-
-        <!-- Báo hàng đợi Offline -->
-        <button type="button" id="offlineQueueBadge" onclick="syncOfflineQueue(true)"
-                class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-extrabold shadow-sm">
-          <i class="fa-solid fa-cloud-arrow-up animate-bounce"></i>
-          <span id="queueCountText">0 chờ gửi</span>
-        </button>
-
-        <div class="flex items-center gap-1.5 pl-1 border-l border-white/20">
-          <div class="hidden sm:block text-right leading-tight">
-            <p id="currentUserDisplay" class="text-xs font-extrabold">---</p>
-            <p id="currentRoleDisplay" class="text-[10px] text-red-100 uppercase">Thành viên</p>
+  <!-- ==================== PHẦN THÂN TRANG WEB ==================== -->
+  <div>
+    <!-- HEADER CHÍNH -->
+    <header class="header-gradient text-white shadow-md sticky top-0 z-40">
+      <div class="max-w-6xl mx-auto px-3 sm:px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+        <!-- Logo từ file logo.jpg -->
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-full bg-white p-0.5 flex items-center justify-center shadow-md overflow-hidden shrink-0">
+            <img src="logo.jpg" alt="Logo THPT Đô Lương 3" class="w-full h-full object-contain rounded-full" />
           </div>
-          <button type="button" onclick="logoutSystem()" title="Đăng xuất tài khoản"
-                  class="w-9 h-9 rounded-xl bg-black/20 hover:bg-black/30 flex items-center justify-center text-white text-xs transition">
-            <i class="fa-solid fa-power-off"></i>
+          <div>
+            <p class="text-[10px] font-bold tracking-wider uppercase text-red-100">
+              SỞ GD&ĐT NGHỆ AN • THPT ĐÔ LƯƠNG 3
+            </p>
+            <h1 class="text-sm sm:text-base md:text-lg font-extrabold tracking-tight uppercase leading-tight">
+              HỆ THỐNG GHI LỖI VI PHẠM
+            </h1>
+          </div>
+        </div>
+
+        <!-- Thanh công cụ -->
+        <div id="headerToolbarGroup" class="flex items-center gap-1.5 sm:gap-2">
+          <!-- Nút Bot Hướng dẫn kiểu Game -->
+          <button type="button" id="btnStartTutorial" onclick="startGameTutorial()" title="Hướng dẫn sử dụng từng bước"
+                  class="px-2.5 py-2 rounded-xl bg-yellow-400/20 hover:bg-yellow-400/30 active:scale-95 border border-yellow-300/40 flex items-center gap-1.5 text-xs font-bold text-yellow-200 transition">
+            <i class="fa-solid fa-robot text-yellow-300 text-sm"></i>
+            <span class="hidden md:inline">Hướng dẫn</span>
           </button>
-        </div>
-      </div>
-    </div>
-  </header>
 
-  <!-- ==================== NỘI DUNG CHÍNH ==================== -->
-  <main class="max-w-6xl mx-auto px-4 mt-6 space-y-8">
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-      <!-- ==================== CỘT 1: GHI LỖI CÁ NHÂN HỌC SINH ==================== -->
-      <section class="glass-card rounded-2xl shadow-sm border border-slate-200/80 p-5 md:p-6 flex flex-col justify-between">
-        <div>
-          <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
-            <div class="flex items-center gap-2.5">
-              <span class="w-7 h-7 rounded-full bg-red-600 text-white font-bold text-sm flex items-center justify-center">1</span>
-              <h2 class="font-bold text-base md:text-lg">Ghi lỗi Cá nhân Học sinh</h2>
-            </div>
-            <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-300 border border-red-200 dark:border-red-800">
-              Cá nhân
-            </span>
-          </div>
-
-          <div class="mt-4 space-y-4">
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
-                HỌC SINH <span class="text-red-500">*</span>
-              </label>
-              <div class="relative">
-                <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
-                  <i class="fa-solid fa-user-graduate"></i>
-                </span>
-                <input type="text" id="studentName" placeholder="Nhập họ và tên học sinh vi phạm"
-                       class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-semibold text-sm" />
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
-                LỚP <span class="text-red-500">*</span>
-              </label>
-              <div class="relative">
-                <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
-                  <i class="fa-solid fa-users-rectangle"></i>
-                </span>
-                <input type="text" id="studentClass" placeholder="Nhập lớp (VD: 12T1, 11D9)"
-                       onblur="normalizeClassInput(this)"
-                       class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-bold text-red-600 dark:text-red-400 uppercase placeholder:normal-case placeholder:font-normal placeholder:text-slate-400 text-sm" />
-              </div>
-            </div>
-
-            <div>
-              <div class="flex items-center justify-between mb-1">
-                <label class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
-                  LỖI VI PHẠM <span class="text-red-500">*</span>
-                </label>
-                <button type="button" onclick="document.getElementById('studentViolations').value = ''"
-                        class="text-xs text-slate-400 hover:text-red-600 font-medium">
-                  Xóa nhanh
-                </button>
-              </div>
-              <div class="relative">
-                <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-red-500">
-                  <i class="fa-solid fa-triangle-exclamation"></i>
-                </span>
-                <input type="text" id="studentViolations" placeholder="Nhập lỗi hoặc chạm nhanh bên dưới..."
-                       class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-medium text-sm" />
-              </div>
-
-              <p class="text-[11px] font-semibold text-slate-400 mt-2 mb-1.5">Chạm để điền nhanh lỗi thường gặp:</p>
-              <div class="flex flex-wrap gap-1.5">
-                <button type="button" onclick="appendViolation('studentViolations', 'Không sơ vin')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Không sơ vin</button>
-                <button type="button" onclick="appendViolation('studentViolations', 'Vào lớp muộn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Vào lớp muộn</button>
-                <button type="button" onclick="appendViolation('studentViolations', 'Đi học muộn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Đi học muộn</button>
-                <button type="button" onclick="appendViolation('studentViolations', 'Quần sai quy định')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Quần sai quy định</button>
-                <button type="button" onclick="appendViolation('studentViolations', 'Không đeo thẻ')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Không đeo thẻ</button>
-                <button type="button" onclick="appendViolation('studentViolations', 'Sai đồng phục')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Sai đồng phục</button>
-                <button type="button" onclick="appendViolation('studentViolations', 'Sai giày/dép')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Sai giày/dép</button>
-                <button type="button" onclick="appendViolation('studentViolations', 'Tóc sai quy định')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Tóc sai quy định</button>
-              </div>
-            </div>
-
-            <!-- KHU VỰC ĐÍNH KÈM ẢNH / VIDEO MINH CHỨNG -->
-            <div class="pt-3 border-t border-slate-100 dark:border-slate-700">
-              <label class="block text-sm font-semibold text-slate-800 dark:text-slate-100">
-                Minh chứng vi phạm (Ảnh / Video)
-              </label>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-2.5">
-                Tải tối đa 5 tệp được hỗ trợ lên. Mỗi tệp có kích thước tối đa 100 MB.
-              </p>
-
-              <div id="studentEvidenceList" class="flex flex-wrap gap-2 mb-2.5"></div>
-
-              <button type="button" onclick="triggerDirectAddFile('student')"
-                      class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 text-blue-600 dark:text-blue-400 font-semibold text-xs shadow-sm transition">
-                <i class="fa-solid fa-arrow-up-from-bracket"></i>
-                <span>Thêm tệp</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-5 pt-3.5 border-t border-slate-100 dark:border-slate-700">
-          <div class="grid grid-cols-2 gap-3 mb-3">
-            <div class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-xs">
-              <span class="text-slate-500 dark:text-slate-400 font-medium">Người ghi:</span>
-              <span class="recorder-name font-bold text-red-600 dark:text-red-400 truncate max-w-[110px]">---</span>
-            </div>
-            <div class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-xs">
-              <span class="text-slate-500 dark:text-slate-400 font-medium">Thời gian:</span>
-              <span class="live-date font-bold">--/--/----</span>
-            </div>
-          </div>
-
-          <button type="button" id="btnSubmitStudent" onclick="submitStudentViolation()"
-                  class="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-[0.99] text-white font-extrabold text-sm uppercase tracking-wider shadow-md shadow-red-600/20 flex items-center justify-center gap-2 transition">
-            <i class="fa-solid fa-circle-check"></i>
-            <span>XONG (LƯU LÊN SHEET & DRIVE)</span>
+          <!-- 1. Máy ảnh -->
+          <button type="button" id="btnToolCamera" onclick="openMediaCapture('photo')" title="Chụp ảnh minh chứng"
+                  class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
+            <i class="fa-solid fa-camera text-yellow-300 text-sm"></i>
+            <span class="hidden md:inline">Máy ảnh</span>
           </button>
-        </div>
-      </section>
 
-      <!-- ==================== CỘT 2: GHI LỖI RIÊNG MỖI LỚP ==================== -->
-      <section class="glass-card rounded-2xl shadow-sm border border-slate-200/80 p-5 md:p-6 flex flex-col justify-between">
-        <div>
-          <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
-            <div class="flex items-center gap-2.5">
-              <span class="w-7 h-7 rounded-full bg-red-600 text-white font-bold text-sm flex items-center justify-center">2</span>
-              <h2 class="font-bold text-base md:text-lg">Ghi lỗi Riêng mỗi Lớp</h2>
-            </div>
-            <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
-              Thời gian • Lớp • Lỗi
-            </span>
-          </div>
-
-          <div class="mt-4 space-y-4">
-            <div>
-              <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
-                LỚP <span class="text-red-500">*</span>
-              </label>
-              <div class="relative">
-                <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
-                  <i class="fa-solid fa-school"></i>
-                </span>
-                <input type="text" id="classOnlyName" placeholder="Nhập lớp vi phạm (VD: 12T1, 11D9...)"
-                       onblur="normalizeClassInput(this)"
-                       class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-bold text-red-600 dark:text-red-400 uppercase placeholder:normal-case placeholder:font-normal placeholder:text-slate-400 text-sm" />
-              </div>
-
-              <p class="text-[11px] font-semibold text-slate-400 mt-2 mb-1.5">Chạm nhanh Khối:</p>
-              <div class="flex flex-wrap gap-1.5">
-                <button type="button" onclick="setClassPrefix('12')" class="chip-btn px-3 py-1 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-bold text-xs border border-red-200 dark:border-red-800">Khối 12 (12...)</button>
-                <button type="button" onclick="setClassPrefix('11')" class="chip-btn px-3 py-1 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-bold text-xs border border-red-200 dark:border-red-800">Khối 11 (11...)</button>
-                <button type="button" onclick="setClassPrefix('10')" class="chip-btn px-3 py-1 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-bold text-xs border border-red-200 dark:border-red-800">Khối 10 (10...)</button>
-              </div>
-            </div>
-
-            <div>
-              <div class="flex items-center justify-between mb-1">
-                <label class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
-                  LỖI VI PHẠM CỦA LỚP <span class="text-red-500">*</span>
-                </label>
-                <button type="button" onclick="document.getElementById('classOnlyViolations').value = ''"
-                        class="text-xs text-slate-400 hover:text-red-600 font-medium">
-                  Xóa nhanh
-                </button>
-              </div>
-              <div class="relative">
-                <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-red-500">
-                  <i class="fa-solid fa-clipboard-list"></i>
-                </span>
-                <input type="text" id="classOnlyViolations" placeholder="Nhập lỗi tập thể lớp hoặc chạm nhanh bên dưới..."
-                       class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-medium text-sm" />
-              </div>
-
-              <p class="text-[11px] font-semibold text-slate-400 mt-2 mb-1.5">Chạm để điền nhanh lỗi tập thể lớp:</p>
-              <div class="flex flex-wrap gap-1.5">
-                <button type="button" onclick="appendViolation('classOnlyViolations', 'Sinh hoạt ồn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Sinh hoạt ồn</button>
-                <button type="button" onclick="appendViolation('classOnlyViolations', 'Vệ sinh bẩn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Vệ sinh bẩn</button>
-                <button type="button" onclick="appendViolation('classOnlyViolations', 'Vào lớp muộn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Vào lớp muộn</button>
-                <button type="button" onclick="appendViolation('classOnlyViolations', 'Chưa đổ rác')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Chưa đổ rác</button>
-                <button type="button" onclick="appendViolation('classOnlyViolations', 'Hành lang bẩn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Hành lang bẩn</button>
-                <button type="button" onclick="appendViolation('classOnlyViolations', 'Chưa tắt quạt/điện')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Chưa tắt quạt/điện</button>
-                <button type="button" onclick="appendViolation('classOnlyViolations', 'Xếp hàng chậm')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Xếp hàng chậm</button>
-                <button type="button" onclick="appendViolation('classOnlyViolations', 'Bàn ghế lộn xộn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Bàn ghế lộn xộn</button>
-              </div>
-            </div>
-
-            <!-- KHU VỰC ĐÍNH KÈM ẢNH / VIDEO MINH CHỨNG CỦA LỚP -->
-            <div class="pt-3 border-t border-slate-100 dark:border-slate-700">
-              <label class="block text-sm font-semibold text-slate-800 dark:text-slate-100">
-                Minh chứng vi phạm của Lớp (Ảnh / Video)
-              </label>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-2.5">
-                Tải tối đa 5 tệp được hỗ trợ lên. Mỗi tệp có kích thước tối đa 100 MB.
-              </p>
-
-              <div id="classEvidenceList" class="flex flex-wrap gap-2 mb-2.5"></div>
-
-              <button type="button" onclick="triggerDirectAddFile('class')"
-                      class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 text-blue-600 dark:text-blue-400 font-semibold text-xs shadow-sm transition">
-                <i class="fa-solid fa-arrow-up-from-bracket"></i>
-                <span>Thêm tệp</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-5 pt-3.5 border-t border-slate-100 dark:border-slate-700">
-          <div class="grid grid-cols-2 gap-3 mb-3">
-            <div class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-xs">
-              <span class="text-slate-500 dark:text-slate-400 font-medium">Người ghi:</span>
-              <span class="recorder-name font-bold text-red-600 dark:text-red-400 truncate max-w-[110px]">---</span>
-            </div>
-            <div class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-xs">
-              <span class="text-slate-500 dark:text-slate-400 font-medium">Thời gian:</span>
-              <span class="live-date font-bold">--/--/----</span>
-            </div>
-          </div>
-
-          <button type="button" id="btnSubmitClass" onclick="submitClassViolation()"
-                  class="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-[0.99] text-white font-extrabold text-sm uppercase tracking-wider shadow-md shadow-red-600/20 flex items-center justify-center gap-2 transition">
-            <i class="fa-solid fa-circle-check"></i>
-            <span>XONG (LƯU LÊN SHEET & DRIVE)</span>
+          <!-- 2. Máy quay -->
+          <button type="button" id="btnToolVideo" onclick="openMediaCapture('video')" title="Quay video minh chứng"
+                  class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
+            <i class="fa-solid fa-video text-emerald-300 text-sm"></i>
+            <span class="hidden md:inline">Máy quay</span>
           </button>
-        </div>
-      </section>
 
-    </div>
+          <!-- 3. Tải lên -->
+          <button type="button" id="btnToolUpload" onclick="openMediaCapture('upload')" title="Tải ảnh hoặc video minh chứng lên"
+                  class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
+            <i class="fa-solid fa-cloud-arrow-up text-sky-200 text-sm"></i>
+            <span class="hidden md:inline">Tải lên</span>
+          </button>
 
-    <!-- ==================== GIAO DIỆN QUẢN TRỊ VIÊN ==================== -->
-    <section id="adminDashboardSection" class="hidden space-y-6">
-      <div class="glass-card rounded-2xl shadow-md border-2 border-red-500/30 p-5 md:p-6">
-        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-700">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shadow">
-              <i class="fa-solid fa-user-shield text-lg"></i>
-            </div>
-            <div>
-              <h2 class="font-extrabold text-base md:text-lg uppercase text-red-600 dark:text-red-400">
-                TRUNG TÂM ĐIỀU HÀNH & GIÁM SÁT QUẢN TRỊ VIÊN (v3.0)
-              </h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400">
-                Đồng bộ 2 chiều thời gian thực giữa Điện thoại • Máy tính • Google Sheet • Google Drive
-              </p>
-            </div>
-          </div>
+          <!-- 4. Nền cá nhân -->
+          <button type="button" id="btnToolBg" onclick="openBgCustomizerModal()" title="Tùy chỉnh hình nền cá nhân"
+                  class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center justify-center transition">
+            <i class="fa-solid fa-palette text-pink-200 text-sm"></i>
+          </button>
 
-          <div class="flex flex-wrap items-center gap-2">
-            <button type="button" onclick="syncMembersConfigToCloud(true)"
-                    class="px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center gap-1.5 border border-blue-200 dark:border-blue-800">
-              <i class="fa-solid fa-cloud-arrow-up"></i> Đẩy danh sách TK lên Cloud
+          <!-- 5. Sáng / Tối -->
+          <button type="button" id="btnToolTheme" onclick="toggleDarkMode()" title="Đổi giao diện Sáng / Tối"
+                  class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center justify-center transition">
+            <i id="themeToggleIcon" class="fa-solid fa-moon text-yellow-200 text-sm"></i>
+          </button>
+
+          <!-- Báo hàng đợi Offline -->
+          <button type="button" id="offlineQueueBadge" onclick="syncOfflineQueue(true)"
+                  class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-extrabold shadow-sm">
+            <i class="fa-solid fa-cloud-arrow-up animate-bounce"></i>
+            <span id="queueCountText">0 chờ gửi</span>
+          </button>
+
+          <!-- Hồ sơ Tài khoản Cá nhân & Đăng xuất -->
+          <div class="flex items-center gap-1.5 pl-1.5 border-l border-white/20">
+            <button type="button" id="btnUserProfile" onclick="openProfileModal()" title="Xem & chỉnh sửa Hồ sơ tài khoản"
+                    class="flex items-center gap-2 px-2 py-1 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 transition">
+              <img id="headerUserAvatar" src="logo.jpg" alt="Avatar" class="w-7 h-7 rounded-full object-cover bg-white border border-white/40" />
+              <div class="hidden sm:block text-left leading-tight">
+                <p id="currentUserDisplay" class="text-xs font-extrabold truncate max-w-[110px]">---</p>
+                <p id="currentRoleDisplay" class="text-[10px] text-red-100 uppercase">Hồ sơ</p>
+              </div>
             </button>
-            <button type="button" onclick="fetchAdminDataFromCloud(true, true)"
-                    class="px-3.5 py-2 rounded-xl bg-red-50 dark:bg-red-950/60 hover:bg-red-100 text-red-600 dark:text-red-300 font-bold text-xs flex items-center gap-1.5 border border-red-200 dark:border-red-800">
-              <i class="fa-solid fa-arrows-rotate"></i> Làm mới từ Sheet
+            <button type="button" onclick="logoutSystem()" title="Đăng xuất tài khoản"
+                    class="w-9 h-9 rounded-xl bg-black/20 hover:bg-black/30 flex items-center justify-center text-white text-xs transition">
+              <i class="fa-solid fa-power-off"></i>
             </button>
           </div>
         </div>
+      </div>
+    </header>
 
-        <!-- 4 Ô THỐNG KÊ -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
-          <div class="p-3.5 rounded-2xl bg-red-50/80 dark:bg-red-950/40 border border-red-200 dark:border-red-800">
-            <p class="text-[11px] font-bold uppercase text-red-600 dark:text-red-300">Tổng số Thành viên</p>
-            <div class="flex items-baseline justify-between mt-1">
-              <span id="statTotalMembers" class="text-2xl font-extrabold text-red-700 dark:text-red-200">0</span>
-              <span id="statMaxLimitText" class="text-xs font-semibold text-slate-500">/ 30 tối đa</span>
+    <!-- MAIN CONTENT -->
+    <main class="max-w-6xl mx-auto px-4 mt-6 space-y-8">
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- ==================== CỘT 1: GHI LỖI CÁ NHÂN HỌC SINH ==================== -->
+        <section id="cardStudentViolation" class="glass-card rounded-2xl shadow-sm border border-slate-200/80 p-5 md:p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
+              <div class="flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-full bg-red-600 text-white font-bold text-sm flex items-center justify-center">1</span>
+                <h2 class="font-bold text-base md:text-lg">Ghi lỗi Cá nhân Học sinh</h2>
+              </div>
+              <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-300 border border-red-200 dark:border-red-800">
+                Cá nhân
+              </span>
             </div>
-          </div>
 
-          <div class="p-3.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
-            <p class="text-[11px] font-bold uppercase text-emerald-700 dark:text-emerald-300">Đã kích hoạt Thiết bị</p>
-            <div class="flex items-baseline justify-between mt-1">
-              <span id="statBoundMembers" class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-200">0</span>
-              <span class="text-xs font-semibold text-emerald-600">Đang khóa TB</span>
-            </div>
-          </div>
-
-          <div class="p-3.5 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800">
-            <p class="text-[11px] font-bold uppercase text-blue-700 dark:text-blue-300">Chưa đăng nhập</p>
-            <div class="flex items-baseline justify-between mt-1">
-              <span id="statUnboundMembers" class="text-2xl font-extrabold text-blue-700 dark:text-blue-200">0</span>
-              <span class="text-xs font-semibold text-blue-600">Tài khoản trống</span>
-            </div>
-          </div>
-
-          <div class="p-3.5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
-            <p class="text-[11px] font-bold uppercase text-amber-700 dark:text-amber-300">Tổng lỗi trên Sheet</p>
-            <div class="flex items-baseline justify-between mt-1">
-              <span id="statTotalViolations" class="text-2xl font-extrabold text-amber-700 dark:text-amber-200">0</span>
-              <span class="text-xs font-semibold text-amber-600">Đã đồng bộ</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2 CỘT QUẢN TRỊ -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
-          <div class="lg:col-span-7 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
-            <div>
-              <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                <h3 class="font-extrabold text-sm flex items-center gap-2 text-slate-800 dark:text-slate-100">
-                  <i class="fa-solid fa-users-gear text-red-600"></i>
-                  <span>Cột Kiểm soát Số lượng & Cấp / Xóa Tài khoản Thành viên</span>
-                </h3>
-
-                <div class="flex items-center gap-1.5 text-xs">
-                  <span class="text-slate-500 font-medium">Giới hạn đội:</span>
-                  <input type="number" id="maxMemberLimitInput" min="1" max="200" value="30"
-                         onchange="updateMaxMemberLimit(this.value)"
-                         class="w-16 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-900 font-bold text-center text-red-600" />
-                  <span class="text-slate-500">người</span>
+            <div class="mt-4 space-y-4">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
+                  HỌC SINH <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
+                    <i class="fa-solid fa-user-graduate"></i>
+                  </span>
+                  <input type="text" id="studentName" placeholder="Nhập họ và tên học sinh vi phạm"
+                         class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-semibold text-sm" />
                 </div>
               </div>
 
-              <div class="flex flex-wrap gap-2 mb-3">
-                <input type="text" id="newMemberAccountInput"
-                       onkeydown="if(event.key==='Enter') addMemberAccount()"
-                       placeholder="Nhập tên tài khoản thành viên mới để cấp..."
-                       class="flex-1 min-w-[200px] px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-900 text-xs font-semibold outline-none focus:border-red-500" />
-                <button type="button" id="btnGrantMember" onclick="addMemberAccount()"
-                        class="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs shrink-0 flex items-center gap-1.5 shadow-sm">
-                  <i class="fa-solid fa-user-plus"></i> Cấp Tài Khoản
-                </button>
-                <button type="button" onclick="deleteAllUnboundMembers()"
-                        class="px-3 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-700 hover:bg-red-100 hover:text-red-700 text-slate-700 dark:text-slate-200 font-bold text-xs shrink-0">
-                  Dọn TK trống
-                </button>
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
+                  LỚP <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
+                    <i class="fa-solid fa-users-rectangle"></i>
+                  </span>
+                  <input type="text" id="studentClass" placeholder="Nhập lớp"
+                         onblur="normalizeClassInput(this)"
+                         class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-bold text-red-600 dark:text-red-400 uppercase placeholder:normal-case placeholder:font-normal placeholder:text-slate-400 text-sm" />
+                </div>
               </div>
 
-              <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 max-h-72 overflow-y-auto">
-                <table class="w-full text-left border-collapse text-xs">
-                  <thead class="sticky top-0 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase font-bold border-b border-slate-200 dark:border-slate-700">
-                    <tr>
-                      <th class="py-2.5 px-3 w-10">STT</th>
-                      <th class="py-2.5 px-3">Tài khoản Thành viên</th>
-                      <th class="py-2.5 px-3">Trạng thái Thiết bị</th>
-                      <th class="py-2.5 px-3 text-center">Đã nhập</th>
-                      <th class="py-2.5 px-3 text-right">Thao tác</th>
-                    </tr>
-                  </thead>
-                  <tbody id="memberAccountsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-                </table>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                    LỖI VI PHẠM <span class="text-red-500">*</span>
+                  </label>
+                  <button type="button" onclick="document.getElementById('studentViolations').value = ''"
+                          class="text-xs text-slate-400 hover:text-red-600 font-medium">
+                    Xóa nhanh
+                  </button>
+                </div>
+                <div class="relative">
+                  <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-red-500">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                  </span>
+                  <input type="text" id="studentViolations" placeholder="Nhập lỗi hoặc chạm nhanh bên dưới..."
+                         class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-medium text-sm" />
+                </div>
+
+                <p class="text-[11px] font-semibold text-slate-400 mt-2 mb-1.5">Chạm để điền nhanh lỗi thường gặp:</p>
+                <div class="flex flex-wrap gap-1.5">
+                  <button type="button" onclick="appendViolation('studentViolations', 'Không sơ vin')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Không sơ vin</button>
+                  <button type="button" onclick="appendViolation('studentViolations', 'Vào lớp muộn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Vào lớp muộn</button>
+                  <button type="button" onclick="appendViolation('studentViolations', 'Đi học muộn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Đi học muộn</button>
+                  <button type="button" onclick="appendViolation('studentViolations', 'Quần sai quy định')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Quần sai quy định</button>
+                  <button type="button" onclick="appendViolation('studentViolations', 'Không đeo thẻ')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Không đeo thẻ</button>
+                  <button type="button" onclick="appendViolation('studentViolations', 'Sai đồng phục')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Sai đồng phục</button>
+                  <button type="button" onclick="appendViolation('studentViolations', 'Sai giày/dép')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Sai giày/dép</button>
+                  <button type="button" onclick="appendViolation('studentViolations', 'Tóc sai quy định')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Tóc sai quy định</button>
+                </div>
+              </div>
+
+              <!-- ĐÍNH KÈM MINH CHỨNG -->
+              <div class="pt-3 border-t border-slate-100 dark:border-slate-700">
+                <label class="block text-sm font-semibold text-slate-800 dark:text-slate-100">
+                  Minh chứng vi phạm (Ảnh / Video)
+                </label>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-2.5">
+                  Tải tối đa 5 tệp được hỗ trợ lên. Mỗi tệp có kích thước tối đa 100 MB.
+                </p>
+
+                <div id="studentEvidenceList" class="flex flex-wrap gap-2 mb-2.5"></div>
+
+                <button type="button" onclick="triggerDirectAddFile('student')"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 text-blue-600 dark:text-blue-400 font-semibold text-xs shadow-sm transition">
+                  <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                  <span>Thêm tệp</span>
+                </button>
               </div>
             </div>
           </div>
 
-          <div class="lg:col-span-5 p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <h3 class="font-extrabold text-sm flex items-center gap-2 text-amber-800 dark:text-amber-300">
-                  <i class="fa-solid fa-mobile-screen-button"></i>
-                  <span>Giám sát Đăng nhập Thiết bị khác</span>
-                </h3>
-                <button type="button" onclick="clearSecurityLogs()" class="text-[11px] text-amber-700 dark:text-amber-300 hover:underline font-semibold">
-                  Xóa cảnh báo
+          <div class="mt-5 pt-3.5 border-t border-slate-100 dark:border-slate-700">
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400 font-medium">Thành viên:</span>
+                <span class="recorder-name font-bold text-red-600 dark:text-red-400 truncate max-w-[115px]">---</span>
+              </div>
+              <div class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400 font-medium">Thời gian:</span>
+                <span class="live-date font-bold">--/--/----</span>
+              </div>
+            </div>
+
+            <button type="button" id="btnSubmitStudent" onclick="submitStudentViolation()"
+                    class="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-[0.99] text-white font-extrabold text-sm uppercase tracking-wider shadow-md shadow-red-600/20 flex items-center justify-center gap-2 transition">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>XONG</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- ==================== CỘT 2: GHI LỖI RIÊNG MỖI LỚP ==================== -->
+        <section id="cardClassViolation" class="glass-card rounded-2xl shadow-sm border border-slate-200/80 p-5 md:p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
+              <div class="flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-full bg-red-600 text-white font-bold text-sm flex items-center justify-center">2</span>
+                <h2 class="font-bold text-base md:text-lg">Ghi lỗi Riêng mỗi Lớp</h2>
+              </div>
+              <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                Tập thể lớp
+              </span>
+            </div>
+
+            <div class="mt-4 space-y-4">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
+                  LỚP <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
+                    <i class="fa-solid fa-school"></i>
+                  </span>
+                  <input type="text" id="classOnlyName" placeholder="Nhập lớp vi phạm"
+                         onblur="normalizeClassInput(this)"
+                         class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-bold text-red-600 dark:text-red-400 uppercase placeholder:normal-case placeholder:font-normal placeholder:text-slate-400 text-sm" />
+                </div>
+
+                <p class="text-[11px] font-semibold text-slate-400 mt-2 mb-1.5">Chạm nhanh Khối:</p>
+                <div class="flex flex-wrap gap-1.5">
+                  <button type="button" onclick="setClassPrefix('12')" class="chip-btn px-3 py-1 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-bold text-xs border border-red-200 dark:border-red-800">Khối 12 (12...)</button>
+                  <button type="button" onclick="setClassPrefix('11')" class="chip-btn px-3 py-1 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-bold text-xs border border-red-200 dark:border-red-800">Khối 11 (11...)</button>
+                  <button type="button" onclick="setClassPrefix('10')" class="chip-btn px-3 py-1 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-bold text-xs border border-red-200 dark:border-red-800">Khối 10 (10...)</button>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                    LỖI VI PHẠM CỦA LỚP <span class="text-red-500">*</span>
+                  </label>
+                  <button type="button" onclick="document.getElementById('classOnlyViolations').value = ''"
+                          class="text-xs text-slate-400 hover:text-red-600 font-medium">
+                    Xóa nhanh
+                  </button>
+                </div>
+                <div class="relative">
+                  <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-red-500">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                  </span>
+                  <input type="text" id="classOnlyViolations" placeholder="Nhập lỗi tập thể lớp hoặc chạm nhanh bên dưới..."
+                         class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-medium text-sm" />
+                </div>
+
+                <p class="text-[11px] font-semibold text-slate-400 mt-2 mb-1.5">Chạm để điền nhanh lỗi tập thể lớp:</p>
+                <div class="flex flex-wrap gap-1.5">
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Sinh hoạt ồn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Sinh hoạt ồn</button>
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Vệ sinh bẩn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Vệ sinh bẩn</button>
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Vào lớp muộn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Vào lớp muộn</button>
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Chưa đổ rác')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Chưa đổ rác</button>
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Hành lang bẩn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Hành lang bẩn</button>
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Chưa tắt quạt/điện')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Chưa tắt quạt/điện</button>
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Xếp hàng chậm')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Xếp hàng chậm</button>
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Bàn ghế lộn xộn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Bàn ghế lộn xộn</button>
+                </div>
+              </div>
+
+              <!-- ĐÍNH KÈM MINH CHỨNG CỦA LỚP -->
+              <div class="pt-3 border-t border-slate-100 dark:border-slate-700">
+                <label class="block text-sm font-semibold text-slate-800 dark:text-slate-100">
+                  Minh chứng vi phạm của Lớp (Ảnh / Video)
+                </label>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-2.5">
+                  Tải tối đa 5 tệp được hỗ trợ lên. Mỗi tệp có kích thước tối đa 100 MB.
+                </p>
+
+                <div id="classEvidenceList" class="flex flex-wrap gap-2 mb-2.5"></div>
+
+                <button type="button" onclick="triggerDirectAddFile('class')"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 text-blue-600 dark:text-blue-400 font-semibold text-xs shadow-sm transition">
+                  <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                  <span>Thêm tệp</span>
                 </button>
               </div>
-              <div id="deviceSecurityLogsBox" class="max-h-72 overflow-y-auto space-y-2 text-xs"></div>
             </div>
+          </div>
+
+          <div class="mt-5 pt-3.5 border-t border-slate-100 dark:border-slate-700">
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400 font-medium">Thành viên:</span>
+                <span class="recorder-name font-bold text-red-600 dark:text-red-400 truncate max-w-[115px]">---</span>
+              </div>
+              <div class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400 font-medium">Thời gian:</span>
+                <span class="live-date font-bold">--/--/----</span>
+              </div>
+            </div>
+
+            <button type="button" id="btnSubmitClass" onclick="submitClassViolation()"
+                    class="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-[0.99] text-white font-extrabold text-sm uppercase tracking-wider shadow-md shadow-red-600/20 flex items-center justify-center gap-2 transition">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>XONG</span>
+            </button>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ==================== TỔNG HỢP SỐ LỖI ĐÃ NHẬP CỦA THÀNH VIÊN ==================== -->
+      <section id="memberSummarySection" class="glass-card rounded-2xl shadow-sm border border-slate-200/80 p-5 md:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center shadow-sm">
+              <i class="fa-solid fa-clipboard-check"></i>
+            </div>
+            <div>
+              <h2 class="font-extrabold text-sm sm:text-base uppercase text-slate-800 dark:text-slate-100">
+                TỔNG HỢP SỐ LỖI ĐÃ NHẬP CỦA BẠN
+              </h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Theo dõi các lỗi bạn đã ghi nhận và bấm "Báo sai sót" nếu cần chỉnh sửa
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="px-3.5 py-1.5 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 font-extrabold text-xs">
+              Đã nhập: <span id="myTotalEnteredCount">0</span> lỗi
+            </span>
+            <button type="button" onclick="fetchAdminDataFromCloud(true, false)"
+                    class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-bold flex items-center gap-1.5">
+              <i class="fa-solid fa-arrows-rotate"></i> Làm mới
+            </button>
           </div>
         </div>
 
-        <!-- BẢNG GIÁM SÁT CHI TIẾT HOẠT ĐỘNG NHẬP LỖI TRÊN CLOUD -->
-        <div class="mt-6 pt-5 border-t border-slate-200 dark:border-slate-700">
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-            <h3 class="font-extrabold text-sm flex items-center gap-2">
-              <i class="fa-solid fa-list-check text-red-600"></i>
-              <span>Bảng Giám sát Hoạt động Nhập lỗi (Đồng bộ từ Google Sheet)</span>
-            </h3>
-            <input type="text" id="adminFilterMember" oninput="renderAdminActivityTable()"
-                   placeholder="Tìm theo tên thành viên, học sinh, lớp hoặc lỗi..."
-                   class="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 text-xs outline-none w-72" />
+        <div class="mt-4 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase font-bold">
+                <th class="py-3 px-3">TT</th>
+                <th class="py-3 px-3">Thời gian ghi nhận</th>
+                <th class="py-3 px-3">Phân loại</th>
+                <th class="py-3 px-3">Học sinh vi phạm</th>
+                <th class="py-3 px-3">Lớp</th>
+                <th class="py-3 px-3">Lỗi vi phạm</th>
+                <th class="py-3 px-3 text-right">Báo sai sót</th>
+              </tr>
+            </thead>
+            <tbody id="memberMyLogsTableBody" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ==================== GIAO DIỆN QUẢN TRỊ VIÊN ==================== -->
+      <section id="adminDashboardSection" class="hidden space-y-6">
+        <div class="glass-card rounded-2xl shadow-md border-2 border-red-500/30 p-5 md:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shadow">
+                <i class="fa-solid fa-user-shield text-lg"></i>
+              </div>
+              <div>
+                <h2 class="font-extrabold text-base md:text-lg uppercase text-red-600 dark:text-red-400">
+                  TRUNG TÂM ĐIỀU HÀNH & GIÁM SÁT QUẢN TRỊ VIÊN
+                </h2>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="syncMembersConfigToCloud(true)"
+                      class="px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center gap-1.5 border border-blue-200 dark:border-blue-800">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Đồng bộ TK lên Cloud
+              </button>
+              <button type="button" onclick="fetchAdminDataFromCloud(true, true)"
+                      class="px-3.5 py-2 rounded-xl bg-red-50 dark:bg-red-950/60 hover:bg-red-100 text-red-600 dark:text-red-300 font-bold text-xs flex items-center gap-1.5 border border-red-200 dark:border-red-800">
+                <i class="fa-solid fa-arrows-rotate"></i> Làm mới dữ liệu
+              </button>
+            </div>
           </div>
 
-          <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase font-bold">
-                  <th class="py-3 px-3">TT</th>
-                  <th class="py-3 px-3">Ngày / Giờ chi tiết</th>
-                  <th class="py-3 px-3">Thành viên nhập</th>
-                  <th class="py-3 px-3">Phân loại</th>
-                  <th class="py-3 px-3">Học sinh vi phạm</th>
-                  <th class="py-3 px-3">Lớp</th>
-                  <th class="py-3 px-3">Lỗi vi phạm</th>
-                </tr>
-              </thead>
-              <tbody id="adminActivityTableBody" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
-            </table>
+          <!-- 4 Ô THỐNG KÊ -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
+            <div class="p-3.5 rounded-2xl bg-red-50/80 dark:bg-red-950/40 border border-red-200 dark:border-red-800">
+              <p class="text-[11px] font-bold uppercase text-red-600 dark:text-red-300">Tổng số Thành viên</p>
+              <div class="flex items-baseline justify-between mt-1">
+                <span id="statTotalMembers" class="text-2xl font-extrabold text-red-700 dark:text-red-200">0</span>
+                <span id="statMaxLimitText" class="text-xs font-semibold text-slate-500">/ 30 tối đa</span>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
+              <p class="text-[11px] font-bold uppercase text-emerald-700 dark:text-emerald-300">Đã kích hoạt Thiết bị</p>
+              <div class="flex items-baseline justify-between mt-1">
+                <span id="statBoundMembers" class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-200">0</span>
+                <span class="text-xs font-semibold text-emerald-600">Đang khóa IP/TB</span>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800">
+              <p class="text-[11px] font-bold uppercase text-blue-700 dark:text-blue-300">Chưa đăng nhập</p>
+              <div class="flex items-baseline justify-between mt-1">
+                <span id="statUnboundMembers" class="text-2xl font-extrabold text-blue-700 dark:text-blue-200">0</span>
+                <span class="text-xs font-semibold text-blue-600">Tài khoản trống</span>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
+              <p class="text-[11px] font-bold uppercase text-amber-700 dark:text-amber-300">Tổng lỗi đã nhập</p>
+              <div class="flex items-baseline justify-between mt-1">
+                <span id="statTotalViolations" class="text-2xl font-extrabold text-amber-700 dark:text-amber-200">0</span>
+                <span class="text-xs font-semibold text-amber-600">Trên hệ thống</span>
+              </div>
+            </div>
           </div>
+
+          <!-- QUẢN LÝ TÀI KHOẢN THÀNH VIÊN & CẢNH BÁO -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+            <div class="lg:col-span-8 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+              <div>
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                  <h3 class="font-extrabold text-sm flex items-center gap-2 text-slate-800 dark:text-slate-100">
+                    <i class="fa-solid fa-users-gear text-red-600"></i>
+                    <span>Kiểm soát Số lượng & Cấp / Xóa Tài khoản Thành viên</span>
+                  </h3>
+
+                  <div class="flex items-center gap-1.5 text-xs">
+                    <span class="text-slate-500 font-medium">Giới hạn đội:</span>
+                    <input type="number" id="maxMemberLimitInput" min="1" max="200" value="30"
+                           onchange="updateMaxMemberLimit(this.value)"
+                           class="w-16 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-900 font-bold text-center text-red-600" />
+                    <span class="text-slate-500">người</span>
+                  </div>
+                </div>
+
+                <!-- Ô Cấp Tài khoản Mới (Tên TK + Tên Thành Viên + Mật khẩu) -->
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-3">
+                  <input type="text" id="newMemberAccountInput"
+                         placeholder="Tên tài khoản (VD: minhthu)"
+                         class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-900 text-xs font-semibold outline-none focus:border-red-500" />
+                  <input type="text" id="newMemberFullNameInput"
+                         placeholder="Tên Thành Viên (VD: Minh Thư)"
+                         class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-900 text-xs font-semibold outline-none focus:border-red-500" />
+                  <input type="text" id="newMemberPasswordInput"
+                         placeholder="Mật khẩu (Mặc định: 123456)"
+                         class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-900 text-xs font-semibold outline-none focus:border-red-500" />
+                  <button type="button" id="btnGrantMember" onclick="addMemberAccount()"
+                          class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-user-plus"></i> Cấp Tài Khoản
+                  </button>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 max-h-80 overflow-y-auto">
+                  <table class="w-full text-left border-collapse text-xs">
+                    <thead class="sticky top-0 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase font-bold border-b border-slate-200 dark:border-slate-700">
+                      <tr>
+                        <th class="py-2.5 px-2.5">STT</th>
+                        <th class="py-2.5 px-2.5">Tài khoản</th>
+                        <th class="py-2.5 px-2.5">Tên Thành Viên</th>
+                        <th class="py-2.5 px-2.5">Mật khẩu</th>
+                        <th class="py-2.5 px-2.5">Trạng thái Thiết bị & IP</th>
+                        <th class="py-2.5 px-2.5 text-center">Đã nhập</th>
+                        <th class="py-2.5 px-2.5 text-right">Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody id="memberAccountsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- CỘT PHẢI: CẢNH BÁO THIẾT BỊ & BÁO CÁO SAI SÓT TỪ THÀNH VIÊN -->
+            <div class="lg:col-span-4 space-y-4">
+              <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+                <div class="flex items-center justify-between mb-2.5">
+                  <h3 class="font-extrabold text-xs uppercase flex items-center gap-1.5 text-amber-800 dark:text-amber-300">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                    <span>Cảnh báo Đăng nhập Thiết bị lạ</span>
+                  </h3>
+                  <button type="button" onclick="clearSecurityLogs()" class="text-[11px] text-amber-700 dark:text-amber-300 hover:underline font-semibold">
+                    Xóa
+                  </button>
+                </div>
+                <div id="deviceSecurityLogsBox" class="max-h-36 overflow-y-auto space-y-2 text-xs"></div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800">
+                <div class="flex items-center justify-between mb-2.5">
+                  <h3 class="font-extrabold text-xs uppercase flex items-center gap-1.5 text-rose-800 dark:text-rose-300">
+                    <i class="fa-solid fa-flag"></i>
+                    <span>Báo cáo sai sót từ Thành viên</span>
+                  </h3>
+                  <button type="button" onclick="clearMistakeReports()" class="text-[11px] text-rose-700 dark:text-rose-300 hover:underline font-semibold">
+                    Xóa
+                  </button>
+                </div>
+                <div id="mistakeReportsBox" class="max-h-36 overflow-y-auto space-y-2 text-xs"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BẢNG GIÁM SÁT HOẠT ĐỘNG NHẬP LỖI -->
+          <div class="mt-6 pt-5 border-t border-slate-200 dark:border-slate-700">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <h3 class="font-extrabold text-sm flex items-center gap-2">
+                <i class="fa-solid fa-list-check text-red-600"></i>
+                <span>Bảng Giám sát Hoạt động Nhập lỗi</span>
+              </h3>
+              <input type="text" id="adminFilterMember" oninput="renderAdminActivityTable()"
+                     placeholder="Tìm theo Tên Thành Viên, học sinh, lớp hoặc lỗi..."
+                     class="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 text-xs outline-none w-72" />
+            </div>
+
+            <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase font-bold">
+                    <th class="py-3 px-3">TT</th>
+                    <th class="py-3 px-3">Ngày / Giờ chi tiết</th>
+                    <th class="py-3 px-3">Thành viên nhập</th>
+                    <th class="py-3 px-3">Phân loại</th>
+                    <th class="py-3 px-3">Học sinh vi phạm</th>
+                    <th class="py-3 px-3">Lớp</th>
+                    <th class="py-3 px-3">Lỗi vi phạm</th>
+                  </tr>
+                </thead>
+                <tbody id="adminActivityTableBody" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==================== FOOTER TÁC GIẢ ==================== -->
+  <footer class="mt-12 py-5 border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+      <div class="flex items-center gap-2 font-semibold text-slate-700 dark:text-slate-300">
+        <img src="logo.jpg" alt="Logo" class="w-5 h-5 rounded-full object-contain" />
+        <span>Đội Nề Nếp • Trường THPT Đô Lương 3</span>
+      </div>
+      <p class="font-medium text-center sm:text-right">
+        Trang web này được phát triển và thực hiện bởi <span class="font-extrabold text-red-600 dark:text-red-400">Nguyễn Phúc Nguyên</span>
+      </p>
+    </div>
+  </footer>
+
+  <!-- ==================== MODAL HỒ SƠ CÁ NHÂN (ĐỔI AVATAR, TÊN TK, TÊN THÀNH VIÊN, MẬT KHẨU) ==================== -->
+  <div id="profileModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div class="header-gradient px-5 py-4 text-white flex items-center justify-between">
+        <h3 class="font-extrabold text-sm uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-user-pen"></i> Hồ sơ Tài khoản Cá nhân
+        </h3>
+        <button type="button" onclick="closeProfileModal()" class="text-white/80 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <!-- Ảnh đại diện -->
+        <div class="flex flex-col items-center">
+          <div class="relative group cursor-pointer" onclick="document.getElementById('AvatarFileInput').click()">
+            <img id="profileAvatarPreview" src="logo.jpg" alt="Avatar"
+                 class="w-24 h-24 rounded-full object-cover border-4 border-red-500/30 shadow-md bg-white" />
+            <div class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center absolute bottom-0 right-0 shadow border-2 border-white">
+              <i class="fa-solid fa-camera text-xs"></i>
+            </div>
+          </div>
+          <button type="button" onclick="document.getElementById('AvatarFileInput').click()"
+                  class="mt-2 text-xs font-bold text-red-600 dark:text-red-400 hover:underline">
+            Thay đổi ảnh đại diện cá nhân
+          </button>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">
+            TÊN TÀI KHOẢN ĐĂNG NHẬP
+          </label>
+          <input type="text" id="profileUsernameInput"
+                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 text-sm font-bold outline-none focus:border-red-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">
+            TÊN THÀNH VIÊN (HIỂN THỊ KHI NHẬP LỖI)
+          </label>
+          <input type="text" id="profileFullNameInput" placeholder="VD: Lê Đức Nhân, Minh Thư..."
+                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 text-sm font-semibold outline-none focus:border-red-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">
+            MẬT KHẨU CÁ NHÂN
+          </label>
+          <div class="relative">
+            <input type="password" id="profilePasswordInput"
+                   class="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 text-sm font-semibold outline-none focus:border-red-500" />
+            <button type="button" onclick="togglePassVisibility('profilePasswordInput', 'profileEyeIcon')"
+                    class="w-10 h-full absolute right-0 top-0 flex items-center justify-center text-slate-400">
+              <i id="profileEyeIcon" class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="button" id="btnSaveProfile" onclick="saveUserProfile()"
+                class="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-2">
+          <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi Hồ sơ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== HỆ THỐNG BOT HƯỚNG DẪN TỪNG BƯỚC KIỂU GAME ==================== -->
+  <div id="tutorialOverlay" class="fixed inset-0 z-[85] hidden">
+    <div id="tutorialSpotlight"></div>
+    <div id="tutorialBotCard" class="w-[92%] max-w-sm glass-card rounded-2xl shadow-2xl border-2 border-yellow-400 p-4 text-slate-800 dark:text-slate-100">
+      <div class="flex items-start gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-600 to-amber-500 text-white flex items-center justify-center shadow-md shrink-0 text-xl">
+          <i class="fa-solid fa-robot animate-bounce"></i>
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-red-600 dark:text-yellow-400">
+              Bot Trợ Lý Đội Nề Nếp
+            </span>
+            <span id="tutorialStepBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200">
+              Bước 1/6
+            </span>
+          </div>
+          <h4 id="tutorialStepTitle" class="font-extrabold text-sm mt-1">Tiêu đề bước</h4>
+          <p id="tutorialStepDesc" class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+            Nội dung hướng dẫn chi tiết từng bước...
+          </p>
         </div>
       </div>
-    </section>
 
-  </main>
+      <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-200 dark:border-slate-700">
+        <button type="button" onclick="endGameTutorial()" class="text-xs font-bold text-slate-400 hover:text-red-600">
+          Bỏ qua hướng dẫn
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" id="btnTutPrev" onclick="prevTutorialStep()"
+                  class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">
+            Quay lại
+          </button>
+          <button type="button" id="btnTutNext" onclick="nextTutorialStep()"
+                  class="px-4 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold shadow">
+            Tiếp theo <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL CHỌN NƠI GÁN MINH CHỨNG -->
   <div id="assignEvidenceModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
@@ -676,51 +883,162 @@
   <!-- TOAST THÔNG BÁO -->
   <div id="toastBox" class="fixed bottom-5 right-5 z-50 hidden items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg bg-slate-900 text-white text-xs sm:text-sm font-semibold max-w-sm">
     <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400"></i>
-    <span id="toastText">Đã đồng bộ lên Google Sheet!</span>
+    <span id="toastText">Đã đồng bộ!</span>
   </div>
 
   <script>
     /*************************************************************************
-     * 1. LOGO TRƯỜNG THPT ĐÔ LƯƠNG 3
-     *************************************************************************/
-    const SCHOOL_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-      <circle cx="100" cy="100" r="96" fill="#ffffff" stroke="#003f87" stroke-width="5"/>
-      <circle cx="100" cy="100" r="88" fill="none" stroke="#003f87" stroke-width="2"/>
-      <circle cx="100" cy="100" r="60" fill="none" stroke="#003f87" stroke-width="2.5"/>
-      <path d="M 28 148 Q 100 185 172 148 L 155 172 Q 100 192 45 172 Z" fill="#003f87"/>
-      <path d="M 92 78 L 108 78 L 103 126 L 95 126 Z" fill="#003f87"/>
-      <path d="M 98 46 C 85 58 92 70 100 74 C 110 68 114 55 98 46 Z" fill="#dc2626"/>
-      <rect x="103" y="84" width="26" height="36" rx="2" fill="#003f87" stroke="#ffffff" stroke-width="1.5"/>
-      <ellipse cx="116" cy="102" rx="9" ry="4" fill="none" stroke="#ef4444" stroke-width="1.5" transform="rotate(30 116 102)"/>
-      <ellipse cx="116" cy="102" rx="9" ry="4" fill="none" stroke="#ef4444" stroke-width="1.5" transform="rotate(-30 116 102)"/>
-      <path d="M 75 122 Q 62 95 72 72" fill="none" stroke="#047857" stroke-width="4" stroke-linecap="round"/>
-      <text x="100" y="31" text-anchor="middle" fill="#dc2626" font-family="Arial, sans-serif" font-weight="900" font-size="13.5">THPT ĐÔ LƯƠNG 3</text>
-      <text x="100" y="146" text-anchor="middle" fill="#dc2626" font-family="Arial, sans-serif" font-weight="900" font-size="18">ĐÔ LƯƠNG 3</text>
-    </svg>`;
-    window.DEFAULT_LOGO_DATA_URI = 'data:image/svg+xml;utf8,' + encodeURIComponent(SCHOOL_LOGO_SVG);
-
-    (function initSchoolFavicon() {
-      const testImg = new Image();
-      testImg.onload = () => { document.getElementById('faviconLink').href = 'logo.jpg'; };
-      testImg.onerror = () => { document.getElementById('faviconLink').href = window.DEFAULT_LOGO_DATA_URI; };
-      testImg.src = 'logo.jpg';
-    })();
-
-    /*************************************************************************
-     * 2. CẤU HÌNH APPS SCRIPT & TÀI KHOẢN QUẢN TRỊ
+     * 1. CẤU HÌNH APPS SCRIPT & TÀI KHOẢN QUẢN TRỊ
      *************************************************************************/
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSTYrnxaOFaw1-nUEzYV2zL1DAxzhoRCrSXSgKlZYgtEdTIuwoUkK5868d89CLoV-Mfg/exec';
 
     const ADMIN_CREDENTIALS = {
       username: 'BAN AN NINH TRƯỜNG HỌC',
       altUsername: 'thptdl3',
-      password: 'The song(200th)'
+      thirdUsername: 'Nguyễn Phúc Nguyên',
+      password: 'The song(200th)',
+      altPassword: '123456'
     };
 
-    const DEFAULT_MEMBER_ACCOUNTS = ['leducnhan'];
+    // Danh sách thành viên ban đầu (Tự động nâng cấp các tài khoản cũ lên cấu trúc mới có Tên Thành Viên & Mật khẩu)
+    const INITIAL_MEMBERS = [
+      { username: 'minhthu', fullName: 'Minh Thư', password: '123456', avatar: '' },
+      { username: 'thailequyen', fullName: 'Thái Lệ Quyên', password: '123456', avatar: '' },
+      { username: 'nguyenhuuviet', fullName: 'Nguyễn Hữu Việt', password: '123456', avatar: '' },
+      { username: 'thuthuy', fullName: 'Thu Thủy', password: '123456', avatar: '' },
+      { username: 'leducnhan', fullName: 'Lê Đức Nhân', password: '123456', avatar: '' },
+      { username: 'themanh', fullName: 'Thế Mạnh', password: '123456', avatar: '' },
+      { username: 'quynhanh', fullName: 'Quỳnh Anh', password: '123456', avatar: '' },
+      { username: 'tamnhu', fullName: 'Tâm Như', password: '123456', avatar: '' }
+    ];
 
     /*************************************************************************
-     * 3. KHO LƯU TRỮ OFFLINE INDEXED-DB
+     * 2. NHẬN DIỆN THIẾT BỊ VẬT LÝ & ĐỊA CHỈ IP (KHÔNG BÁO LỖI KHI ĐỔI TRÌNH DUYỆT TRÊN CÙNG 1 MÁY)
+     *************************************************************************/
+    let cachedPublicIP = localStorage.getItem('dl3_cached_ip') || '';
+
+    async function fetchPublicIP() {
+      try {
+        const controller = new AbortController();
+        const t = setTimeout(() => controller.abort(), 3500);
+        const res = await fetch('https://api.ipify.org?format=json', { signal: controller.signal });
+        clearTimeout(t);
+        const data = await res.json();
+        if (data && data.ip) {
+          cachedPublicIP = data.ip;
+          localStorage.setItem('dl3_cached_ip', cachedPublicIP);
+          return cachedPublicIP;
+        }
+      } catch (e) {}
+      return cachedPublicIP || 'IP-Local';
+    }
+    fetchPublicIP();
+
+    // Đặc trưng phần cứng thiết bị: Giống hệt nhau dù mở bằng Zalo, Safari hay Chrome trên cùng 1 điện thoại
+    function getHardwareSignature() {
+      const ua = navigator.userAgent || '';
+      let os = 'Other';
+      if (/iPhone|iPad|iPod/i.test(ua)) os = 'iOS';
+      else if (/Android/i.test(ua)) os = 'Android';
+      else if (/Windows/i.test(ua)) os = 'Windows';
+      else if (/Macintosh|Mac OS/i.test(ua)) os = 'MacOS';
+
+      const w = Math.min(window.screen.width || 0, window.screen.height || 0);
+      const h = Math.max(window.screen.width || 0, window.screen.height || 0);
+      const dpr = Math.round((window.devicePixelRatio || 1) * 10);
+      return `${os}_${w}x${h}_${dpr}`;
+    }
+
+    function getDeviceReadableName(ipAddr) {
+      const ua = navigator.userAgent || '';
+      let os = 'Thiết bị';
+      if (/iPhone|iPad|iPod/i.test(ua)) os = 'iPhone/iPad (iOS)';
+      else if (/Android/i.test(ua)) os = 'Android';
+      else if (/Windows/i.test(ua)) os = 'Windows PC';
+      else if (/Macintosh|Mac OS/i.test(ua)) os = 'MacBook/iMac';
+      return `${os} • IP: ${ipAddr || cachedPublicIP || 'Đang cập nhật'}`;
+    }
+
+    // Kiểm tra có phải cùng 1 thiết bị / IP hợp lệ hay không
+    function isSameDeviceOrIP(memberObj, currentHwSig, currentIP) {
+      if (!memberObj.hwSig && !memberObj.boundIP) return true;
+      // Nếu trùng đặc trưng phần cứng điện thoại (mở trình duyệt khác trên cùng máy) -> Hợp lệ 100%
+      if (memberObj.hwSig && memberObj.hwSig === currentHwSig) return true;
+      // Nếu trùng địa chỉ IP mạng trên cùng hệ điều hành -> Hợp lệ
+      const savedOS = (memberObj.hwSig || '').split('_')[0];
+      const currentOS = (currentHwSig || '').split('_')[0];
+      if (memberObj.boundIP && currentIP && memberObj.boundIP === currentIP && savedOS === currentOS) {
+        return true;
+      }
+      return false;
+    }
+
+    /*************************************************************************
+     * 3. QUẢN LÝ DANH SÁCH THÀNH VIÊN (CHUẨN HÓA OBJECT CÓ MẬT KHẨU, TÊN THÀNH VIÊN, AVATAR)
+     *************************************************************************/
+    function normalizeMemberList(rawList, legacyBindings = {}) {
+      if (!Array.isArray(rawList) || rawList.length === 0) return INITIAL_MEMBERS;
+      return rawList.map((item, idx) => {
+        if (typeof item === 'string') {
+          const cleanUser = item.trim();
+          const legacyBind = legacyBindings[cleanUser.toLowerCase()] || {};
+          const foundInit = INITIAL_MEMBERS.find(m => m.username.toLowerCase() === cleanUser.toLowerCase());
+          return {
+            id: 'MEM_' + cleanUser.toLowerCase(),
+            username: cleanUser,
+            fullName: foundInit ? foundInit.fullName : cleanUser,
+            password: '123456',
+            avatar: '',
+            hwSig: legacyBind.hwSig || '',
+            boundIP: legacyBind.boundIP || '',
+            deviceName: legacyBind.deviceName || ''
+          };
+        }
+        return {
+          id: item.id || ('MEM_' + (item.username || idx)),
+          username: String(item.username || '').trim(),
+          fullName: String(item.fullName || item.username || '').trim(),
+          password: String(item.password || '123456'),
+          avatar: item.avatar || '',
+          hwSig: item.hwSig || '',
+          boundIP: item.boundIP || '',
+          deviceName: item.deviceName || ''
+        };
+      });
+    }
+
+    function getMemberAccounts() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('dl3_members_v4') || 'null');
+        if (Array.isArray(saved) && saved.length > 0) return normalizeMemberList(saved);
+        const oldSaved = JSON.parse(localStorage.getItem('dl3_member_accounts') || 'null');
+        const oldBindings = JSON.parse(localStorage.getItem('dl3_device_bindings') || '{}');
+        if (Array.isArray(oldSaved) && oldSaved.length > 0) {
+          const migrated = normalizeMemberList(oldSaved, oldBindings);
+          saveMemberAccounts(migrated);
+          return migrated;
+        }
+      } catch (e) {}
+      return INITIAL_MEMBERS;
+    }
+
+    function saveMemberAccounts(list) {
+      localStorage.setItem('dl3_members_v4', JSON.stringify(list));
+    }
+
+    // Tìm Tên Thành Viên từ mã tài khoản (để hiển thị trên bảng Giám sát)
+    function resolveMemberDisplayName(rawRecorder) {
+      if (!rawRecorder) return '';
+      const list = getMemberAccounts();
+      const found = list.find(
+        m => m.username.toLowerCase() === String(rawRecorder).trim().toLowerCase() ||
+             m.fullName.toLowerCase() === String(rawRecorder).trim().toLowerCase()
+      );
+      return found ? found.fullName : rawRecorder;
+    }
+
+    /*************************************************************************
+     * 4. KHO LƯU TRỮ OFFLINE INDEXED-DB (GIỮ NGUYÊN THỜI GIAN LÚC BẤM NÚT 7H05)
      *************************************************************************/
     const IDB_NAME = 'DL3_Offline_Database';
     const IDB_STORE = 'offline_queue';
@@ -755,7 +1073,7 @@
     async function getAllOfflineDB() {
       try {
         const db = await openOfflineDB();
-        return await new Promise((resolve, reject) => {
+        return await new Promise((resolve) => {
           const tx = db.transaction(IDB_STORE, 'readonly');
           const req = tx.objectStore(IDB_STORE).getAll();
           req.onsuccess = () => resolve(req.result || []);
@@ -793,28 +1111,11 @@
       }
     }
 
-    function updateNetworkPill() {
-      const pill = document.getElementById('networkStatusPill');
-      if (!pill) return;
-      if (navigator.onLine) {
-        pill.className = 'hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/25 border border-emerald-300/40 text-[11px] font-bold';
-        pill.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-300"></span> Online';
-      } else {
-        pill.className = 'hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/30 border border-amber-300/50 text-[11px] font-bold';
-        pill.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-300 animate-ping"></span> Offline (Lưu máy)';
-      }
-    }
-
-    window.addEventListener('online', () => {
-      updateNetworkPill();
-      syncOfflineQueue(true);
-    });
-    window.addEventListener('offline', updateNetworkPill);
-    updateNetworkPill();
+    window.addEventListener('online', () => syncOfflineQueue(true));
     refreshOfflineBadge();
 
     /*************************************************************************
-     * 4. GIAO TIẾP VỚI GOOGLE APPS SCRIPT QUA POST (ĐẢM BẢO 100% TRÊN MỌI ĐIỆN THOẠI)
+     * 5. ĐỒNG BỘ VỚI GOOGLE SHEET & DRIVE QUA POST
      *************************************************************************/
     async function sendDirectToSheetVerified(payload) {
       const controller = new AbortController();
@@ -835,10 +1136,10 @@
         if (json && (json.status === 'success' || json.status === 'ok' || json.status === 'synced' || json.status === 'logged')) {
           return { ok: true, data: json };
         }
-        return { ok: false, error: (json && json.message) || 'Apps Script báo lỗi' };
+        return { ok: false, error: (json && json.message) || 'Lỗi phản hồi' };
       } catch (err) {
         clearTimeout(timeoutId);
-        return { ok: false, error: err.message || 'Lỗi kết nối tới Apps Script' };
+        return { ok: false, error: err.message || 'Mất kết nối mạng' };
       }
     }
 
@@ -850,11 +1151,12 @@
 
       isSyncingOffline = true;
       if (showNotification) {
-        showToast(`Đang đồng bộ ${items.length} lỗi lưu tạm lên Google Sheet & Drive...`);
+        showToast(`Đang đồng bộ ${items.length} lỗi lưu offline lên Sheet...`);
       }
 
       let syncedCount = 0;
       for (const item of items) {
+        // item.payload giữ nguyên 100% thời gian ngay lúc nhập (VD: 7h05)
         const res = await sendDirectToSheetVerified(item.payload);
         if (res.ok) {
           await deleteFromOfflineDB(item.id);
@@ -866,15 +1168,13 @@
 
       isSyncingOffline = false;
       if (syncedCount > 0) {
-        showToast(`Đã đẩy thành công ${syncedCount} lỗi lưu tạm lên Sheet & Drive!`);
-        if (currentUserSession && currentUserSession.role === 'admin') {
-          fetchAdminDataFromCloud(false);
-        }
+        showToast(`Đã đồng bộ ${syncedCount} lỗi offline (giữ nguyên giờ nhập ban đầu)!`);
+        fetchAdminDataFromCloud(false, false);
       }
     }
 
     /*************************************************************************
-     * 5. QUẢN LÝ ĐĂNG NHẬP & ĐỒNG BỘ 2 CHIỀU ĐIỆN THOẠI <-> MÁY TÍNH
+     * 6. ĐĂNG NHẬP, HỒ SƠ CÁ NHÂN & ĐỔI MẬT KHẨU / TÊN TÀI KHOẢN / AVATAR
      *************************************************************************/
     let selectedLoginRole = 'member';
     let currentUserSession = null;
@@ -890,50 +1190,6 @@
       renderMemberAccountsAdmin();
       await syncMembersConfigToCloud(false);
       showToast(`Đã đặt giới hạn tối đa ${num} thành viên!`);
-    }
-
-    function getOrCreateDeviceId() {
-      let devId = localStorage.getItem('dl3_unique_device_id');
-      if (!devId) {
-        devId = 'DEV-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
-        localStorage.setItem('dl3_unique_device_id', devId);
-      }
-      return devId;
-    }
-
-    function getDeviceDescription() {
-      const ua = navigator.userAgent;
-      let os = 'Thiết bị Khác';
-      if (/android/i.test(ua)) os = 'Điện thoại Android';
-      else if (/iPad|iPhone|iPod/.test(ua)) os = 'iPhone / iPad (iOS)';
-      else if (/Windows/i.test(ua)) os = 'Máy tính Windows';
-      else if (/Mac/i.test(ua)) os = 'Máy tính MacOS';
-      return `${os} (${getOrCreateDeviceId().slice(0, 12)})`;
-    }
-
-    function getMemberAccounts() {
-      try {
-        const saved = JSON.parse(localStorage.getItem('dl3_member_accounts') || 'null');
-        return Array.isArray(saved) ? saved : DEFAULT_MEMBER_ACCOUNTS;
-      } catch (e) {
-        return DEFAULT_MEMBER_ACCOUNTS;
-      }
-    }
-
-    function saveMemberAccounts(list) {
-      localStorage.setItem('dl3_member_accounts', JSON.stringify(list));
-    }
-
-    function getDeviceBindings() {
-      try {
-        return JSON.parse(localStorage.getItem('dl3_device_bindings') || '{}');
-      } catch (e) {
-        return {};
-      }
-    }
-
-    function saveDeviceBindings(bindings) {
-      localStorage.setItem('dl3_device_bindings', JSON.stringify(bindings));
     }
 
     function getSecurityLogs() {
@@ -968,12 +1224,11 @@
       const res = await sendDirectToSheetVerified({
         action: 'syncMembers',
         members: getMemberAccounts(),
-        bindings: getDeviceBindings(),
         maxLimit: getMaxMemberLimit()
       });
       if (showMsg) {
-        if (res.ok) showToast('Đã đẩy danh sách tài khoản lên Cloud thành công!');
-        else showToast('Lỗi đẩy lên Cloud: Hãy chắc chắn bạn đã chọn "Phiên bản mới" trong Apps Script!', false);
+        if (res.ok) showToast('Đã đồng bộ danh sách tài khoản lên Cloud!');
+        else showToast('Chưa đồng bộ được lên Cloud!', false);
       }
       return res;
     }
@@ -982,23 +1237,23 @@
       selectedLoginRole = role;
       const btnMember = document.getElementById('tabRoleMember');
       const btnAdmin = document.getElementById('tabRoleAdmin');
-      const passGroup = document.getElementById('adminPasswordGroup');
+      const passLabel = document.getElementById('loginPasswordLabel');
       document.getElementById('loginErrorMsg').classList.add('hidden');
 
       if (role === 'admin') {
         btnAdmin.className = 'py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-red-600 text-white shadow transition';
         btnMember.className = 'py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-300 hover:bg-white/50 transition';
-        passGroup.classList.remove('hidden');
+        passLabel.innerHTML = 'MẬT KHẨU QUẢN TRỊ <span class="text-red-500">*</span>';
       } else {
         btnMember.className = 'py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-red-600 text-white shadow transition';
         btnAdmin.className = 'py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-300 hover:bg-white/50 transition';
-        passGroup.classList.add('hidden');
+        passLabel.innerHTML = 'MẬT KHẨU TÀI KHOẢN <span class="text-red-500">*</span>';
       }
     }
 
-    function togglePassVisibility() {
-      const passInput = document.getElementById('loginPassword');
-      const icon = document.getElementById('passEyeIcon');
+    function togglePassVisibility(inputId, iconId) {
+      const passInput = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
       if (passInput.type === 'password') {
         passInput.type = 'text';
         icon.className = 'fa-regular fa-eye-slash';
@@ -1008,7 +1263,6 @@
       }
     }
 
-    // ĐĂNG NHẬP THÔNG MINH QUA POST (ĐỒNG BỘ TỨC THÌ TỪ GOOGLE CLOUD)
     async function handleLogin() {
       const rawUser = document.getElementById('loginUsername').value.trim();
       const rawPass = document.getElementById('loginPassword').value.trim();
@@ -1016,90 +1270,118 @@
       const btnSubmit = document.getElementById('btnLoginSubmit');
       errEl.classList.add('hidden');
 
-      if (!rawUser) {
-        errEl.textContent = 'Vui lòng nhập tên tài khoản được cấp!';
+      if (!rawUser || !rawPass) {
+        errEl.textContent = 'Vui lòng nhập đầy đủ Tên tài khoản và Mật khẩu!';
         errEl.classList.remove('hidden');
         return;
       }
 
-      const myDeviceId = getOrCreateDeviceId();
-      const myDeviceName = getDeviceDescription();
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>ĐANG ĐĂNG NHẬP...</span>';
+
+      const myHwSig = getHardwareSignature();
+      const myIP = await fetchPublicIP();
+      const myDeviceDesc = getDeviceReadableName(myIP);
 
       if (selectedLoginRole === 'admin') {
         const isAdminUser =
           rawUser.toLowerCase() === ADMIN_CREDENTIALS.username.toLowerCase() ||
-          rawUser.toLowerCase() === ADMIN_CREDENTIALS.altUsername.toLowerCase();
+          rawUser.toLowerCase() === ADMIN_CREDENTIALS.altUsername.toLowerCase() ||
+          rawUser.toLowerCase() === ADMIN_CREDENTIALS.thirdUsername.toLowerCase();
 
-        if (!isAdminUser || rawPass !== ADMIN_CREDENTIALS.password) {
+        const isAdminPass =
+          rawPass === ADMIN_CREDENTIALS.password ||
+          rawPass === ADMIN_CREDENTIALS.altPassword;
+
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>VÀO HỆ THỐNG</span>';
+
+        if (!isAdminUser || !isAdminPass) {
           errEl.textContent = 'Tên tài khoản hoặc mật khẩu Quản trị không chính xác!';
           errEl.classList.remove('hidden');
           return;
         }
 
         currentUserSession = {
-          username: ADMIN_CREDENTIALS.username,
+          id: 'ADMIN_MASTER',
+          username: rawUser,
+          fullName: 'Quản trị viên',
+          password: rawPass,
+          avatar: localStorage.getItem('dl3_admin_avatar') || 'logo.jpg',
           role: 'admin',
-          deviceId: myDeviceId,
-          deviceName: myDeviceName,
-          loginTime: getFullDateTimeString()
+          hwSig: myHwSig,
+          boundIP: myIP,
+          deviceName: myDeviceDesc
         };
       } else {
         if (navigator.onLine) {
-          btnSubmit.disabled = true;
-          btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>ĐANG ĐỒNG BỘ TÀI KHOẢN TỪ CLOUD...</span>';
           await fetchAdminDataFromCloud(false, true);
-          btnSubmit.disabled = false;
-          btnSubmit.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>VÀO HỆ THỐNG</span>';
         }
 
-        const allowedMembers = getMemberAccounts();
-        const matchedMember = allowedMembers.find(m => String(m).trim().toLowerCase() === rawUser.toLowerCase());
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>VÀO HỆ THỐNG</span>';
 
-        if (!matchedMember) {
-          errEl.innerHTML = `Tài khoản <b>"${rawUser}"</b> chưa có trên Cloud! <br/>(Hãy bấm nút <b>"Đẩy danh sách TK lên Cloud"</b> trên máy tính Quản trị rồi thử lại).`;
+        const members = getMemberAccounts();
+        const memberIdx = members.findIndex(m => m.username.toLowerCase() === rawUser.toLowerCase());
+
+        if (memberIdx === -1) {
+          errEl.textContent = 'Tài khoản thành viên này không tồn tại hoặc chưa được cấp!';
           errEl.classList.remove('hidden');
           return;
         }
 
-        const bindings = getDeviceBindings();
-        const key = matchedMember.trim().toLowerCase();
+        const matchedMember = members[memberIdx];
 
-        if (bindings[key] && bindings[key].deviceId !== myDeviceId) {
+        if (matchedMember.password !== rawPass) {
+          errEl.textContent = 'Mật khẩu không chính xác! Vui lòng kiểm tra lại.';
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        // Kiểm tra Thiết bị vật lý & IP (Cho phép đổi trình duyệt trên cùng 1 điện thoại)
+        if (!isSameDeviceOrIP(matchedMember, myHwSig, myIP)) {
           addSecurityLog({
             time: getFullDateTimeString(),
-            username: matchedMember,
-            device: myDeviceName,
+            username: `${matchedMember.fullName} (${matchedMember.username})`,
+            device: myDeviceDesc,
             status: 'CẢNH BÁO THIẾT BỊ LẠ',
-            message: `Tài khoản "${matchedMember}" đăng nhập trên thiết bị khác (${myDeviceName}), khác với máy gốc (${bindings[key].deviceName}).`
+            message: `Đăng nhập từ thiết bị khác (${myDeviceDesc}), khác với thiết bị gốc (${matchedMember.deviceName}).`
           });
 
-          errEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Tài khoản <b>${matchedMember}</b> chỉ được sử dụng duy nhất trên thiết bị đã đăng ký đầu tiên. Hoạt động này đã được lưu vào tài khoản Quản trị!`;
+          errEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Tài khoản <b>${matchedMember.username}</b> đã được khóa cố định trên thiết bị gốc (${matchedMember.deviceName}). Nếu bạn đổi điện thoại mới, hãy báo Quản trị viên bấm "Đổi TB"!`;
           errEl.classList.remove('hidden');
           return;
         }
 
-        if (!bindings[key]) {
-          bindings[key] = {
-            deviceId: myDeviceId,
-            deviceName: myDeviceName,
-            boundAt: getFullDateTimeString()
-          };
-          saveDeviceBindings(bindings);
-          await syncMembersConfigToCloud(false);
-        }
+        // Cập nhật thông số Thiết bị + IP nếu đăng nhập lần đầu hoặc đổi trình duyệt trên cùng máy
+        matchedMember.hwSig = myHwSig;
+        matchedMember.boundIP = myIP;
+        matchedMember.deviceName = myDeviceDesc;
+        members[memberIdx] = matchedMember;
+        saveMemberAccounts(members);
+        syncMembersConfigToCloud(false);
 
         currentUserSession = {
-          username: matchedMember,
+          id: matchedMember.id,
+          username: matchedMember.username,
+          fullName: matchedMember.fullName || matchedMember.username,
+          password: matchedMember.password,
+          avatar: matchedMember.avatar || 'logo.jpg',
           role: 'member',
-          deviceId: myDeviceId,
-          deviceName: myDeviceName,
-          loginTime: getFullDateTimeString()
+          hwSig: myHwSig,
+          boundIP: myIP,
+          deviceName: myDeviceDesc
         };
       }
 
-      localStorage.setItem('dl3_saved_session', JSON.stringify(currentUserSession));
+      localStorage.setItem('dl3_saved_session_v4', JSON.stringify(currentUserSession));
       applySessionUI();
-      showToast(`Đăng nhập thành công: ${currentUserSession.username}`);
+      showToast(`Xin chào ${currentUserSession.fullName}!`);
+
+      // Tự động mở Bot hướng dẫn nếu là lần đầu thành viên vào web
+      if (currentUserSession.role === 'member' && !localStorage.getItem('dl3_tutorial_done')) {
+        setTimeout(() => startGameTutorial(), 600);
+      }
     }
 
     function applySessionUI() {
@@ -1108,13 +1390,16 @@
         return;
       }
       document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('currentUserDisplay').textContent = currentUserSession.username;
+      document.getElementById('currentUserDisplay').textContent = currentUserSession.fullName || currentUserSession.username;
       document.getElementById('currentRoleDisplay').textContent =
-        currentUserSession.role === 'admin' ? 'Quản trị viên' : 'Thành viên';
+        currentUserSession.role === 'admin' ? 'Quản trị viên' : `@${currentUserSession.username}`;
+      document.getElementById('headerUserAvatar').src = currentUserSession.avatar || 'logo.jpg';
 
       document.querySelectorAll('.recorder-name').forEach(el => {
-        el.textContent = currentUserSession.username;
+        el.textContent = currentUserSession.fullName || currentUserSession.username;
       });
+
+      renderMyViolationSummaryTable();
 
       const adminSection = document.getElementById('adminDashboardSection');
       if (currentUserSession.role === 'admin') {
@@ -1122,44 +1407,243 @@
         document.getElementById('maxMemberLimitInput').value = getMaxMemberLimit();
         renderMemberAccountsAdmin();
         renderSecurityLogsAdmin();
+        renderMistakeReportsAdmin();
         renderAdminActivityTable();
         fetchAdminDataFromCloud(false, false);
       } else {
         adminSection.classList.add('hidden');
+        fetchAdminDataFromCloud(false, false);
       }
     }
 
     function logoutSystem() {
-      localStorage.removeItem('dl3_saved_session');
+      localStorage.removeItem('dl3_saved_session_v4');
       currentUserSession = null;
       document.getElementById('loginPassword').value = '';
       document.getElementById('loginScreen').classList.remove('hidden');
     }
 
+    // Tự động đăng nhập như Facebook
     (function checkAutoLogin() {
       try {
-        const saved = JSON.parse(localStorage.getItem('dl3_saved_session') || 'null');
+        const saved = JSON.parse(localStorage.getItem('dl3_saved_session_v4') || 'null');
         if (saved && saved.username) {
-          const myDeviceId = getOrCreateDeviceId();
-          if (saved.deviceId === myDeviceId) {
-            currentUserSession = saved;
-            applySessionUI();
-          }
+          currentUserSession = saved;
+          applySessionUI();
         }
       } catch (e) {}
     })();
 
-    setInterval(() => {
-      if (navigator.onLine) {
-        syncOfflineQueue(false);
-        if (currentUserSession && currentUserSession.role === 'admin') {
-          fetchAdminDataFromCloud(false, false);
-        }
+    /*************************************************************************
+     * 7. HỒ SƠ TÀI KHOẢN CÁ NHÂN (ĐỔI AVATAR, ĐỔI TÊN TK, TÊN THÀNH VIÊN, MẬT KHẨU)
+     *************************************************************************/
+    let pendingAvatarDataUrl = '';
+
+    function openProfileModal() {
+      if (!currentUserSession) return;
+      pendingAvatarDataUrl = currentUserSession.avatar || 'logo.jpg';
+      document.getElementById('profileAvatarPreview').src = pendingAvatarDataUrl;
+      document.getElementById('profileUsernameInput').value = currentUserSession.username || '';
+      document.getElementById('profileFullNameInput').value = currentUserSession.fullName || '';
+      document.getElementById('profilePasswordInput').value = currentUserSession.password || '';
+      document.getElementById('profileModal').classList.remove('hidden');
+      document.getElementById('profileModal').classList.add('flex');
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModal').classList.add('hidden');
+      document.getElementById('profileModal').classList.remove('flex');
+    }
+
+    // Nén ảnh đại diện thành hình vuông nhỏ 120x120 (~4KB) để đồng bộ Cloud siêu tốc
+    document.getElementById('AvatarFileInput').addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const size = 120;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          const minSide = Math.min(img.width, img.height);
+          const sx = (img.width - minSide) / 2;
+          const sy = (img.height - minSide) / 2;
+          ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+          pendingAvatarDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+          document.getElementById('profileAvatarPreview').src = pendingAvatarDataUrl;
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    });
+
+    async function saveUserProfile() {
+      if (!currentUserSession) return;
+      const newUsername = document.getElementById('profileUsernameInput').value.trim();
+      const newFullName = document.getElementById('profileFullNameInput').value.trim();
+      const newPassword = document.getElementById('profilePasswordInput').value.trim();
+
+      if (!newUsername || !newFullName || !newPassword) {
+        return showToast('Vui lòng không để trống Tên tài khoản, Tên Thành Viên hoặc Mật khẩu!', false);
       }
-    }, 15000);
+
+      const btn = document.getElementById('btnSaveProfile');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang cập nhật lên Quản trị...';
+
+      if (currentUserSession.role === 'admin') {
+        currentUserSession.username = newUsername;
+        currentUserSession.fullName = newFullName;
+        currentUserSession.password = newPassword;
+        currentUserSession.avatar = pendingAvatarDataUrl;
+        localStorage.setItem('dl3_admin_avatar', pendingAvatarDataUrl);
+      } else {
+        const members = getMemberAccounts();
+        // Kiểm tra trùng tên tài khoản với người khác
+        const duplicate = members.find(
+          m => m.id !== currentUserSession.id &&
+               m.username.toLowerCase() !== currentUserSession.username.toLowerCase() &&
+               m.username.toLowerCase() === newUsername.toLowerCase()
+        );
+        if (duplicate) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi Hồ sơ';
+          return showToast('Tên tài khoản này đã có người sử dụng!', false);
+        }
+
+        const idx = members.findIndex(
+          m => m.id === currentUserSession.id || m.username.toLowerCase() === currentUserSession.username.toLowerCase()
+        );
+        if (idx !== -1) {
+          members[idx].username = newUsername;
+          members[idx].fullName = newFullName;
+          members[idx].password = newPassword;
+          members[idx].avatar = pendingAvatarDataUrl;
+          saveMemberAccounts(members);
+          await syncMembersConfigToCloud(false);
+        }
+
+        currentUserSession.username = newUsername;
+        currentUserSession.fullName = newFullName;
+        currentUserSession.password = newPassword;
+        currentUserSession.avatar = pendingAvatarDataUrl;
+      }
+
+      localStorage.setItem('dl3_saved_session_v4', JSON.stringify(currentUserSession));
+      applySessionUI();
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi Hồ sơ';
+      closeProfileModal();
+      showToast('Đã cập nhật Hồ sơ cá nhân & đồng bộ về Quản trị viên!');
+    }
 
     /*************************************************************************
-     * 6. GIAO DIỆN SÁNG / TỐI & NỀN CÁ NHÂN
+     * 8. BOT HƯỚNG DẪN TỪNG BƯỚC KIỂU GAME (SPOTLIGHT TUTORIAL)
+     *************************************************************************/
+    const TUTORIAL_STEPS = [
+      {
+        targetId: 'headerToolbarGroup',
+        title: '1. Thanh công cụ Minh chứng & Giao diện',
+        desc: 'Tại đây bạn có thể bấm "Máy ảnh" để chụp ảnh nhanh, "Máy quay" để quay video vi phạm, "Tải lên" tệp từ máy, hoặc đổi hình nền cá nhân và chế độ Sáng/Tối.'
+      },
+      {
+        targetId: 'cardStudentViolation',
+        title: '2. Ghi lỗi Cá nhân Học sinh',
+        desc: 'Khi bắt lỗi từng học sinh: Nhập Họ tên, Lớp, chọn nhanh Lỗi vi phạm (hoặc tự gõ), đính kèm ảnh/video minh chứng nếu có rồi bấm nút "XONG".'
+      },
+      {
+        targetId: 'cardClassViolation',
+        title: '3. Ghi lỗi Riêng mỗi Lớp',
+        desc: 'Khi bắt lỗi tập thể lớp (như sinh hoạt ồn, vệ sinh bẩn...): Bạn chỉ cần nhập tên Lớp và Lỗi vi phạm của lớp rồi bấm "XONG", không cần nhập họ tên học sinh.'
+      },
+      {
+        targetId: 'memberSummarySection',
+        title: '4. Tổng hợp số lỗi đã nhập & Báo sai sót',
+        desc: 'Ở cuối trang là danh sách toàn bộ các lỗi chính bạn đã nhập. Nếu lỡ nhập nhầm thông tin, bạn chỉ cần bấm nút "Báo sai sót" ở dòng đó để báo Quản trị viên.'
+      },
+      {
+        targetId: 'btnUserProfile',
+        title: '5. Hồ sơ Tài khoản Cá nhân',
+        desc: 'Bấm vào ảnh đại diện và tên của bạn ở góc phải trên cùng để thay đổi Ảnh đại diện, đổi Tên tài khoản, Tên Thành Viên hoặc đổi Mật khẩu riêng!'
+      }
+    ];
+
+    let currentTutorialIndex = 0;
+
+    function startGameTutorial() {
+      currentTutorialIndex = 0;
+      document.getElementById('tutorialOverlay').classList.remove('hidden');
+      showTutorialStep(currentTutorialIndex);
+    }
+
+    function endGameTutorial() {
+      document.getElementById('tutorialOverlay').classList.add('hidden');
+      localStorage.setItem('dl3_tutorial_done', '1');
+    }
+
+    function nextTutorialStep() {
+      if (currentTutorialIndex < TUTORIAL_STEPS.length - 1) {
+        currentTutorialIndex++;
+        showTutorialStep(currentTutorialIndex);
+      } else {
+        endGameTutorial();
+        showToast('Bạn đã hoàn thành hướng dẫn sử dụng!');
+      }
+    }
+
+    function prevTutorialStep() {
+      if (currentTutorialIndex > 0) {
+        currentTutorialIndex--;
+        showTutorialStep(currentTutorialIndex);
+      }
+    }
+
+    function showTutorialStep(idx) {
+      const step = TUTORIAL_STEPS[idx];
+      const el = document.getElementById(step.targetId);
+      if (!el) return;
+
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      setTimeout(() => {
+        const rect = el.getBoundingClientRect();
+        const spot = document.getElementById('tutorialSpotlight');
+        const botCard = document.getElementById('tutorialBotCard');
+
+        const pad = 6;
+        spot.style.top = Math.max(4, rect.top - pad) + 'px';
+        spot.style.left = Math.max(4, rect.left - pad) + 'px';
+        spot.style.width = Math.min(window.innerWidth - 8, rect.width + pad * 2) + 'px';
+        spot.style.height = (rect.height + pad * 2) + 'px';
+
+        document.getElementById('tutorialStepBadge').textContent = `Bước ${idx + 1}/${TUTORIAL_STEPS.length}`;
+        document.getElementById('tutorialStepTitle').textContent = step.title;
+        document.getElementById('tutorialStepDesc').textContent = step.desc;
+
+        document.getElementById('btnTutPrev').style.visibility = idx === 0 ? 'hidden' : 'visible';
+        document.getElementById('btnTutNext').innerHTML =
+          idx === TUTORIAL_STEPS.length - 1
+            ? 'Hoàn thành <i class="fa-solid fa-check ml-1"></i>'
+            : 'Tiếp theo <i class="fa-solid fa-arrow-right ml-1"></i>';
+
+        // Đặt vị trí thẻ Bot thông minh phía dưới hoặc phía trên vùng sáng
+        const cardHeight = 190;
+        let topPos = rect.bottom + 16;
+        if (topPos + cardHeight > window.innerHeight) {
+          topPos = Math.max(16, rect.top - cardHeight - 16);
+        }
+        botCard.style.top = topPos + 'px';
+        botCard.style.left = Math.max(16, Math.min(window.innerWidth - 360, rect.left)) + 'px';
+      }, 300);
+    }
+
+    /*************************************************************************
+     * 9. GIAO DIỆN SÁNG / TỐI & NỀN CÁ NHÂN
      *************************************************************************/
     function toggleDarkMode() {
       const htmlEl = document.documentElement;
@@ -1176,8 +1660,7 @@
     }
 
     (function initSavedThemeAndBg() {
-      const savedTheme = localStorage.getItem('dl3_theme_mode');
-      if (savedTheme === 'dark') {
+      if (localStorage.getItem('dl3_theme_mode') === 'dark') {
         document.documentElement.classList.add('dark');
         updateThemeIcon(true);
       }
@@ -1227,7 +1710,7 @@
     });
 
     /*************************************************************************
-     * 7. XỬ LÝ ẢNH / VIDEO MINH CHỨNG
+     * 10. XỬ LÝ ẢNH / VIDEO MINH CHỨNG
      *************************************************************************/
     let studentEvidenceFiles = [];
     let classEvidenceFiles = [];
@@ -1253,27 +1736,16 @@
           const img = new Image();
           img.onload = () => {
             const maxDim = 1280;
-            let w = img.width;
-            let h = img.height;
+            let w = img.width, h = img.height;
             if (w > maxDim || h > maxDim) {
-              if (w > h) {
-                h = Math.round((h * maxDim) / w);
-                w = maxDim;
-              } else {
-                w = Math.round((w * maxDim) / h);
-                h = maxDim;
-              }
+              if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              else { w = Math.round((w * maxDim) / h); h = maxDim; }
             }
             const canvas = document.createElement('canvas');
-            canvas.width = w;
-            canvas.height = h;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
             const dataUrl = canvas.toDataURL('image/jpeg', 0.78);
-            resolve({
-              base64: dataUrl.split(',')[1] || '',
-              mimeType: 'image/jpeg'
-            });
+            resolve({ base64: dataUrl.split(',')[1] || '', mimeType: 'image/jpeg' });
           };
           img.onerror = () => resolve(null);
           img.src = e.target.result;
@@ -1285,10 +1757,7 @@
     function rawFileToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => {
-          const result = reader.result || '';
-          resolve(String(result).split(',')[1] || '');
-        };
+        reader.onload = () => resolve(String(reader.result || '').split(',')[1] || '');
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
@@ -1307,31 +1776,18 @@
             showToast(`Tệp "${f.name}" vượt quá 100MB!`, false);
             continue;
           }
-
           if (f.type && f.type.startsWith('image/')) {
             const compressed = await compressImageFileToBase64(f);
             if (compressed) {
-              validFiles.push({
-                originalName: f.name,
-                mimeType: compressed.mimeType,
-                size: f.size,
-                base64: compressed.base64
-              });
+              validFiles.push({ originalName: f.name, mimeType: compressed.mimeType, size: f.size, base64: compressed.base64 });
               continue;
             }
           }
-
           const base64Data = await rawFileToBase64(f);
-          validFiles.push({
-            originalName: f.name,
-            mimeType: f.type || 'video/mp4',
-            size: f.size,
-            base64: base64Data
-          });
+          validFiles.push({ originalName: f.name, mimeType: f.type || 'video/mp4', size: f.size, base64: base64Data });
         }
 
         if (validFiles.length === 0) return;
-
         if (directTargetColumn) {
           attachFilesToTarget(directTargetColumn, validFiles);
           directTargetColumn = null;
@@ -1352,9 +1808,7 @@
     }
 
     function confirmAssignEvidence(targetCol) {
-      if (pendingPickedFiles.length > 0) {
-        attachFilesToTarget(targetCol, pendingPickedFiles);
-      }
+      if (pendingPickedFiles.length > 0) attachFilesToTarget(targetCol, pendingPickedFiles);
       closeAssignModal();
     }
 
@@ -1388,16 +1842,12 @@
       container.innerHTML = files.map((file, idx) => {
         const isVideo = file.mimeType.startsWith('video/');
         const iconClass = isVideo ? 'fa-solid fa-film text-red-600' : 'fa-solid fa-image text-red-600';
-        const shortName = file.originalName.length > 18
-          ? file.originalName.substring(0, 15) + '...'
-          : file.originalName;
-
+        const shortName = file.originalName.length > 18 ? file.originalName.substring(0, 15) + '...' : file.originalName;
         return `
           <div class="inline-flex items-center gap-2.5 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xs text-xs font-medium">
             <i class="${iconClass} text-base"></i>
             <span class="truncate max-w-[140px] text-slate-800 dark:text-slate-100" title="${file.originalName}">${shortName}</span>
-            <button type="button" onclick="removeEvidenceFile('${targetCol}', ${idx})"
-                    class="text-slate-400 hover:text-red-600 ml-1 text-sm leading-none">
+            <button type="button" onclick="removeEvidenceFile('${targetCol}', ${idx})" class="text-slate-400 hover:text-red-600 ml-1 text-sm leading-none">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
@@ -1406,7 +1856,7 @@
     }
 
     /*************************************************************************
-     * 8. NGÀY GIỜ & GỬI LỖI VI PHẠM
+     * 11. GHI NHẬN THỜI GIAN CHÍNH XÁC LÚC NHẬP (KHẮC PHỤC LỖI 7H05 OFFLINE)
      *************************************************************************/
     function getTodayDateString() {
       const now = new Date();
@@ -1424,7 +1874,11 @@
       return `${getTodayDateString()} - ${getDetailedTimeString()}`;
     }
 
-    document.querySelectorAll('.live-date').forEach(el => el.textContent = getTodayDateString());
+    setInterval(() => {
+      const t = getFullDateTimeString();
+      document.querySelectorAll('.live-date').forEach(el => el.textContent = t);
+    }, 1000);
+    document.querySelectorAll('.live-date').forEach(el => el.textContent = getFullDateTimeString());
 
     function showToast(message, isSuccess = true) {
       const box = document.getElementById('toastBox');
@@ -1439,7 +1893,7 @@
       setTimeout(() => {
         box.classList.add('hidden');
         box.classList.remove('flex');
-      }, 3800);
+      }, 3600);
     }
 
     function appendViolation(inputId, text) {
@@ -1477,11 +1931,13 @@
         hoVaTen: item.hoVaTen,
         lop: item.lop,
         loiViPham: item.loiViPham,
-        nguoiGhiLoi: item.nguoiGhiLoi
+        nguoiGhiLoi: item.tenThanhVien || item.nguoiGhiLoi,
+        usernameGhiLoi: item.usernameGhiLoi || ''
       };
       const logs = getLocalActivityLogs();
       logs.unshift(lightCopy);
-      localStorage.setItem('dl3_activity_logs', JSON.stringify(logs.slice(0, 300)));
+      localStorage.setItem('dl3_activity_logs', JSON.stringify(logs.slice(0, 400)));
+      renderMyViolationSummaryTable();
       if (currentUserSession && currentUserSession.role === 'admin') {
         renderMemberAccountsAdmin();
         renderAdminActivityTable();
@@ -1494,18 +1950,17 @@
         if (res.ok) {
           payload.tt = res.data?.tt || '';
           saveLocalActivityLog(payload);
-          showToast('Đã đồng bộ thành công lên Google Sheet & Drive!');
+          showToast('Đã ghi nhận lỗi thành công!');
           syncOfflineQueue(false);
-          if (currentUserSession && currentUserSession.role === 'admin') {
-            fetchAdminDataFromCloud(false, false);
-          }
+          fetchAdminDataFromCloud(false, false);
           return;
         }
       }
 
+      // Khi mất mạng lúc 7h05: payload đã khóa cứng thoiGianChiTiet = "dd/MM/yyyy - 7:05:xx"
       await addToOfflineDB(payload);
       saveLocalActivityLog(payload);
-      showToast('Mạng yếu / Mất mạng! Đã lưu an toàn vào máy, sẽ tự đẩy lên Sheet & Drive khi có mạng.', false);
+      showToast(`Đang ngoại tuyến! Đã lưu lỗi lúc ${payload.gioChiTiet}, sẽ tự đồng bộ đúng giờ này khi có mạng.`, false);
     }
 
     async function submitStudentViolation() {
@@ -1523,29 +1978,33 @@
         return showToast('Vui lòng điền đủ: Học sinh, Lớp và Lỗi vi phạm!', false);
       }
 
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>ĐANG ĐỒNG BỘ LÊN SHEET & DRIVE...</span>';
+      // Khóa cứng thời điểm bấm nút XONG (Ví dụ: 7:05:12)
+      const capturedDate = getTodayDateString();
+      const capturedTime = getDetailedTimeString();
+      const capturedFull = `${capturedDate} - ${capturedTime}`;
 
-      const ngayThang = getTodayDateString();
-      const gioChiTiet = getDetailedTimeString();
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>ĐANG LƯU...</span>';
 
       await submitDataToSystem({
         action: 'recordViolation',
         loaiViPham: 'Cá nhân học sinh',
-        ngay: ngayThang,
-        gioChiTiet: gioChiTiet,
-        thoiGianChiTiet: `${ngayThang} - ${gioChiTiet}`,
+        ngay: capturedDate,
+        gioChiTiet: capturedTime,
+        thoiGianChiTiet: capturedFull,
         hoVaTen: hoVaTen,
         lop: lop,
         loiViPham: loiViPham,
         diemTru: '',
-        nguoiGhiLoi: currentUserSession.username,
+        nguoiGhiLoi: currentUserSession.fullName || currentUserSession.username,
+        tenThanhVien: currentUserSession.fullName || currentUserSession.username,
+        usernameGhiLoi: currentUserSession.username,
         thietBi: currentUserSession.deviceName,
         evidenceFiles: studentEvidenceFiles
       });
 
       btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>XONG (LƯU LÊN SHEET & DRIVE)</span>';
+      btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>XONG</span>';
 
       nameEl.value = '';
       classEl.value = '';
@@ -1567,29 +2026,33 @@
         return showToast('Vui lòng nhập Lớp và Lỗi vi phạm của lớp!', false);
       }
 
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>ĐANG ĐỒNG BỘ LÊN SHEET & DRIVE...</span>';
+      // Khóa cứng thời điểm bấm nút XONG
+      const capturedDate = getTodayDateString();
+      const capturedTime = getDetailedTimeString();
+      const capturedFull = `${capturedDate} - ${capturedTime}`;
 
-      const ngayThang = getTodayDateString();
-      const gioChiTiet = getDetailedTimeString();
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>ĐANG LƯU...</span>';
 
       await submitDataToSystem({
         action: 'recordViolation',
         loaiViPham: 'Tập thể lớp',
-        ngay: ngayThang,
-        gioChiTiet: gioChiTiet,
-        thoiGianChiTiet: `${ngayThang} - ${gioChiTiet}`,
+        ngay: capturedDate,
+        gioChiTiet: capturedTime,
+        thoiGianChiTiet: capturedFull,
         hoVaTen: '',
         lop: lop,
         loiViPham: loiViPham,
         diemTru: '',
-        nguoiGhiLoi: currentUserSession.username,
+        nguoiGhiLoi: currentUserSession.fullName || currentUserSession.username,
+        tenThanhVien: currentUserSession.fullName || currentUserSession.username,
+        usernameGhiLoi: currentUserSession.username,
         thietBi: currentUserSession.deviceName,
         evidenceFiles: classEvidenceFiles
       });
 
       btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>XONG (LƯU LÊN SHEET & DRIVE)</span>';
+      btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>XONG</span>';
 
       classEl.value = '';
       violationEl.value = '';
@@ -1598,13 +2061,93 @@
     }
 
     /*************************************************************************
-     * 9. BẢNG QUẢN TRỊ & ĐỒNG BỘ TÀI KHOẢN THÀNH VIÊN QUA POST
+     * 12. TỔNG HỢP SỐ LỖI ĐÃ NHẬP CỦA THÀNH VIÊN & BÁO LẠI SAI SÓT
+     *************************************************************************/
+    function renderMyViolationSummaryTable() {
+      const tbody = document.getElementById('memberMyLogsTableBody');
+      const countEl = document.getElementById('myTotalEnteredCount');
+      if (!tbody || !currentUserSession) return;
+
+      const myUsername = (currentUserSession.username || '').trim().toLowerCase();
+      const myFullName = (currentUserSession.fullName || '').trim().toLowerCase();
+
+      const allLogs = getLocalActivityLogs();
+      const myLogs = allLogs.filter(item => {
+        const rec = String(item.nguoiGhiLoi || '').trim().toLowerCase();
+        const uRec = String(item.usernameGhiLoi || '').trim().toLowerCase();
+        return rec === myFullName || rec === myUsername || (uRec && uRec === myUsername);
+      });
+
+      if (countEl) countEl.textContent = myLogs.length;
+
+      if (myLogs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400 italic">Bạn chưa nhập lỗi vi phạm nào.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = myLogs.map((item, idx) => {
+        const displayTT = item.tt || (myLogs.length - idx);
+        const infoSummary = `TT #${displayTT} (${item.thoiGianChiTiet}) - ${item.hoVaTen || 'Tập thể lớp'} - Lớp ${item.lop}: ${item.loiViPham}`;
+        return `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+            <td class="py-2.5 px-3 font-extrabold text-red-600">#${displayTT}</td>
+            <td class="py-2.5 px-3 font-semibold whitespace-nowrap">${item.thoiGianChiTiet || ''}</td>
+            <td class="py-2.5 px-3">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${item.hoVaTen ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-800'}">
+                ${item.hoVaTen ? 'Cá nhân HS' : 'Riêng Lớp'}
+              </span>
+            </td>
+            <td class="py-2.5 px-3 font-semibold">${item.hoVaTen || '<span class="text-slate-400 italic">(Lỗi Lớp)</span>'}</td>
+            <td class="py-2.5 px-3 font-extrabold text-red-600">${item.lop || ''}</td>
+            <td class="py-2.5 px-3">${item.loiViPham || ''}</td>
+            <td class="py-2.5 px-3 text-right">
+              <button type="button" onclick="reportViolationMistake('${infoSummary.replace(/'/g, "\\'")}')"
+                      class="px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-[11px] transition">
+                <i class="fa-solid fa-flag mr-1"></i>Báo sai sót
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function reportViolationMistake(violationInfo) {
+      if (!currentUserSession) return;
+      const reason = prompt(`Báo lại sai sót cho mục:\n[${violationInfo}]\n\nNhập nội dung sai sót cần báo lại Quản trị viên:`);
+      if (!reason || !reason.trim()) return;
+
+      const reportEntry = {
+        action: 'reportMistake',
+        time: getFullDateTimeString(),
+        memberName: currentUserSession.fullName || currentUserSession.username,
+        username: currentUserSession.username,
+        violationInfo: violationInfo,
+        reason: reason.trim()
+      };
+
+      const savedReports = JSON.parse(localStorage.getItem('dl3_mistake_reports') || '[]');
+      savedReports.unshift(reportEntry);
+      localStorage.setItem('dl3_mistake_reports', JSON.stringify(savedReports));
+
+      await sendDirectToSheetVerified(reportEntry);
+      renderMistakeReportsAdmin();
+      showToast('Đã gửi báo cáo sai sót về cho Quản trị viên!');
+    }
+
+    /*************************************************************************
+     * 13. BẢNG QUẢN TRỊ VIÊN (QUẢN LÝ TÀI KHOẢN, TÊN THÀNH VIÊN, MẬT KHẨU, BÁO SAI SÓT)
      *************************************************************************/
     async function addMemberAccount() {
-      const input = document.getElementById('newMemberAccountInput');
+      const userInp = document.getElementById('newMemberAccountInput');
+      const fullNameInp = document.getElementById('newMemberFullNameInput');
+      const passInp = document.getElementById('newMemberPasswordInput');
       const btn = document.getElementById('btnGrantMember');
-      const rawName = input.value.trim();
-      if (!rawName) return showToast('Vui lòng nhập tên tài khoản cần cấp!', false);
+
+      const rawUser = userInp.value.trim();
+      const rawFullName = fullNameInp.value.trim() || rawUser;
+      const rawPass = passInp.value.trim() || '123456';
+
+      if (!rawUser) return showToast('Vui lòng nhập Tên tài khoản cần cấp!', false);
 
       const list = getMemberAccounts();
       const maxLimit = getMaxMemberLimit();
@@ -1612,61 +2155,82 @@
       if (list.length >= maxLimit) {
         return showToast(`Đã đạt giới hạn tối đa ${maxLimit} thành viên!`, false);
       }
-      if (list.some(m => String(m).trim().toLowerCase() === rawName.toLowerCase())) {
-        return showToast(`Tài khoản "${rawName}" đã có trong danh sách! Đang đồng bộ lại lên Cloud...`, true);
+
+      const existingIdx = list.findIndex(m => m.username.toLowerCase() === rawUser.toLowerCase());
+      if (existingIdx !== -1) {
+        list[existingIdx].fullName = rawFullName;
+        list[existingIdx].password = rawPass;
       } else {
-        list.unshift(rawName);
-        saveMemberAccounts(list);
+        list.unshift({
+          id: 'MEM_' + Date.now(),
+          username: rawUser,
+          fullName: rawFullName,
+          password: rawPass,
+          avatar: '',
+          hwSig: '',
+          boundIP: '',
+          deviceName: ''
+        });
       }
 
+      saveMemberAccounts(list);
       renderMemberAccountsAdmin();
-      input.value = '';
+      userInp.value = '';
+      fullNameInp.value = '';
+      passInp.value = '';
 
       if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu Cloud...';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...';
       }
-      const res = await syncMembersConfigToCloud(false);
+      await syncMembersConfigToCloud(false);
       if (btn) {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Cấp Tài Khoản';
       }
-
-      if (res.ok) {
-        showToast(`Đã cấp & đồng bộ tài khoản "${rawName}" lên Cloud thành công!`);
-      } else {
-        showToast(`Chưa đẩy được lên Cloud! Hãy kiểm tra lại bước chọn "Phiên bản mới" trong Apps Script.`, false);
-      }
+      showToast(`Đã cấp tài khoản "${rawUser}" (${rawFullName})!`);
     }
 
-    async function removeMemberAccount(name) {
-      const list = getMemberAccounts().filter(m => m !== name);
-      const bindings = getDeviceBindings();
-      delete bindings[name.toLowerCase()];
-      saveMemberAccounts(list);
-      saveDeviceBindings(bindings);
-      renderMemberAccountsAdmin();
-      await syncMembersConfigToCloud(false);
-      showToast(`Đã xóa tài khoản: ${name}`);
-    }
-
-    async function deleteAllUnboundMembers() {
+    async function editMemberByAdmin(username) {
       const list = getMemberAccounts();
-      const bindings = getDeviceBindings();
-      const activeOnly = list.filter(name => Boolean(bindings[name.toLowerCase()]));
-      saveMemberAccounts(activeOnly);
+      const idx = list.findIndex(m => m.username === username);
+      if (idx === -1) return;
+
+      const m = list[idx];
+      const newFullName = prompt(`Đổi Tên Thành Viên cho tài khoản "${m.username}":`, m.fullName);
+      if (newFullName === null) return;
+      const newPass = prompt(`Đổi Mật khẩu cho thành viên "${newFullName || m.fullName}":`, m.password);
+      if (newPass === null) return;
+
+      list[idx].fullName = newFullName.trim() || m.fullName;
+      list[idx].password = newPass.trim() || m.password;
+      saveMemberAccounts(list);
       renderMemberAccountsAdmin();
+      renderAdminActivityTable();
       await syncMembersConfigToCloud(false);
-      showToast('Đã dọn các tài khoản chưa kích hoạt!');
+      showToast(`Đã cập nhật thông tin thành viên ${list[idx].fullName}!`);
     }
 
-    async function resetDeviceBinding(name) {
-      const bindings = getDeviceBindings();
-      delete bindings[name.toLowerCase()];
-      saveDeviceBindings(bindings);
+    async function removeMemberAccount(username) {
+      const list = getMemberAccounts().filter(m => m.username !== username);
+      saveMemberAccounts(list);
       renderMemberAccountsAdmin();
       await syncMembersConfigToCloud(false);
-      showToast(`Đã mở khóa thiết bị cho: ${name}`);
+      showToast(`Đã xóa tài khoản: ${username}`);
+    }
+
+    async function resetDeviceBinding(username) {
+      const list = getMemberAccounts();
+      const idx = list.findIndex(m => m.username === username);
+      if (idx !== -1) {
+        list[idx].hwSig = '';
+        list[idx].boundIP = '';
+        list[idx].deviceName = '';
+        saveMemberAccounts(list);
+        renderMemberAccountsAdmin();
+        await syncMembersConfigToCloud(false);
+        showToast(`Đã mở khóa Thiết bị & IP cho: ${list[idx].fullName}`);
+      }
     }
 
     function renderMemberAccountsAdmin() {
@@ -1674,18 +2238,24 @@
       if (!tbody) return;
 
       const list = getMemberAccounts();
-      const bindings = getDeviceBindings();
       const logs = getLocalActivityLogs();
       const maxLimit = getMaxMemberLimit();
 
       const countByMember = {};
       logs.forEach(item => {
-        const key = (item.nguoiGhiLoi || '').toLowerCase();
-        if (key) countByMember[key] = (countByMember[key] || 0) + 1;
+        const rec = (item.nguoiGhiLoi || '').trim().toLowerCase();
+        const uRec = (item.usernameGhiLoi || '').trim().toLowerCase();
+        list.forEach(m => {
+          const mUser = m.username.toLowerCase();
+          const mFull = m.fullName.toLowerCase();
+          if (rec === mUser || rec === mFull || (uRec && uRec === mUser)) {
+            countByMember[mUser] = (countByMember[mUser] || 0) + 1;
+          }
+        });
       });
 
       let boundCount = 0;
-      list.forEach(name => { if (bindings[name.toLowerCase()]) boundCount++; });
+      list.forEach(m => { if (m.hwSig || m.boundIP) boundCount++; });
 
       document.getElementById('statTotalMembers').textContent = list.length;
       document.getElementById('statMaxLimitText').textContent = `/ ${maxLimit} tối đa`;
@@ -1694,34 +2264,46 @@
       document.getElementById('statTotalViolations').textContent = logs.length;
 
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400 italic">Chưa cấp tài khoản thành viên nào.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400 italic">Chưa cấp tài khoản thành viên nào.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = list.map((name, idx) => {
-        const bound = bindings[name.toLowerCase()];
-        const recordedCount = countByMember[name.toLowerCase()] || 0;
+      tbody.innerHTML = list.map((m, idx) => {
+        const isBound = Boolean(m.hwSig || m.boundIP);
+        const recordedCount = countByMember[m.username.toLowerCase()] || 0;
+        const avatarSrc = m.avatar || 'logo.jpg';
+
         return `
           <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
-            <td class="py-2.5 px-3 font-bold text-slate-400">${idx + 1}</td>
-            <td class="py-2.5 px-3 font-extrabold text-slate-800 dark:text-slate-100">${name}</td>
-            <td class="py-2.5 px-3">
-              ${bound
+            <td class="py-2.5 px-2.5 font-bold text-slate-400">${idx + 1}</td>
+            <td class="py-2.5 px-2.5">
+              <div class="flex items-center gap-2">
+                <img src="${avatarSrc}" alt="Avatar" class="w-6 h-6 rounded-full object-cover border border-slate-300 bg-white shrink-0" />
+                <span class="font-extrabold text-slate-800 dark:text-slate-100">${m.username}</span>
+              </div>
+            </td>
+            <td class="py-2.5 px-2.5 font-bold text-blue-600 dark:text-blue-400">${m.fullName}</td>
+            <td class="py-2.5 px-2.5">
+              <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono font-bold text-slate-700 dark:text-slate-300">${m.password}</span>
+            </td>
+            <td class="py-2.5 px-2.5">
+              ${isBound
                 ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-semibold text-[11px]">
-                     <i class="fa-solid fa-lock text-[10px]"></i> ${bound.deviceName}
+                     <i class="fa-solid fa-lock text-[10px]"></i> ${m.deviceName || 'Đã khóa TB'}
                    </span>`
                 : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 font-medium text-[11px]">Chưa đăng nhập</span>`
               }
             </td>
-            <td class="py-2.5 px-3 text-center">
+            <td class="py-2.5 px-2.5 text-center">
               <span class="px-2 py-0.5 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-300 font-extrabold text-xs">${recordedCount} lỗi</span>
             </td>
-            <td class="py-2.5 px-3 text-right whitespace-nowrap space-x-1">
-              ${bound
-                ? `<button type="button" onclick="resetDeviceBinding('${name.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-[11px]">Đổi TB</button>`
+            <td class="py-2.5 px-2.5 text-right whitespace-nowrap space-x-1">
+              <button type="button" onclick="editMemberByAdmin('${m.username.replace(/'/g, "\\'")}')" class="px-2 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold text-[11px]">Sửa</button>
+              ${isBound
+                ? `<button type="button" onclick="resetDeviceBinding('${m.username.replace(/'/g, "\\'")}')" class="px-2 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-[11px]">Đổi TB</button>`
                 : ''
               }
-              <button type="button" onclick="removeMemberAccount('${name.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg bg-red-100 hover:bg-red-600 hover:text-white text-red-700 font-bold text-[11px] transition">Xóa TK</button>
+              <button type="button" onclick="removeMemberAccount('${m.username.replace(/'/g, "\\'")}')" class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-600 hover:text-white text-red-700 font-bold text-[11px] transition">Xóa TK</button>
             </td>
           </tr>
         `;
@@ -1733,13 +2315,13 @@
       if (!box) return;
       const logs = getSecurityLogs();
       if (logs.length === 0) {
-        box.innerHTML = `<p class="text-slate-400 italic py-4 text-center">Chưa có cảnh báo đăng nhập thiết bị lạ nào.</p>`;
+        box.innerHTML = `<p class="text-slate-400 italic py-3 text-center">Chưa có cảnh báo thiết bị lạ.</p>`;
         return;
       }
       box.innerHTML = logs.map(l => `
-        <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-red-300 dark:border-red-800">
+        <div class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-800">
           <div class="flex items-center justify-between font-bold">
-            <span class="text-red-600">${l.username} • ${l.status}</span>
+            <span class="text-red-600">${l.username}</span>
             <span class="text-[10px] text-slate-400">${l.time}</span>
           </div>
           <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">${l.message}</p>
@@ -1747,30 +2329,60 @@
       `).join('');
     }
 
+    function renderMistakeReportsAdmin() {
+      const box = document.getElementById('mistakeReportsBox');
+      if (!box) return;
+      const reports = JSON.parse(localStorage.getItem('dl3_mistake_reports') || '[]');
+      if (reports.length === 0) {
+        box.innerHTML = `<p class="text-slate-400 italic py-3 text-center">Chưa có báo cáo sai sót nào.</p>`;
+        return;
+      }
+      box.innerHTML = reports.map(r => `
+        <div class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-rose-300 dark:border-rose-800">
+          <div class="flex items-center justify-between font-bold">
+            <span class="text-rose-600">${r.memberName}</span>
+            <span class="text-[10px] text-slate-400">${r.time}</span>
+          </div>
+          <p class="text-[10px] font-semibold text-slate-500 mt-0.5">${r.violationInfo}</p>
+          <p class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Lý do: ${r.reason}</p>
+        </div>
+      `).join('');
+    }
+
+    async function clearMistakeReports() {
+      localStorage.removeItem('dl3_mistake_reports');
+      renderMistakeReportsAdmin();
+      await sendDirectToSheetVerified({ action: 'clearMistakeReports' });
+      showToast('Đã xóa danh sách báo cáo sai sót!');
+    }
+
+    // Bảng Giám sát hiển thị cột THÀNH VIÊN NHẬP theo đúng Tên Thành Viên
     function renderAdminActivityTable() {
       const tbody = document.getElementById('adminActivityTableBody');
       if (!tbody) return;
       const filterText = (document.getElementById('adminFilterMember')?.value || '').trim().toLowerCase();
       const logs = getLocalActivityLogs().filter(item => {
+        const displayName = resolveMemberDisplayName(item.nguoiGhiLoi);
         if (!filterText) return true;
-        const combined = `${item.nguoiGhiLoi} ${item.hoVaTen} ${item.lop} ${item.loiViPham} ${item.thoiGianChiTiet}`.toLowerCase();
+        const combined = `${displayName} ${item.nguoiGhiLoi} ${item.hoVaTen} ${item.lop} ${item.loiViPham} ${item.thoiGianChiTiet}`.toLowerCase();
         return combined.includes(filterText);
       });
 
       document.getElementById('statTotalViolations').textContent = logs.length;
 
       if (logs.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400 italic">Chưa có dữ liệu hoạt động nào trên Google Sheet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400 italic">Chưa có dữ liệu hoạt động nào.</td></tr>`;
         return;
       }
 
       tbody.innerHTML = logs.map((item, idx) => {
         const displayIndex = item.tt || (logs.length - idx);
+        const memberDisplayName = resolveMemberDisplayName(item.nguoiGhiLoi);
         return `
           <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
             <td class="py-2.5 px-3 font-extrabold text-red-600">#${displayIndex}</td>
             <td class="py-2.5 px-3 font-semibold whitespace-nowrap">${item.thoiGianChiTiet || ''}</td>
-            <td class="py-2.5 px-3 font-bold text-blue-600 dark:text-blue-400">${item.nguoiGhiLoi || ''}</td>
+            <td class="py-2.5 px-3 font-bold text-blue-600 dark:text-blue-400">${memberDisplayName}</td>
             <td class="py-2.5 px-3">
               <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${item.hoVaTen ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-800'}">
                 ${item.hoVaTen ? 'Cá nhân HS' : 'Riêng Lớp'}
@@ -1784,37 +2396,43 @@
       }).join('');
     }
 
-    // LẤY DỮ LIỆU TỪ CLOUD QUA LỆNH POST (KHÔNG LO BỊ CHẶN TRÊN ĐIỆN THOẠI)
     async function fetchAdminDataFromCloud(showMsg = false, forcePullMembers = false) {
       try {
         const res = await sendDirectToSheetVerified({ action: 'getAdminData' });
-        if (!res.ok || !res.data) {
-          if (showMsg) showToast('Chưa tải được từ Cloud! Hãy cập nhật Phiên bản mới trong Apps Script.', false);
-          return;
-        }
+        if (!res.ok || !res.data) return;
         const data = res.data;
         if (Array.isArray(data.logs)) {
           localStorage.setItem('dl3_activity_logs', JSON.stringify(data.logs));
         }
         if (forcePullMembers || (Date.now() - lastMemberModifyTimestamp > 8000)) {
-          if (Array.isArray(data.members)) {
-            saveMemberAccounts(data.members);
-          }
-          if (data.bindings) {
-            saveDeviceBindings(data.bindings);
+          if (Array.isArray(data.members) && data.members.length > 0) {
+            const normalized = normalizeMemberList(data.members, data.bindings || {});
+            saveMemberAccounts(normalized);
           }
         }
         if (Array.isArray(data.securityLogs)) {
           localStorage.setItem('dl3_security_logs', JSON.stringify(data.securityLogs));
         }
-        renderMemberAccountsAdmin();
-        renderSecurityLogsAdmin();
-        renderAdminActivityTable();
-        if (showMsg) showToast('Đã đồng bộ dữ liệu mới nhất từ Cloud!');
-      } catch (e) {
-        if (showMsg) showToast('Lỗi tải dữ liệu Cloud!', false);
-      }
+        if (Array.isArray(data.mistakeReports)) {
+          localStorage.setItem('dl3_mistake_reports', JSON.stringify(data.mistakeReports));
+        }
+        renderMyViolationSummaryTable();
+        if (currentUserSession && currentUserSession.role === 'admin') {
+          renderMemberAccountsAdmin();
+          renderSecurityLogsAdmin();
+          renderMistakeReportsAdmin();
+          renderAdminActivityTable();
+        }
+        if (showMsg) showToast('Đã làm mới dữ liệu!');
+      } catch (e) {}
     }
+
+    setInterval(() => {
+      if (navigator.onLine) {
+        syncOfflineQueue(false);
+        fetchAdminDataFromCloud(false, false);
+      }
+    }, 15000);
 
     fetchAdminDataFromCloud(false, true);
   </script>
