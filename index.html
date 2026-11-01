@@ -153,7 +153,6 @@
     <!-- HEADER CHÍNH -->
     <header class="header-gradient text-white shadow-md sticky top-0 z-40">
       <div class="max-w-6xl mx-auto px-3 sm:px-4 py-3 flex flex-wrap items-center justify-between gap-2">
-        <!-- Logo từ file logo.jpg -->
         <div class="flex items-center gap-3">
           <div class="w-11 h-11 rounded-full bg-white p-0.5 flex items-center justify-center shadow-md overflow-hidden shrink-0">
             <img src="logo.jpg" alt="Logo THPT Đô Lương 3" class="w-full h-full object-contain rounded-full" />
@@ -168,7 +167,6 @@
           </div>
         </div>
 
-        <!-- Thanh công cụ -->
         <div id="headerToolbarGroup" class="flex items-center gap-1.5 sm:gap-2">
           <!-- Nút Bot Hướng dẫn kiểu Game -->
           <button type="button" id="btnStartTutorial" onclick="startGameTutorial()" title="Hướng dẫn sử dụng từng bước"
@@ -509,7 +507,8 @@
 
       <!-- ==================== GIAO DIỆN QUẢN TRỊ VIÊN ==================== -->
       <section id="adminDashboardSection" class="hidden space-y-6">
-        <div class="glass-card rounded-2xl shadow-md border-2 border-red-500/30 p-5 md:p-6">
+        <div class="glass-card rounded-2xl shadow-md border-2 border-red-500/30 p-5 md:p-6 space-y-6">
+          <!-- Tiêu đề Quản trị -->
           <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-700">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shadow">
@@ -535,7 +534,7 @@
           </div>
 
           <!-- 4 Ô THỐNG KÊ -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-5">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div class="p-3.5 rounded-2xl bg-red-50/80 dark:bg-red-950/40 border border-red-200 dark:border-red-800">
               <p class="text-[11px] font-bold uppercase text-red-600 dark:text-red-300">Tổng số Thành viên</p>
               <div class="flex items-baseline justify-between mt-1">
@@ -569,95 +568,87 @@
             </div>
           </div>
 
-          <!-- QUẢN LÝ TÀI KHOẢN THÀNH VIÊN & CẢNH BÁO -->
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
-            <div class="lg:col-span-8 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
-              <div>
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                  <h3 class="font-extrabold text-sm flex items-center gap-2 text-slate-800 dark:text-slate-100">
-                    <i class="fa-solid fa-users-gear text-red-600"></i>
-                    <span>Kiểm soát Số lượng & Cấp / Xóa Tài khoản Thành viên</span>
-                  </h3>
+          <!-- KHỐI 1 (TOÀN CHIỀU NGANG RỘNG RÃI): KIỂM SOÁT SỐ LƯỢNG & CẤP / XÓA TÀI KHOẢN THÀNH VIÊN -->
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <h3 class="font-extrabold text-sm sm:text-base flex items-center gap-2 text-slate-800 dark:text-slate-100">
+                <i class="fa-solid fa-users-gear text-red-600"></i>
+                <span>Kiểm soát Số lượng & Cấp / Xóa Tài khoản Thành viên</span>
+              </h3>
 
-                  <div class="flex items-center gap-1.5 text-xs">
-                    <span class="text-slate-500 font-medium">Giới hạn đội:</span>
-                    <input type="number" id="maxMemberLimitInput" min="1" max="200" value="30"
-                           onchange="updateMaxMemberLimit(this.value)"
-                           class="w-16 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-900 font-bold text-center text-red-600" />
-                    <span class="text-slate-500">người</span>
-                  </div>
-                </div>
-
-                <!-- Ô Cấp Tài khoản Mới (Tên TK + Tên Thành Viên + Mật khẩu) -->
-                <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-3">
-                  <input type="text" id="newMemberAccountInput"
-                         placeholder="Tên tài khoản (VD: minhthu)"
-                         class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-900 text-xs font-semibold outline-none focus:border-red-500" />
-                  <input type="text" id="newMemberFullNameInput"
-                         placeholder="Tên Thành Viên (VD: Minh Thư)"
-                         class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-900 text-xs font-semibold outline-none focus:border-red-500" />
-                  <input type="text" id="newMemberPasswordInput"
-                         placeholder="Mật khẩu (Mặc định: 123456)"
-                         class="px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-900 text-xs font-semibold outline-none focus:border-red-500" />
-                  <button type="button" id="btnGrantMember" onclick="addMemberAccount()"
-                          class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm">
-                    <i class="fa-solid fa-user-plus"></i> Cấp Tài Khoản
-                  </button>
-                </div>
-
-                <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 max-h-80 overflow-y-auto">
-                  <table class="w-full text-left border-collapse text-xs">
-                    <thead class="sticky top-0 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase font-bold border-b border-slate-200 dark:border-slate-700">
-                      <tr>
-                        <th class="py-2.5 px-2.5">STT</th>
-                        <th class="py-2.5 px-2.5">Tài khoản</th>
-                        <th class="py-2.5 px-2.5">Tên Thành Viên</th>
-                        <th class="py-2.5 px-2.5">Mật khẩu</th>
-                        <th class="py-2.5 px-2.5">Trạng thái Thiết bị & IP</th>
-                        <th class="py-2.5 px-2.5 text-center">Đã nhập</th>
-                        <th class="py-2.5 px-2.5 text-right">Thao tác</th>
-                      </tr>
-                    </thead>
-                    <tbody id="memberAccountsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-                  </table>
-                </div>
+              <div class="flex items-center gap-2 text-xs bg-white dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                <span class="text-slate-500 font-semibold">Giới hạn đội:</span>
+                <input type="number" id="maxMemberLimitInput" min="1" max="200" value="30"
+                       onchange="updateMaxMemberLimit(this.value)"
+                       class="w-16 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 font-extrabold text-center text-red-600" />
+                <span class="text-slate-500 font-semibold">người</span>
               </div>
             </div>
 
-            <!-- CỘT PHẢI: CẢNH BÁO THIẾT BỊ & BÁO CÁO SAI SÓT TỪ THÀNH VIÊN -->
-            <div class="lg:col-span-4 space-y-4">
-              <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
-                <div class="flex items-center justify-between mb-2.5">
-                  <h3 class="font-extrabold text-xs uppercase flex items-center gap-1.5 text-amber-800 dark:text-amber-300">
-                    <i class="fa-solid fa-mobile-screen-button"></i>
-                    <span>Cảnh báo Đăng nhập Thiết bị lạ</span>
-                  </h3>
-                  <button type="button" onclick="clearSecurityLogs()" class="text-[11px] text-amber-700 dark:text-amber-300 hover:underline font-semibold">
-                    Xóa
-                  </button>
-                </div>
-                <div id="deviceSecurityLogsBox" class="max-h-36 overflow-y-auto space-y-2 text-xs"></div>
+            <!-- Khung nhập Cấp Tài Khoản Mới rộng rãi, có nhãn rõ ràng -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700">
+              <div class="md:col-span-3">
+                <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                  Tên tài khoản đăng nhập <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="newMemberAccountInput"
+                       onkeydown="if(event.key==='Enter') addMemberAccount()"
+                       placeholder="Nhập mã TK (VD: minhthu)"
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-xs font-semibold outline-none focus:border-red-500" />
               </div>
 
-              <div class="p-4 rounded-2xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800">
-                <div class="flex items-center justify-between mb-2.5">
-                  <h3 class="font-extrabold text-xs uppercase flex items-center gap-1.5 text-rose-800 dark:text-rose-300">
-                    <i class="fa-solid fa-flag"></i>
-                    <span>Báo cáo sai sót từ Thành viên</span>
-                  </h3>
-                  <button type="button" onclick="clearMistakeReports()" class="text-[11px] text-rose-700 dark:text-rose-300 hover:underline font-semibold">
-                    Xóa
-                  </button>
-                </div>
-                <div id="mistakeReportsBox" class="max-h-36 overflow-y-auto space-y-2 text-xs"></div>
+              <div class="md:col-span-4">
+                <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                  Tên Thành Viên hiển thị <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="newMemberFullNameInput"
+                       onkeydown="if(event.key==='Enter') addMemberAccount()"
+                       placeholder="Nhập họ tên (VD: Minh Thư)"
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-xs font-semibold outline-none focus:border-red-500" />
               </div>
+
+              <div class="md:col-span-3">
+                <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                  Mật khẩu riêng
+                </label>
+                <input type="text" id="newMemberPasswordInput"
+                       onkeydown="if(event.key==='Enter') addMemberAccount()"
+                       placeholder="Để trống = mặc định 123456"
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-xs font-semibold outline-none focus:border-red-500" />
+              </div>
+
+              <div class="md:col-span-2 flex items-end">
+                <button type="button" id="btnGrantMember" onclick="addMemberAccount()"
+                        class="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-red-600/20 transition">
+                  <i class="fa-solid fa-user-plus"></i>
+                  <span>Cấp Tài Khoản</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Bảng danh sách thành viên rộng toàn màn hình -->
+            <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 max-h-[420px] overflow-y-auto">
+              <table class="w-full min-w-[820px] text-left border-collapse text-xs">
+                <thead class="sticky top-0 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase font-bold border-b border-slate-200 dark:border-slate-700 z-10">
+                  <tr>
+                    <th class="py-3.5 px-4 w-14">STT</th>
+                    <th class="py-3.5 px-4">Tài khoản</th>
+                    <th class="py-3.5 px-4">Tên Thành Viên</th>
+                    <th class="py-3.5 px-4">Mật khẩu</th>
+                    <th class="py-3.5 px-4">Trạng thái Thiết bị & IP</th>
+                    <th class="py-3.5 px-4 text-center">Đã nhập</th>
+                    <th class="py-3.5 px-4 text-right">Thao tác quản lý</th>
+                  </tr>
+                </thead>
+                <tbody id="memberAccountsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+              </table>
             </div>
           </div>
 
-          <!-- BẢNG GIÁM SÁT HOẠT ĐỘNG NHẬP LỖI -->
-          <div class="mt-6 pt-5 border-t border-slate-200 dark:border-slate-700">
+          <!-- KHỐI 2: BẢNG GIÁM SÁT HOẠT ĐỘNG NHẬP LỖI -->
+          <div class="pt-2">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-              <h3 class="font-extrabold text-sm flex items-center gap-2">
+              <h3 class="font-extrabold text-sm sm:text-base flex items-center gap-2">
                 <i class="fa-solid fa-list-check text-red-600"></i>
                 <span>Bảng Giám sát Hoạt động Nhập lỗi</span>
               </h3>
@@ -666,23 +657,53 @@
                      class="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 text-xs outline-none w-72" />
             </div>
 
-            <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
-              <table class="w-full text-left border-collapse text-xs">
+            <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
+              <table class="w-full min-w-[760px] text-left border-collapse text-xs">
                 <thead>
                   <tr class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase font-bold">
-                    <th class="py-3 px-3">TT</th>
-                    <th class="py-3 px-3">Ngày / Giờ chi tiết</th>
-                    <th class="py-3 px-3">Thành viên nhập</th>
-                    <th class="py-3 px-3">Phân loại</th>
-                    <th class="py-3 px-3">Học sinh vi phạm</th>
-                    <th class="py-3 px-3">Lớp</th>
-                    <th class="py-3 px-3">Lỗi vi phạm</th>
+                    <th class="py-3 px-4">TT</th>
+                    <th class="py-3 px-4">Ngày / Giờ chi tiết</th>
+                    <th class="py-3 px-4">Thành viên nhập</th>
+                    <th class="py-3 px-4">Phân loại</th>
+                    <th class="py-3 px-4">Học sinh vi phạm</th>
+                    <th class="py-3 px-4">Lớp</th>
+                    <th class="py-3 px-4">Lỗi vi phạm</th>
                   </tr>
                 </thead>
                 <tbody id="adminActivityTableBody" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
               </table>
             </div>
           </div>
+
+          <!-- KHỐI 3 (ĐƯA XUỐNG PHÍA DƯỚI CÙNG): CẢNH BÁO THIẾT BỊ LẠ & BÁO CÁO SAI SÓT TỪ THÀNH VIÊN -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+            <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-extrabold text-xs sm:text-sm uppercase flex items-center gap-2 text-amber-800 dark:text-amber-300">
+                  <i class="fa-solid fa-mobile-screen-button"></i>
+                  <span>Cảnh báo Đăng nhập Thiết bị lạ</span>
+                </h3>
+                <button type="button" onclick="clearSecurityLogs()" class="text-xs text-amber-700 dark:text-amber-300 hover:underline font-bold">
+                  Xóa tất cả
+                </button>
+              </div>
+              <div id="deviceSecurityLogsBox" class="max-h-56 overflow-y-auto space-y-2 text-xs"></div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-extrabold text-xs sm:text-sm uppercase flex items-center gap-2 text-rose-800 dark:text-rose-300">
+                  <i class="fa-solid fa-flag"></i>
+                  <span>Báo cáo sai sót từ Thành viên</span>
+                </h3>
+                <button type="button" onclick="clearMistakeReports()" class="text-xs text-rose-700 dark:text-rose-300 hover:underline font-bold">
+                  Xóa tất cả
+                </button>
+              </div>
+              <div id="mistakeReportsBox" class="max-h-56 overflow-y-auto space-y-2 text-xs"></div>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -702,7 +723,7 @@
     </div>
   </footer>
 
-  <!-- ==================== MODAL HỒ SƠ CÁ NHÂN (ĐỔI AVATAR, TÊN TK, TÊN THÀNH VIÊN, MẬT KHẨU) ==================== -->
+  <!-- ==================== MODAL HỒ SƠ CÁ NHÂN ==================== -->
   <div id="profileModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
     <div class="glass-card w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
       <div class="header-gradient px-5 py-4 text-white flex items-center justify-between">
@@ -715,7 +736,6 @@
       </div>
 
       <div class="p-6 space-y-4">
-        <!-- Ảnh đại diện -->
         <div class="flex flex-col items-center">
           <div class="relative group cursor-pointer" onclick="document.getElementById('AvatarFileInput').click()">
             <img id="profileAvatarPreview" src="logo.jpg" alt="Avatar"
@@ -742,7 +762,7 @@
           <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">
             TÊN THÀNH VIÊN (HIỂN THỊ KHI NHẬP LỖI)
           </label>
-          <input type="text" id="profileFullNameInput" placeholder="VD: Lê Đức Nhân, Minh Thư..."
+          <input type="text" id="profileFullNameInput" placeholder="Nhập họ và tên hiển thị..."
                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 text-sm font-semibold outline-none focus:border-red-500" />
         </div>
 
@@ -782,7 +802,7 @@
               Bot Trợ Lý Đội Nề Nếp
             </span>
             <span id="tutorialStepBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200">
-              Bước 1/6
+              Bước 1/5
             </span>
           </div>
           <h4 id="tutorialStepTitle" class="font-extrabold text-sm mt-1">Tiêu đề bước</h4>
@@ -888,32 +908,44 @@
 
   <script>
     /*************************************************************************
-     * 1. CẤU HÌNH APPS SCRIPT & TÀI KHOẢN QUẢN TRỊ
+     * 1. BẢO MẬT MÃ NGUỒN (CHẶN CTRL+U, F12 & MÃ HÓA BĂM 1 CHIỀU TÀI KHOẢN QUẢN TRỊ)
      *************************************************************************/
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSTYrnxaOFaw1-nUEzYV2zL1DAxzhoRCrSXSgKlZYgtEdTIuwoUkK5868d89CLoV-Mfg/exec';
 
-    const ADMIN_CREDENTIALS = {
-      username: 'BAN AN NINH TRƯỜNG HỌC',
-      altUsername: 'thptdl3',
-      thirdUsername: 'Nguyễn Phúc Nguyên',
-      password: 'The song(200th)',
-      altPassword: '123456'
+    // Chặn phím tắt xem mã nguồn (Ctrl+U, F12, Ctrl+Shift+I/J/C)
+    document.addEventListener('keydown', function(e) {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && (e.key === 'u' || e.key === 'U')) ||
+        (e.ctrlKey && e.shiftKey && ['I', 'i', 'J', 'j', 'C', 'c'].includes(e.key))
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // Hàm băm một chiều (Không lưu chữ rõ tên tài khoản hay mật khẩu Quản trị trong code)
+    function computeSecurityDigest(str) {
+      const s = String(str || '').normalize('NFC');
+      const L = s.length;
+      let s1 = 0, s2 = 0, s3 = 0;
+      for (let i = 0; i < L; i++) {
+        const c = s.charCodeAt(i);
+        s1 += c * (i + 1);
+        s2 += c * (L - i);
+        s3 = (s3 * 31 + c) % 10007;
+      }
+      return `${L}-${s1}-${s2}-${s3}`;
+    }
+
+    // Mã băm một chiều của duy nhất 2 tên đăng nhập Quản trị và mật khẩu Quản trị (Không thể dịch ngược)
+    const ADMIN_SECURITY_DIGESTS = {
+      allowedUsers: ['22-316747-95712-7387', '7-2629-3027-5838'],
+      passDigest: '15-9101-10211-5612'
     };
 
-    // Danh sách thành viên ban đầu (Tự động nâng cấp các tài khoản cũ lên cấu trúc mới có Tên Thành Viên & Mật khẩu)
-    const INITIAL_MEMBERS = [
-      { username: 'minhthu', fullName: 'Minh Thư', password: '123456', avatar: '' },
-      { username: 'thailequyen', fullName: 'Thái Lệ Quyên', password: '123456', avatar: '' },
-      { username: 'nguyenhuuviet', fullName: 'Nguyễn Hữu Việt', password: '123456', avatar: '' },
-      { username: 'thuthuy', fullName: 'Thu Thủy', password: '123456', avatar: '' },
-      { username: 'leducnhan', fullName: 'Lê Đức Nhân', password: '123456', avatar: '' },
-      { username: 'themanh', fullName: 'Thế Mạnh', password: '123456', avatar: '' },
-      { username: 'quynhanh', fullName: 'Quỳnh Anh', password: '123456', avatar: '' },
-      { username: 'tamnhu', fullName: 'Tâm Như', password: '123456', avatar: '' }
-    ];
-
     /*************************************************************************
-     * 2. NHẬN DIỆN THIẾT BỊ VẬT LÝ & ĐỊA CHỈ IP (KHÔNG BÁO LỖI KHI ĐỔI TRÌNH DUYỆT TRÊN CÙNG 1 MÁY)
+     * 2. NHẬN DIỆN THIẾT BỊ VẬT LÝ & ĐỊA CHỈ IP (CHO PHÉP ĐỔI TRÌNH DUYỆT CÙNG MÁY)
      *************************************************************************/
     let cachedPublicIP = localStorage.getItem('dl3_cached_ip') || '';
 
@@ -934,7 +966,6 @@
     }
     fetchPublicIP();
 
-    // Đặc trưng phần cứng thiết bị: Giống hệt nhau dù mở bằng Zalo, Safari hay Chrome trên cùng 1 điện thoại
     function getHardwareSignature() {
       const ua = navigator.userAgent || '';
       let os = 'Other';
@@ -959,12 +990,9 @@
       return `${os} • IP: ${ipAddr || cachedPublicIP || 'Đang cập nhật'}`;
     }
 
-    // Kiểm tra có phải cùng 1 thiết bị / IP hợp lệ hay không
     function isSameDeviceOrIP(memberObj, currentHwSig, currentIP) {
       if (!memberObj.hwSig && !memberObj.boundIP) return true;
-      // Nếu trùng đặc trưng phần cứng điện thoại (mở trình duyệt khác trên cùng máy) -> Hợp lệ 100%
       if (memberObj.hwSig && memberObj.hwSig === currentHwSig) return true;
-      // Nếu trùng địa chỉ IP mạng trên cùng hệ điều hành -> Hợp lệ
       const savedOS = (memberObj.hwSig || '').split('_')[0];
       const currentOS = (currentHwSig || '').split('_')[0];
       if (memberObj.boundIP && currentIP && memberObj.boundIP === currentIP && savedOS === currentOS) {
@@ -974,19 +1002,18 @@
     }
 
     /*************************************************************************
-     * 3. QUẢN LÝ DANH SÁCH THÀNH VIÊN (CHUẨN HÓA OBJECT CÓ MẬT KHẨU, TÊN THÀNH VIÊN, AVATAR)
+     * 3. QUẢN LÝ DANH SÁCH THÀNH VIÊN TRÊN HỆ THỐNG (KHÔNG GÕ CỨNG TRONG CODE)
      *************************************************************************/
     function normalizeMemberList(rawList, legacyBindings = {}) {
-      if (!Array.isArray(rawList) || rawList.length === 0) return INITIAL_MEMBERS;
+      if (!Array.isArray(rawList)) return [];
       return rawList.map((item, idx) => {
         if (typeof item === 'string') {
           const cleanUser = item.trim();
           const legacyBind = legacyBindings[cleanUser.toLowerCase()] || {};
-          const foundInit = INITIAL_MEMBERS.find(m => m.username.toLowerCase() === cleanUser.toLowerCase());
           return {
             id: 'MEM_' + cleanUser.toLowerCase(),
             username: cleanUser,
-            fullName: foundInit ? foundInit.fullName : cleanUser,
+            fullName: cleanUser,
             password: '123456',
             avatar: '',
             hwSig: legacyBind.hwSig || '',
@@ -1010,23 +1037,15 @@
     function getMemberAccounts() {
       try {
         const saved = JSON.parse(localStorage.getItem('dl3_members_v4') || 'null');
-        if (Array.isArray(saved) && saved.length > 0) return normalizeMemberList(saved);
-        const oldSaved = JSON.parse(localStorage.getItem('dl3_member_accounts') || 'null');
-        const oldBindings = JSON.parse(localStorage.getItem('dl3_device_bindings') || '{}');
-        if (Array.isArray(oldSaved) && oldSaved.length > 0) {
-          const migrated = normalizeMemberList(oldSaved, oldBindings);
-          saveMemberAccounts(migrated);
-          return migrated;
-        }
+        if (Array.isArray(saved)) return normalizeMemberList(saved);
       } catch (e) {}
-      return INITIAL_MEMBERS;
+      return [];
     }
 
     function saveMemberAccounts(list) {
       localStorage.setItem('dl3_members_v4', JSON.stringify(list));
     }
 
-    // Tìm Tên Thành Viên từ mã tài khoản (để hiển thị trên bảng Giám sát)
     function resolveMemberDisplayName(rawRecorder) {
       if (!rawRecorder) return '';
       const list = getMemberAccounts();
@@ -1038,7 +1057,7 @@
     }
 
     /*************************************************************************
-     * 4. KHO LƯU TRỮ OFFLINE INDEXED-DB (GIỮ NGUYÊN THỜI GIAN LÚC BẤM NÚT 7H05)
+     * 4. KHO LƯU TRỮ OFFLINE INDEXED-DB (GIỮ NGUYÊN GIỜ LÚC BẤM NÚT 7H05)
      *************************************************************************/
     const IDB_NAME = 'DL3_Offline_Database';
     const IDB_STORE = 'offline_queue';
@@ -1156,7 +1175,6 @@
 
       let syncedCount = 0;
       for (const item of items) {
-        // item.payload giữ nguyên 100% thời gian ngay lúc nhập (VD: 7h05)
         const res = await sendDirectToSheetVerified(item.payload);
         if (res.ok) {
           await deleteFromOfflineDB(item.id);
@@ -1174,7 +1192,7 @@
     }
 
     /*************************************************************************
-     * 6. ĐĂNG NHẬP, HỒ SƠ CÁ NHÂN & ĐỔI MẬT KHẨU / TÊN TÀI KHOẢN / AVATAR
+     * 6. ĐĂNG NHẬP, HỒ SƠ CÁ NHÂN & QUẢN LÝ PHIÊN
      *************************************************************************/
     let selectedLoginRole = 'member';
     let currentUserSession = null;
@@ -1284,19 +1302,17 @@
       const myDeviceDesc = getDeviceReadableName(myIP);
 
       if (selectedLoginRole === 'admin') {
-        const isAdminUser =
-          rawUser.toLowerCase() === ADMIN_CREDENTIALS.username.toLowerCase() ||
-          rawUser.toLowerCase() === ADMIN_CREDENTIALS.altUsername.toLowerCase() ||
-          rawUser.toLowerCase() === ADMIN_CREDENTIALS.thirdUsername.toLowerCase();
+        const userDigest = computeSecurityDigest(rawUser.toLowerCase());
+        const passDigest = computeSecurityDigest(rawPass);
 
-        const isAdminPass =
-          rawPass === ADMIN_CREDENTIALS.password ||
-          rawPass === ADMIN_CREDENTIALS.altPassword;
+        const isValidAdmin =
+          ADMIN_SECURITY_DIGESTS.allowedUsers.includes(userDigest) &&
+          passDigest === ADMIN_SECURITY_DIGESTS.passDigest;
 
         btnSubmit.disabled = false;
         btnSubmit.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>VÀO HỆ THỐNG</span>';
 
-        if (!isAdminUser || !isAdminPass) {
+        if (!isValidAdmin) {
           errEl.textContent = 'Tên tài khoản hoặc mật khẩu Quản trị không chính xác!';
           errEl.classList.remove('hidden');
           return;
@@ -1305,8 +1321,8 @@
         currentUserSession = {
           id: 'ADMIN_MASTER',
           username: rawUser,
-          fullName: 'Quản trị viên',
-          password: rawPass,
+          fullName: 'BAN AN NINH TRƯỜNG HỌC',
+          password: '',
           avatar: localStorage.getItem('dl3_admin_avatar') || 'logo.jpg',
           role: 'admin',
           hwSig: myHwSig,
@@ -1325,7 +1341,7 @@
         const memberIdx = members.findIndex(m => m.username.toLowerCase() === rawUser.toLowerCase());
 
         if (memberIdx === -1) {
-          errEl.textContent = 'Tài khoản thành viên này không tồn tại hoặc chưa được cấp!';
+          errEl.textContent = 'Tài khoản thành viên này chưa được Quản trị viên cấp hoặc đã bị thu hồi!';
           errEl.classList.remove('hidden');
           return;
         }
@@ -1338,7 +1354,6 @@
           return;
         }
 
-        // Kiểm tra Thiết bị vật lý & IP (Cho phép đổi trình duyệt trên cùng 1 điện thoại)
         if (!isSameDeviceOrIP(matchedMember, myHwSig, myIP)) {
           addSecurityLog({
             time: getFullDateTimeString(),
@@ -1353,7 +1368,6 @@
           return;
         }
 
-        // Cập nhật thông số Thiết bị + IP nếu đăng nhập lần đầu hoặc đổi trình duyệt trên cùng máy
         matchedMember.hwSig = myHwSig;
         matchedMember.boundIP = myIP;
         matchedMember.deviceName = myDeviceDesc;
@@ -1378,7 +1392,6 @@
       applySessionUI();
       showToast(`Xin chào ${currentUserSession.fullName}!`);
 
-      // Tự động mở Bot hướng dẫn nếu là lần đầu thành viên vào web
       if (currentUserSession.role === 'member' && !localStorage.getItem('dl3_tutorial_done')) {
         setTimeout(() => startGameTutorial(), 600);
       }
@@ -1423,7 +1436,6 @@
       document.getElementById('loginScreen').classList.remove('hidden');
     }
 
-    // Tự động đăng nhập như Facebook
     (function checkAutoLogin() {
       try {
         const saved = JSON.parse(localStorage.getItem('dl3_saved_session_v4') || 'null');
@@ -1435,7 +1447,7 @@
     })();
 
     /*************************************************************************
-     * 7. HỒ SƠ TÀI KHOẢN CÁ NHÂN (ĐỔI AVATAR, ĐỔI TÊN TK, TÊN THÀNH VIÊN, MẬT KHẨU)
+     * 7. HỒ SƠ TÀI KHOẢN CÁ NHÂN
      *************************************************************************/
     let pendingAvatarDataUrl = '';
 
@@ -1455,7 +1467,6 @@
       document.getElementById('profileModal').classList.remove('flex');
     }
 
-    // Nén ảnh đại diện thành hình vuông nhỏ 120x120 (~4KB) để đồng bộ Cloud siêu tốc
     document.getElementById('AvatarFileInput').addEventListener('change', (e) => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
@@ -1487,23 +1498,26 @@
       const newFullName = document.getElementById('profileFullNameInput').value.trim();
       const newPassword = document.getElementById('profilePasswordInput').value.trim();
 
-      if (!newUsername || !newFullName || !newPassword) {
-        return showToast('Vui lòng không để trống Tên tài khoản, Tên Thành Viên hoặc Mật khẩu!', false);
+      if (!newUsername || !newFullName) {
+        return showToast('Vui lòng không để trống Tên tài khoản hoặc Tên Thành Viên!', false);
       }
 
       const btn = document.getElementById('btnSaveProfile');
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang cập nhật lên Quản trị...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang cập nhật...';
 
       if (currentUserSession.role === 'admin') {
-        currentUserSession.username = newUsername;
         currentUserSession.fullName = newFullName;
-        currentUserSession.password = newPassword;
         currentUserSession.avatar = pendingAvatarDataUrl;
         localStorage.setItem('dl3_admin_avatar', pendingAvatarDataUrl);
       } else {
+        if (!newPassword) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi Hồ sơ';
+          return showToast('Vui lòng nhập mật khẩu cá nhân!', false);
+        }
+
         const members = getMemberAccounts();
-        // Kiểm tra trùng tên tài khoản với người khác
         const duplicate = members.find(
           m => m.id !== currentUserSession.id &&
                m.username.toLowerCase() !== currentUserSession.username.toLowerCase() &&
@@ -1543,7 +1557,7 @@
     }
 
     /*************************************************************************
-     * 8. BOT HƯỚNG DẪN TỪNG BƯỚC KIỂU GAME (SPOTLIGHT TUTORIAL)
+     * 8. BOT HƯỚNG DẪN TỪNG BƯỚC KIỂU GAME
      *************************************************************************/
     const TUTORIAL_STEPS = [
       {
@@ -1631,7 +1645,6 @@
             ? 'Hoàn thành <i class="fa-solid fa-check ml-1"></i>'
             : 'Tiếp theo <i class="fa-solid fa-arrow-right ml-1"></i>';
 
-        // Đặt vị trí thẻ Bot thông minh phía dưới hoặc phía trên vùng sáng
         const cardHeight = 190;
         let topPos = rect.bottom + 16;
         if (topPos + cardHeight > window.innerHeight) {
@@ -1856,7 +1869,7 @@
     }
 
     /*************************************************************************
-     * 11. GHI NHẬN THỜI GIAN CHÍNH XÁC LÚC NHẬP (KHẮC PHỤC LỖI 7H05 OFFLINE)
+     * 11. GHI NHẬN THỜI GIAN CHÍNH XÁC LÚC NHẬP (GIỮ NGUYÊN GIỜ KHI LƯU OFFLINE)
      *************************************************************************/
     function getTodayDateString() {
       const now = new Date();
@@ -1957,7 +1970,6 @@
         }
       }
 
-      // Khi mất mạng lúc 7h05: payload đã khóa cứng thoiGianChiTiet = "dd/MM/yyyy - 7:05:xx"
       await addToOfflineDB(payload);
       saveLocalActivityLog(payload);
       showToast(`Đang ngoại tuyến! Đã lưu lỗi lúc ${payload.gioChiTiet}, sẽ tự đồng bộ đúng giờ này khi có mạng.`, false);
@@ -1978,7 +1990,6 @@
         return showToast('Vui lòng điền đủ: Học sinh, Lớp và Lỗi vi phạm!', false);
       }
 
-      // Khóa cứng thời điểm bấm nút XONG (Ví dụ: 7:05:12)
       const capturedDate = getTodayDateString();
       const capturedTime = getDetailedTimeString();
       const capturedFull = `${capturedDate} - ${capturedTime}`;
@@ -2026,7 +2037,6 @@
         return showToast('Vui lòng nhập Lớp và Lỗi vi phạm của lớp!', false);
       }
 
-      // Khóa cứng thời điểm bấm nút XONG
       const capturedDate = getTodayDateString();
       const capturedTime = getDetailedTimeString();
       const capturedFull = `${capturedDate} - ${capturedTime}`;
@@ -2135,7 +2145,7 @@
     }
 
     /*************************************************************************
-     * 13. BẢNG QUẢN TRỊ VIÊN (QUẢN LÝ TÀI KHOẢN, TÊN THÀNH VIÊN, MẬT KHẨU, BÁO SAI SÓT)
+     * 13. BẢNG QUẢN TRỊ VIÊN (QUẢN LÝ TÀI KHOẢN RỘNG RÃI, TÊN THÀNH VIÊN, MẬT KHẨU)
      *************************************************************************/
     async function addMemberAccount() {
       const userInp = document.getElementById('newMemberAccountInput');
@@ -2186,7 +2196,7 @@
       await syncMembersConfigToCloud(false);
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Cấp Tài Khoản';
+        btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> <span>Cấp Tài Khoản</span>';
       }
       showToast(`Đã cấp tài khoản "${rawUser}" (${rawFullName})!`);
     }
@@ -2264,7 +2274,7 @@
       document.getElementById('statTotalViolations').textContent = logs.length;
 
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400 italic">Chưa cấp tài khoản thành viên nào.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400 italic">Chưa có tài khoản thành viên nào. Hãy nhập thông tin ở khung trên và bấm "Cấp Tài Khoản"!</td></tr>`;
         return;
       }
 
@@ -2274,36 +2284,38 @@
         const avatarSrc = m.avatar || 'logo.jpg';
 
         return `
-          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60">
-            <td class="py-2.5 px-2.5 font-bold text-slate-400">${idx + 1}</td>
-            <td class="py-2.5 px-2.5">
-              <div class="flex items-center gap-2">
-                <img src="${avatarSrc}" alt="Avatar" class="w-6 h-6 rounded-full object-cover border border-slate-300 bg-white shrink-0" />
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
+            <td class="py-3 px-4 font-bold text-slate-400 whitespace-nowrap">${idx + 1}</td>
+            <td class="py-3 px-4 whitespace-nowrap">
+              <div class="flex items-center gap-2.5">
+                <img src="${avatarSrc}" alt="Avatar" class="w-7 h-7 rounded-full object-cover border border-slate-300 bg-white shrink-0" />
                 <span class="font-extrabold text-slate-800 dark:text-slate-100">${m.username}</span>
               </div>
             </td>
-            <td class="py-2.5 px-2.5 font-bold text-blue-600 dark:text-blue-400">${m.fullName}</td>
-            <td class="py-2.5 px-2.5">
-              <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono font-bold text-slate-700 dark:text-slate-300">${m.password}</span>
+            <td class="py-3 px-4 font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">${m.fullName}</td>
+            <td class="py-3 px-4 whitespace-nowrap">
+              <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-mono font-bold text-slate-700 dark:text-slate-300">${m.password}</span>
             </td>
-            <td class="py-2.5 px-2.5">
+            <td class="py-3 px-4 whitespace-nowrap">
               ${isBound
-                ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-semibold text-[11px]">
+                ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-semibold text-xs">
                      <i class="fa-solid fa-lock text-[10px]"></i> ${m.deviceName || 'Đã khóa TB'}
                    </span>`
-                : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 font-medium text-[11px]">Chưa đăng nhập</span>`
+                : `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 font-medium text-xs">
+                     Chưa đăng nhập
+                   </span>`
               }
             </td>
-            <td class="py-2.5 px-2.5 text-center">
-              <span class="px-2 py-0.5 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-300 font-extrabold text-xs">${recordedCount} lỗi</span>
+            <td class="py-3 px-4 text-center whitespace-nowrap">
+              <span class="px-2.5 py-1 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-300 font-extrabold text-xs">${recordedCount} lỗi</span>
             </td>
-            <td class="py-2.5 px-2.5 text-right whitespace-nowrap space-x-1">
-              <button type="button" onclick="editMemberByAdmin('${m.username.replace(/'/g, "\\'")}')" class="px-2 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold text-[11px]">Sửa</button>
+            <td class="py-3 px-4 text-right whitespace-nowrap space-x-1.5">
+              <button type="button" onclick="editMemberByAdmin('${m.username.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold text-xs transition">Sửa</button>
               ${isBound
-                ? `<button type="button" onclick="resetDeviceBinding('${m.username.replace(/'/g, "\\'")}')" class="px-2 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-[11px]">Đổi TB</button>`
+                ? `<button type="button" onclick="resetDeviceBinding('${m.username.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-xs transition">Đổi TB</button>`
                 : ''
               }
-              <button type="button" onclick="removeMemberAccount('${m.username.replace(/'/g, "\\'")}')" class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-600 hover:text-white text-red-700 font-bold text-[11px] transition">Xóa TK</button>
+              <button type="button" onclick="removeMemberAccount('${m.username.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-red-100 hover:bg-red-600 hover:text-white text-red-700 font-bold text-xs transition">Xóa TK</button>
             </td>
           </tr>
         `;
@@ -2315,11 +2327,11 @@
       if (!box) return;
       const logs = getSecurityLogs();
       if (logs.length === 0) {
-        box.innerHTML = `<p class="text-slate-400 italic py-3 text-center">Chưa có cảnh báo thiết bị lạ.</p>`;
+        box.innerHTML = `<p class="text-slate-400 italic py-4 text-center">Chưa có cảnh báo thiết bị lạ.</p>`;
         return;
       }
       box.innerHTML = logs.map(l => `
-        <div class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-800">
+        <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-800">
           <div class="flex items-center justify-between font-bold">
             <span class="text-red-600">${l.username}</span>
             <span class="text-[10px] text-slate-400">${l.time}</span>
@@ -2334,11 +2346,11 @@
       if (!box) return;
       const reports = JSON.parse(localStorage.getItem('dl3_mistake_reports') || '[]');
       if (reports.length === 0) {
-        box.innerHTML = `<p class="text-slate-400 italic py-3 text-center">Chưa có báo cáo sai sót nào.</p>`;
+        box.innerHTML = `<p class="text-slate-400 italic py-4 text-center">Chưa có báo cáo sai sót nào.</p>`;
         return;
       }
       box.innerHTML = reports.map(r => `
-        <div class="p-2 rounded-xl bg-white dark:bg-slate-900 border border-rose-300 dark:border-rose-800">
+        <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-rose-300 dark:border-rose-800">
           <div class="flex items-center justify-between font-bold">
             <span class="text-rose-600">${r.memberName}</span>
             <span class="text-[10px] text-slate-400">${r.time}</span>
@@ -2356,7 +2368,6 @@
       showToast('Đã xóa danh sách báo cáo sai sót!');
     }
 
-    // Bảng Giám sát hiển thị cột THÀNH VIÊN NHẬP theo đúng Tên Thành Viên
     function renderAdminActivityTable() {
       const tbody = document.getElementById('adminActivityTableBody');
       if (!tbody) return;
@@ -2380,17 +2391,17 @@
         const memberDisplayName = resolveMemberDisplayName(item.nguoiGhiLoi);
         return `
           <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-            <td class="py-2.5 px-3 font-extrabold text-red-600">#${displayIndex}</td>
-            <td class="py-2.5 px-3 font-semibold whitespace-nowrap">${item.thoiGianChiTiet || ''}</td>
-            <td class="py-2.5 px-3 font-bold text-blue-600 dark:text-blue-400">${memberDisplayName}</td>
-            <td class="py-2.5 px-3">
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${item.hoVaTen ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-800'}">
+            <td class="py-3 px-4 font-extrabold text-red-600 whitespace-nowrap">#${displayIndex}</td>
+            <td class="py-3 px-4 font-semibold whitespace-nowrap">${item.thoiGianChiTiet || ''}</td>
+            <td class="py-3 px-4 font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">${memberDisplayName}</td>
+            <td class="py-3 px-4 whitespace-nowrap">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${item.hoVaTen ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-800'}">
                 ${item.hoVaTen ? 'Cá nhân HS' : 'Riêng Lớp'}
               </span>
             </td>
-            <td class="py-2.5 px-3 font-semibold">${item.hoVaTen || '<span class="text-slate-400 italic">(Trống - Lỗi Lớp)</span>'}</td>
-            <td class="py-2.5 px-3 font-extrabold text-red-600">${item.lop || ''}</td>
-            <td class="py-2.5 px-3">${item.loiViPham || ''}</td>
+            <td class="py-3 px-4 font-semibold">${item.hoVaTen || '<span class="text-slate-400 italic">(Trống - Lỗi Lớp)</span>'}</td>
+            <td class="py-3 px-4 font-extrabold text-red-600 whitespace-nowrap">${item.lop || ''}</td>
+            <td class="py-3 px-4">${item.loiViPham || ''}</td>
           </tr>
         `;
       }).join('');
@@ -2405,7 +2416,7 @@
           localStorage.setItem('dl3_activity_logs', JSON.stringify(data.logs));
         }
         if (forcePullMembers || (Date.now() - lastMemberModifyTimestamp > 8000)) {
-          if (Array.isArray(data.members) && data.members.length > 0) {
+          if (Array.isArray(data.members)) {
             const normalized = normalizeMemberList(data.members, data.bindings || {});
             saveMemberAccounts(normalized);
           }
