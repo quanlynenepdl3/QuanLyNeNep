@@ -626,7 +626,7 @@
               </div>
             </div>
 
-            <!-- Bảng danh sách thành viên rộng toàn màn hình -->
+            <!-- Bảng danh sách thành viên rộng toàn màn hình (CÓ NÚT ẨN/HIỆN MẬT KHẨU BẰNG DẤU CHẤM TRÒN) -->
             <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 max-h-[420px] overflow-y-auto">
               <table class="w-full min-w-[820px] text-left border-collapse text-xs">
                 <thead class="sticky top-0 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase font-bold border-b border-slate-200 dark:border-slate-700 z-10">
@@ -634,7 +634,16 @@
                     <th class="py-3.5 px-4 w-14">STT</th>
                     <th class="py-3.5 px-4">Tài khoản</th>
                     <th class="py-3.5 px-4">Tên Thành Viên</th>
-                    <th class="py-3.5 px-4">Mật khẩu</th>
+                    <th class="py-3.5 px-4">
+                      <div class="inline-flex items-center gap-1.5">
+                        <span>Mật khẩu</span>
+                        <button type="button" onclick="toggleAllAdminPasswords()"
+                                class="w-6 h-6 rounded-lg bg-slate-200/80 dark:bg-slate-700 hover:bg-red-100 dark:hover:bg-red-900/50 text-slate-600 dark:text-slate-300 hover:text-red-600 flex items-center justify-center transition"
+                                title="Ẩn / Hiện toàn bộ mật khẩu thành viên">
+                          <i id="headerPassEyeIcon" class="fa-regular fa-eye text-[11px]"></i>
+                        </button>
+                      </div>
+                    </th>
                     <th class="py-3.5 px-4">Trạng thái Thiết bị & IP</th>
                     <th class="py-3.5 px-4 text-center">Đã nhập</th>
                     <th class="py-3.5 px-4 text-right">Thao tác quản lý</th>
@@ -2145,8 +2154,38 @@
     }
 
     /*************************************************************************
-     * 13. BẢNG QUẢN TRỊ VIÊN (QUẢN LÝ TÀI KHOẢN RỘNG RÃI, TÊN THÀNH VIÊN, MẬT KHẨU)
+     * 13. BẢNG QUẢN TRỊ VIÊN & TÍNH NĂNG ẨN/HIỆN MẬT KHẨU BẰNG DẤU CHẤM TRÒN
      *************************************************************************/
+    const revealedMemberPasswords = new Set();
+    let revealAllMemberPasswords = false;
+
+    function toggleSingleMemberPassword(username) {
+      const key = String(username || '').toLowerCase();
+      if (revealedMemberPasswords.has(key)) {
+        revealedMemberPasswords.delete(key);
+      } else {
+        revealedMemberPasswords.add(key);
+      }
+      renderMemberAccountsAdmin();
+    }
+
+    function toggleAllAdminPasswords() {
+      revealAllMemberPasswords = !revealAllMemberPasswords;
+      const list = getMemberAccounts();
+      if (revealAllMemberPasswords) {
+        list.forEach(m => revealedMemberPasswords.add(m.username.toLowerCase()));
+      } else {
+        revealedMemberPasswords.clear();
+      }
+      const headerIcon = document.getElementById('headerPassEyeIcon');
+      if (headerIcon) {
+        headerIcon.className = revealAllMemberPasswords
+          ? 'fa-regular fa-eye-slash text-[11px] text-red-600'
+          : 'fa-regular fa-eye text-[11px]';
+      }
+      renderMemberAccountsAdmin();
+    }
+
     async function addMemberAccount() {
       const userInp = document.getElementById('newMemberAccountInput');
       const fullNameInp = document.getElementById('newMemberFullNameInput');
@@ -2223,6 +2262,7 @@
 
     async function removeMemberAccount(username) {
       const list = getMemberAccounts().filter(m => m.username !== username);
+      revealedMemberPasswords.delete(String(username || '').toLowerCase());
       saveMemberAccounts(list);
       renderMemberAccountsAdmin();
       await syncMembersConfigToCloud(false);
@@ -2280,8 +2320,11 @@
 
       tbody.innerHTML = list.map((m, idx) => {
         const isBound = Boolean(m.hwSig || m.boundIP);
-        const recordedCount = countByMember[m.username.toLowerCase()] || 0;
+        const userKey = m.username.toLowerCase();
+        const recordedCount = countByMember[userKey] || 0;
         const avatarSrc = m.avatar || 'logo.jpg';
+        const isPassVisible = revealedMemberPasswords.has(userKey);
+        const safeUserEscaped = m.username.replace(/'/g, "\\'");
 
         return `
           <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
@@ -2294,7 +2337,16 @@
             </td>
             <td class="py-3 px-4 font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">${m.fullName}</td>
             <td class="py-3 px-4 whitespace-nowrap">
-              <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-mono font-bold text-slate-700 dark:text-slate-300">${m.password}</span>
+              <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700">
+                <span class="font-mono font-bold ${isPassVisible ? 'text-red-600 dark:text-red-400' : 'text-slate-500 dark:text-slate-400 tracking-widest'}">
+                  ${isPassVisible ? m.password : '••••••••'}
+                </span>
+                <button type="button" onclick="toggleSingleMemberPassword('${safeUserEscaped}')"
+                        class="text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition"
+                        title="${isPassVisible ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}">
+                  <i class="fa-regular ${isPassVisible ? 'fa-eye-slash' : 'fa-eye'} text-[11px]"></i>
+                </button>
+              </div>
             </td>
             <td class="py-3 px-4 whitespace-nowrap">
               ${isBound
@@ -2310,12 +2362,12 @@
               <span class="px-2.5 py-1 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-300 font-extrabold text-xs">${recordedCount} lỗi</span>
             </td>
             <td class="py-3 px-4 text-right whitespace-nowrap space-x-1.5">
-              <button type="button" onclick="editMemberByAdmin('${m.username.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold text-xs transition">Sửa</button>
+              <button type="button" onclick="editMemberByAdmin('${safeUserEscaped}')" class="px-3 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold text-xs transition">Sửa</button>
               ${isBound
-                ? `<button type="button" onclick="resetDeviceBinding('${m.username.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-xs transition">Đổi TB</button>`
+                ? `<button type="button" onclick="resetDeviceBinding('${safeUserEscaped}')" class="px-3 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-xs transition">Đổi TB</button>`
                 : ''
               }
-              <button type="button" onclick="removeMemberAccount('${m.username.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-red-100 hover:bg-red-600 hover:text-white text-red-700 font-bold text-xs transition">Xóa TK</button>
+              <button type="button" onclick="removeMemberAccount('${safeUserEscaped}')" class="px-3 py-1.5 rounded-lg bg-red-100 hover:bg-red-600 hover:text-white text-red-700 font-bold text-xs transition">Xóa TK</button>
             </td>
           </tr>
         `;
