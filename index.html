@@ -71,10 +71,14 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between text-slate-800 dark:text-slate-100">
 
-  <!-- 3 INPUT TÁCH BIỆT RÕ RÀNG: 1. CAM CHỤP ẢNH | 2. CAM QUAY VIDEO | 3. BỘ SƯU TẬP (ẢNH & VIDEO) -->
+  <!-- 3 INPUT KẾT NỐI TRỰC TIẾP VỚI CAMERA CỦA MÁY & BỘ SƯU TẬP (ẢNH + VIDEO) -->
+  <!-- 1. Mở trực tiếp Camera Chụp Ảnh của máy -->
   <input type="file" id="NativePhotoCameraInput" accept="image/*" capture="environment" class="offscreen-input" />
+  <!-- 2. Mở trực tiếp Camera Quay Video của máy -->
   <input type="file" id="NativeVideoCameraInput" accept="video/*" capture="environment" class="offscreen-input" />
-  <input type="file" id="GalleryUploadInput" accept="image/*,video/*" multiple class="offscreen-input" />
+  <!-- 3. Mở Bộ sưu tập / Thư viện máy để chọn cả Ảnh và Video -->
+  <input type="file" id="GalleryUploadInput" accept="image/*,video/*,.mp4,.mov,.avi,.mkv,.webm,.jpg,.jpeg,.png,.heic" multiple class="offscreen-input" />
+
   <input type="file" id="CustomBgFileInput" accept="image/*" class="offscreen-input" />
   <input type="file" id="AvatarFileInput" accept="image/*" class="offscreen-input" />
 
@@ -183,26 +187,26 @@
             <span class="hidden md:inline">Hướng dẫn</span>
           </button>
 
-          <!-- 1. Máy ảnh -->
-          <button type="button" id="btnToolCamera" onclick="openMediaCapture('photo')" title="Mở Camera chụp ảnh minh chứng"
-                  class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
+          <!-- 1. Máy ảnh: Mở trực tiếp Camera chụp ảnh của thiết bị -->
+          <label for="NativePhotoCameraInput" id="btnToolCamera" onclick="directTargetColumn = null;" title="Mở Camera chụp ảnh của thiết bị"
+                 class="cursor-pointer px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
             <i class="fa-solid fa-camera text-yellow-300 text-sm"></i>
             <span class="hidden md:inline">Máy ảnh</span>
-          </button>
+          </label>
 
-          <!-- 2. Máy quay -->
-          <button type="button" id="btnToolVideo" onclick="openMediaCapture('video')" title="Mở Camera quay video minh chứng"
-                  class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
+          <!-- 2. Máy quay: Mở trực tiếp Camera quay video của thiết bị -->
+          <label for="NativeVideoCameraInput" id="btnToolVideo" onclick="directTargetColumn = null;" title="Mở Camera quay video của thiết bị"
+                 class="cursor-pointer px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
             <i class="fa-solid fa-video text-emerald-300 text-sm"></i>
             <span class="hidden md:inline">Máy quay</span>
-          </button>
+          </label>
 
-          <!-- 3. Tải lên -->
-          <button type="button" id="btnToolUpload" onclick="openMediaCapture('upload')" title="Chọn Ảnh hoặc Video từ Bộ sưu tập trong máy"
-                  class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
+          <!-- 3. Tải lên: Mở Bộ sưu tập chọn cả Ảnh và Video -->
+          <label for="GalleryUploadInput" id="btnToolUpload" onclick="directTargetColumn = null;" title="Tải Ảnh hoặc Video từ Bộ sưu tập của máy"
+                 class="cursor-pointer px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
             <i class="fa-solid fa-cloud-arrow-up text-sky-200 text-sm"></i>
             <span class="hidden md:inline">Tải lên</span>
-          </button>
+          </label>
 
           <!-- 4. Nền cá nhân -->
           <button type="button" id="btnToolBg" onclick="openBgCustomizerModal()" title="Tùy chỉnh hình nền cá nhân"
@@ -325,16 +329,16 @@
                   Minh chứng vi phạm (Ảnh / Video)
                 </label>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-2.5">
-                  Tải tối đa 5 tệp được hỗ trợ lên. Mỗi tệp có kích thước tối đa 100 MB.
+                  Tải tối đa 5 tệp (Ảnh hoặc Video). Mỗi tệp tối đa 100 MB.
                 </p>
 
                 <div id="studentEvidenceList" class="flex flex-wrap gap-2 mb-2.5"></div>
 
-                <button type="button" onclick="triggerDirectAddFile('student')"
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 text-blue-600 dark:text-blue-400 font-semibold text-xs shadow-sm transition">
+                <label for="GalleryUploadInput" onclick="directTargetColumn = 'student';"
+                       class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 text-blue-600 dark:text-blue-400 font-semibold text-xs shadow-sm transition">
                   <i class="fa-solid fa-arrow-up-from-bracket"></i>
                   <span>Thêm tệp</span>
-                </button>
+                </label>
               </div>
             </div>
           </div>
@@ -431,16 +435,16 @@
                   Minh chứng vi phạm của Lớp (Ảnh / Video)
                 </label>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-2.5">
-                  Tải tối đa 5 tệp được hỗ trợ lên. Mỗi tệp có kích thước tối đa 100 MB.
+                  Chụp/quay trực tiếp sẽ tự động lưu bản sao về máy khi bấm XONG.
                 </p>
 
                 <div id="classEvidenceList" class="flex flex-wrap gap-2 mb-2.5"></div>
 
-                <button type="button" onclick="triggerDirectAddFile('class')"
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 text-blue-600 dark:text-blue-400 font-semibold text-xs shadow-sm transition">
+                <label for="GalleryUploadInput" onclick="directTargetColumn = 'class';"
+                       class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 text-blue-600 dark:text-blue-400 font-semibold text-xs shadow-sm transition">
                   <i class="fa-solid fa-arrow-up-from-bracket"></i>
                   <span>Thêm tệp</span>
-                </button>
+                </label>
               </div>
             </div>
           </div>
@@ -737,60 +741,6 @@
     </div>
   </footer>
 
-  <!-- ==================== MODAL CAMERA CHỤP ẢNH / QUAY VIDEO TRỰC TIẾP ==================== -->
-  <div id="liveCameraModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-    <div class="glass-card w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-      <div class="header-gradient px-5 py-3.5 text-white flex items-center justify-between">
-        <h3 id="liveCameraModalTitle" class="font-extrabold text-sm uppercase tracking-wider flex items-center gap-2">
-          <i class="fa-solid fa-camera"></i> Camera Chụp Ảnh Minh Chứng
-        </h3>
-        <button type="button" onclick="closeLiveCameraModal()" class="text-white/80 hover:text-white">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
-
-      <div class="p-4 space-y-3 bg-slate-950 text-white">
-        <div class="relative w-full aspect-[4/3] bg-black rounded-2xl overflow-hidden flex items-center justify-center border border-slate-800">
-          <video id="liveCameraVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
-
-          <div id="videoRecTimerBadge" class="hidden absolute top-3 left-3 items-center gap-2 px-3 py-1 rounded-full bg-red-600 text-white font-extrabold text-xs shadow">
-            <span class="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
-            <span id="videoRecTimerText">00:00</span>
-          </div>
-
-          <button type="button" onclick="switchCameraFacing()" title="Đổi Camera Trước / Sau"
-                  class="absolute top-3 right-3 w-10 h-10 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center border border-white/20">
-            <i class="fa-solid fa-camera-rotate"></i>
-          </button>
-        </div>
-
-        <div id="photoCaptureControls" class="flex flex-col sm:flex-row items-center gap-2.5">
-          <button type="button" onclick="snapLivePhoto()"
-                  class="w-full py-3.5 rounded-2xl bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg">
-            <i class="fa-solid fa-camera text-lg"></i>
-            <span>CHỤP ẢNH NGAY</span>
-          </button>
-          <button type="button" onclick="triggerNativeSystemCamera('photo')"
-                  class="w-full sm:w-auto px-4 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs whitespace-nowrap">
-            Mở Cam gốc của máy
-          </button>
-        </div>
-
-        <div id="videoCaptureControls" class="hidden flex-col sm:flex-row items-center gap-2.5">
-          <button type="button" id="btnStartStopVideoRec" onclick="toggleLiveVideoRecording()"
-                  class="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg">
-            <i class="fa-solid fa-circle-dot text-lg"></i>
-            <span>BẮT ĐẦU QUAY VIDEO</span>
-          </button>
-          <button type="button" onclick="triggerNativeSystemCamera('video')"
-                  class="w-full sm:w-auto px-4 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs whitespace-nowrap">
-            Mở Cam quay gốc
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- ==================== MODAL HỒ SƠ CÁ NHÂN ==================== -->
   <div id="profileModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
     <div class="glass-card w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
@@ -805,17 +755,16 @@
 
       <div class="p-6 space-y-4">
         <div class="flex flex-col items-center">
-          <div class="relative group cursor-pointer" onclick="document.getElementById('AvatarFileInput').click()">
+          <label for="AvatarFileInput" class="relative group cursor-pointer">
             <img id="profileAvatarPreview" src="logo.jpg" alt="Avatar"
                  class="w-24 h-24 rounded-full object-cover border-4 border-red-500/30 shadow-md bg-white" />
             <div class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center absolute bottom-0 right-0 shadow border-2 border-white">
               <i class="fa-solid fa-camera text-xs"></i>
             </div>
-          </div>
-          <button type="button" onclick="document.getElementById('AvatarFileInput').click()"
-                  class="mt-2 text-xs font-bold text-red-600 dark:text-red-400 hover:underline">
+          </label>
+          <label for="AvatarFileInput" class="cursor-pointer mt-2 text-xs font-bold text-red-600 dark:text-red-400 hover:underline">
             Thay đổi ảnh đại diện cá nhân
-          </button>
+          </label>
         </div>
 
         <div>
@@ -959,10 +908,10 @@
 
         <div class="pt-3 border-t border-slate-200 dark:border-slate-700">
           <p class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Hoặc tải ảnh nền cá nhân từ thiết bị của bạn:</p>
-          <button type="button" onclick="document.getElementById('CustomBgFileInput').click()"
-                  class="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 font-bold text-xs flex items-center justify-center gap-2">
+          <label for="CustomBgFileInput"
+                 class="cursor-pointer w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 font-bold text-xs flex items-center justify-center gap-2">
             <i class="fa-regular fa-image text-red-500"></i> Chọn ảnh từ máy làm hình nền
-          </button>
+          </label>
         </div>
       </div>
     </div>
@@ -976,7 +925,7 @@
 
   <script id="mainAppScript">
     /*************************************************************************
-     * 1. KHỞI TẠO TOÀN BỘ BIẾN TRẠNG THÁI Ở ĐẦU FILE & BẢO MẬT MÃ NGUỒN
+     * 1. KHỞI TẠO BIẾN TRẠNG THÁI & BẢO MẬT MÃ NGUỒN
      *************************************************************************/
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSTYrnxaOFaw1-nUEzYV2zL1DAxzhoRCrSXSgKlZYgtEdTIuwoUkK5868d89CLoV-Mfg/exec';
     const IDB_NAME = 'DL3_Offline_Database';
@@ -995,14 +944,6 @@
     let classEvidenceFiles = [];
     let pendingPickedFiles = [];
     let directTargetColumn = null;
-
-    let liveMediaStream = null;
-    let currentCameraFacing = 'environment';
-    let currentCameraMode = 'photo';
-    let mediaRecorderInstance = null;
-    let recordedVideoChunks = [];
-    let videoTimerInterval = null;
-    let videoSecondsElapsed = 0;
 
     const revealedMemberPasswords = new Set();
     let revealAllMemberPasswords = false;
@@ -1032,11 +973,11 @@
       return `${L}-${s1}-${s2}-${s3}`;
     }
 
-    // Chữ ký mã nguồn chuẩn hóa (Loại bỏ khoảng trắng để khi F5 tải lại trang luôn giữ nguyên 100%,
-    // nhưng chỉ cần bạn sửa bất kỳ nội dung code nào trên GitHub thì chữ ký sẽ đổi và tự động đăng xuất tất cả!)
+    // Chữ ký mã nguồn chuẩn hóa: Giữ nguyên phiên khi tải lại trang (F5),
+    // nhưng tự động đăng xuất 100% tài khoản khi trang web có bản cập nhật code mới
     const CURRENT_WEB_BUILD_SIGNATURE = (function() {
       const rawScript = (document.getElementById('mainAppScript')?.textContent || '').replace(/\s+/g, '');
-      return 'BUILD_V6_' + computeSecurityDigest(rawScript);
+      return 'BUILD_V7_' + computeSecurityDigest(rawScript);
     })();
 
     const ADMIN_SECURITY_DIGESTS = {
@@ -1639,8 +1580,8 @@
         };
       }
 
-      localStorage.setItem('dl3_saved_session_v6', JSON.stringify(currentUserSession));
-      localStorage.setItem('dl3_last_build_sig_v6', CURRENT_WEB_BUILD_SIGNATURE);
+      localStorage.setItem('dl3_saved_session_v7', JSON.stringify(currentUserSession));
+      localStorage.setItem('dl3_last_build_sig_v7', CURRENT_WEB_BUILD_SIGNATURE);
       applySessionUI();
       showToast(`Xin chào ${currentUserSession.fullName}!`);
 
@@ -1686,6 +1627,7 @@
       localStorage.removeItem('dl3_saved_session_v4');
       localStorage.removeItem('dl3_saved_session_v5');
       localStorage.removeItem('dl3_saved_session_v6');
+      localStorage.removeItem('dl3_saved_session_v7');
       currentUserSession = null;
       document.getElementById('loginPassword').value = '';
       document.getElementById('loginScreen').classList.remove('hidden');
@@ -1791,7 +1733,7 @@
       }
 
       currentUserSession.buildSignature = CURRENT_WEB_BUILD_SIGNATURE;
-      localStorage.setItem('dl3_saved_session_v6', JSON.stringify(currentUserSession));
+      localStorage.setItem('dl3_saved_session_v7', JSON.stringify(currentUserSession));
       applySessionUI();
 
       btn.disabled = false;
@@ -1807,7 +1749,7 @@
       {
         targetId: 'headerToolbarGroup',
         title: '1. Thanh công cụ Minh chứng & Giao diện',
-        desc: 'Bấm "Máy ảnh" để mở Cam chụp ảnh, "Máy quay" để mở Cam quay video, "Tải lên" để chọn Ảnh/Video từ Bộ sưu tập trong máy, hoặc đổi hình nền và chế độ Sáng/Tối.'
+        desc: 'Bấm "Máy ảnh" để kết nối thẳng với Cam chụp ảnh của máy, "Máy quay" để mở Cam quay video của máy, hoặc "Tải lên" để chọn cả Video và Ảnh từ Bộ sưu tập.'
       },
       {
         targetId: 'cardStudentViolation',
@@ -1816,8 +1758,8 @@
       },
       {
         targetId: 'cardClassViolation',
-        title: '3. Ghi lỗi Riêng mỗi Lớp',
-        desc: 'Khi bắt lỗi tập thể lớp (như sinh hoạt ồn, vệ sinh bẩn...): Bạn chỉ cần nhập tên Lớp và Lỗi vi phạm của lớp rồi bấm "XONG", không cần nhập họ tên học sinh.'
+        title: '3. Ghi lỗi Riêng mỗi Lớp (Tự lưu minh chứng về máy)',
+        desc: 'Khi chụp/quay trực tiếp và nhập lỗi cho Lớp: Hệ thống vừa gửi lên hệ thống vừa tự động lưu bản sao ảnh/video đó về điện thoại của bạn khi bấm "XONG".'
       },
       {
         targetId: 'memberSummarySection',
@@ -1965,213 +1907,8 @@
     });
 
     /*************************************************************************
-     * 10. HỆ THỐNG CAMERA CHỤP ẢNH • CAMERA QUAY VIDEO • TẢI LÊN TỪ BỘ SƯU TẬP
+     * 10. KẾT NỐI TRỰC TIẾP VỚI CAMERA CỦA MÁY • BỘ SƯU TẬP • TỰ LƯU VỀ MÁY CHO LỖI LỚP
      *************************************************************************/
-    async function openMediaCapture(mode) {
-      directTargetColumn = null;
-      if (mode === 'upload') {
-        document.getElementById('GalleryUploadInput').click();
-        return;
-      }
-      await startLiveCameraModal(mode);
-    }
-
-    function triggerDirectAddFile(targetCol) {
-      directTargetColumn = targetCol;
-      document.getElementById('GalleryUploadInput').click();
-    }
-
-    function triggerNativeSystemCamera(mode) {
-      closeLiveCameraModal();
-      if (mode === 'photo') {
-        document.getElementById('NativePhotoCameraInput').click();
-      } else {
-        document.getElementById('NativeVideoCameraInput').click();
-      }
-    }
-
-    async function startLiveCameraModal(mode) {
-      currentCameraMode = mode;
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        triggerNativeSystemCamera(mode);
-        return;
-      }
-
-      try {
-        stopLiveStreamTracks();
-        const constraints = {
-          video: { facingMode: { ideal: currentCameraFacing }, width: { ideal: 1280 }, height: { ideal: 720 } },
-          audio: mode === 'video'
-        };
-        liveMediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-
-        const videoEl = document.getElementById('liveCameraVideo');
-        videoEl.srcObject = liveMediaStream;
-
-        const titleEl = document.getElementById('liveCameraModalTitle');
-        const photoControls = document.getElementById('photoCaptureControls');
-        const videoControls = document.getElementById('videoCaptureControls');
-        const timerBadge = document.getElementById('videoRecTimerBadge');
-
-        timerBadge.classList.add('hidden');
-        timerBadge.classList.remove('flex');
-
-        if (mode === 'photo') {
-          titleEl.innerHTML = '<i class="fa-solid fa-camera text-yellow-300"></i> <span>Camera Chụp Ảnh Minh Chứng</span>';
-          photoControls.classList.remove('hidden');
-          photoControls.classList.add('flex');
-          videoControls.classList.add('hidden');
-          videoControls.classList.remove('flex');
-        } else {
-          titleEl.innerHTML = '<i class="fa-solid fa-video text-emerald-300"></i> <span>Camera Quay Video Minh Chứng</span>';
-          photoControls.classList.add('hidden');
-          photoControls.classList.remove('flex');
-          videoControls.classList.remove('hidden');
-          videoControls.classList.add('flex');
-          resetVideoRecButtonUI(false);
-        }
-
-        const modal = document.getElementById('liveCameraModal');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-      } catch (err) {
-        triggerNativeSystemCamera(mode);
-      }
-    }
-
-    async function switchCameraFacing() {
-      currentCameraFacing = currentCameraFacing === 'environment' ? 'user' : 'environment';
-      await startLiveCameraModal(currentCameraMode);
-    }
-
-    function stopLiveStreamTracks() {
-      if (videoTimerInterval) {
-        clearInterval(videoTimerInterval);
-        videoTimerInterval = null;
-      }
-      if (liveMediaStream) {
-        liveMediaStream.getTracks().forEach(t => t.stop());
-        liveMediaStream = null;
-      }
-    }
-
-    function closeLiveCameraModal() {
-      if (mediaRecorderInstance && mediaRecorderInstance.state === 'recording') {
-        try { mediaRecorderInstance.stop(); } catch (e) {}
-      }
-      stopLiveStreamTracks();
-      const modal = document.getElementById('liveCameraModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function snapLivePhoto() {
-      const videoEl = document.getElementById('liveCameraVideo');
-      if (!videoEl || !videoEl.videoWidth) {
-        return triggerNativeSystemCamera('photo');
-      }
-
-      const maxDim = 1280;
-      let w = videoEl.videoWidth;
-      let h = videoEl.videoHeight;
-      if (w > maxDim || h > maxDim) {
-        if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
-        else { w = Math.round((w * maxDim) / h); h = maxDim; }
-      }
-
-      const canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
-      canvas.getContext('2d').drawImage(videoEl, 0, 0, w, h);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-      const base64Clean = dataUrl.split(',')[1] || '';
-
-      closeLiveCameraModal();
-
-      const photoFileObj = {
-        originalName: `Anh_${getDetailedTimeString().replace(/:/g, '-')}.jpg`,
-        mimeType: 'image/jpeg',
-        size: Math.round(base64Clean.length * 0.75),
-        base64: base64Clean
-      };
-
-      handleProcessedMediaFiles([photoFileObj]);
-    }
-
-    function resetVideoRecButtonUI(isRecording) {
-      const btn = document.getElementById('btnStartStopVideoRec');
-      const timerBadge = document.getElementById('videoRecTimerBadge');
-      if (isRecording) {
-        btn.className = 'w-full py-3.5 rounded-2xl bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg animate-pulse';
-        btn.innerHTML = '<i class="fa-solid fa-stop text-lg"></i> <span>DỪNG & LƯU VIDEO</span>';
-        timerBadge.classList.remove('hidden');
-        timerBadge.classList.add('flex');
-      } else {
-        btn.className = 'w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg';
-        btn.innerHTML = '<i class="fa-solid fa-circle-dot text-lg"></i> <span>BẮT ĐẦU QUAY VIDEO</span>';
-        timerBadge.classList.add('hidden');
-        timerBadge.classList.remove('flex');
-      }
-    }
-
-    function toggleLiveVideoRecording() {
-      if (!liveMediaStream) return triggerNativeSystemCamera('video');
-
-      if (mediaRecorderInstance && mediaRecorderInstance.state === 'recording') {
-        mediaRecorderInstance.stop();
-        return;
-      }
-
-      recordedVideoChunks = [];
-      let options = {};
-      if (typeof MediaRecorder !== 'undefined') {
-        if (MediaRecorder.isTypeSupported('video/mp4')) options = { mimeType: 'video/mp4', videoBitsPerSecond: 1200000 };
-        else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) options = { mimeType: 'video/webm;codecs=vp8,opus', videoBitsPerSecond: 1200000 };
-        else if (MediaRecorder.isTypeSupported('video/webm')) options = { mimeType: 'video/webm', videoBitsPerSecond: 1200000 };
-      } else {
-        return triggerNativeSystemCamera('video');
-      }
-
-      try {
-        mediaRecorderInstance = new MediaRecorder(liveMediaStream, options);
-      } catch (e) {
-        mediaRecorderInstance = new MediaRecorder(liveMediaStream);
-      }
-
-      mediaRecorderInstance.ondataavailable = (ev) => {
-        if (ev.data && ev.data.size > 0) recordedVideoChunks.push(ev.data);
-      };
-
-      mediaRecorderInstance.onstop = async () => {
-        const mime = mediaRecorderInstance.mimeType || 'video/mp4';
-        const ext = mime.includes('webm') ? 'webm' : 'mp4';
-        const blob = new Blob(recordedVideoChunks, { type: mime });
-        closeLiveCameraModal();
-
-        showToast('Đang xử lý video vừa quay...');
-        const base64Data = await rawFileToBase64(blob);
-        const videoFileObj = {
-          originalName: `Video_${getDetailedTimeString().replace(/:/g, '-')}.${ext}`,
-          mimeType: mime,
-          size: blob.size,
-          base64: base64Data
-        };
-        handleProcessedMediaFiles([videoFileObj]);
-      };
-
-      mediaRecorderInstance.start(250);
-      videoSecondsElapsed = 0;
-      document.getElementById('videoRecTimerText').textContent = '00:00';
-      resetVideoRecButtonUI(true);
-
-      videoTimerInterval = setInterval(() => {
-        videoSecondsElapsed++;
-        const m = String(Math.floor(videoSecondsElapsed / 60)).padStart(2, '0');
-        const s = String(videoSecondsElapsed % 60).padStart(2, '0');
-        document.getElementById('videoRecTimerText').textContent = `${m}:${s}`;
-      }, 1000);
-    }
-
     function compressImageFileToBase64(file) {
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -2187,7 +1924,7 @@
             const canvas = document.createElement('canvas');
             canvas.width = w; canvas.height = h;
             canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.78);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
             resolve({ base64: dataUrl.split(',')[1] || '', mimeType: 'image/jpeg' });
           };
           img.onerror = () => resolve(null);
@@ -2206,6 +1943,60 @@
       });
     }
 
+    // Chuyển chuỗi Base64 về Blob để lưu file gốc về điện thoại khi cần
+    function base64ToBlob(base64Data, contentType) {
+      try {
+        const byteCharacters = atob(base64Data);
+        const byteArrays = [];
+        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+          const slice = byteCharacters.slice(offset, offset + 512);
+          const byteNumbers = new Array(slice.length);
+          for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+          }
+          byteArrays.push(new Uint8Array(byteNumbers));
+        }
+        return new Blob(byteArrays, { type: contentType || 'application/octet-stream' });
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Tự động lưu file ảnh/video minh chứng về điện thoại người nhập (Dành riêng cho Lỗi Lớp khi Chụp/Quay trực tiếp)
+    function saveCapturedEvidenceToPhone(fileItem, className, dateStr, timeStr, indexNum) {
+      try {
+        if (!fileItem || !fileItem.isDirectCapture) return false;
+        const isVideo = (fileItem.mimeType || '').startsWith('video/');
+        let ext = isVideo ? 'mp4' : 'jpg';
+        if (fileItem.originalName && fileItem.originalName.includes('.')) {
+          ext = fileItem.originalName.split('.').pop().toLowerCase() || ext;
+        }
+
+        const safeDate = String(dateStr || '').replace(/\//g, '-');
+        const safeTime = String(timeStr || '').replace(/:/g, '-');
+        const downloadFileName = `MinhChung_Lop_${className}_${safeDate}_${safeTime}${indexNum > 1 ? '_' + indexNum : ''}.${ext}`;
+
+        const blobToSave = fileItem.rawBlob || base64ToBlob(fileItem.base64, fileItem.mimeType);
+        if (!blobToSave) return false;
+
+        const blobUrl = URL.createObjectURL(blobToSave);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = blobUrl;
+        a.download = downloadFileName;
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(blobUrl);
+        }, 12000);
+        return true;
+      } catch (err) {
+        return false;
+      }
+    }
+
     function handleProcessedMediaFiles(validFiles) {
       if (!validFiles || validFiles.length === 0) return;
       if (directTargetColumn) {
@@ -2213,15 +2004,24 @@
         directTargetColumn = null;
       } else {
         pendingPickedFiles = validFiles;
+        const sourceLabel = validFiles[0].isDirectCapture ? 'Quay/Chụp trực tiếp từ máy' : 'Tải lên từ bộ sưu tập';
         document.getElementById('pendingFilesSummary').textContent =
-          `Đã chuẩn bị ${validFiles.length} tệp minh chứng (${validFiles.map(f => f.originalName).join(', ')})`;
+          `Đã nhận ${validFiles.length} tệp (${sourceLabel}: ${validFiles.map(f => f.originalName).join(', ')})`;
         document.getElementById('assignEvidenceModal').classList.remove('hidden');
         document.getElementById('assignEvidenceModal').classList.add('flex');
       }
     }
 
-    ['NativePhotoCameraInput', 'NativeVideoCameraInput', 'GalleryUploadInput'].forEach(id => {
-      document.getElementById(id).addEventListener('change', async (e) => {
+    // Xử lý 3 nguồn input:
+    // - NativePhotoCameraInput -> isDirectCapture = true (Chụp ảnh trực tiếp bằng Cam máy)
+    // - NativeVideoCameraInput -> isDirectCapture = true (Quay video trực tiếp bằng Cam máy)
+    // - GalleryUploadInput     -> isDirectCapture = false (Tải lên Ảnh/Video từ bộ sưu tập)
+    [
+      { id: 'NativePhotoCameraInput', isCapture: true },
+      { id: 'NativeVideoCameraInput', isCapture: true },
+      { id: 'GalleryUploadInput', isCapture: false }
+    ].forEach(cfg => {
+      document.getElementById(cfg.id).addEventListener('change', async (e) => {
         const files = Array.from(e.target.files || []);
         e.target.value = '';
         if (files.length === 0) return;
@@ -2236,12 +2036,26 @@
           if (f.type && f.type.startsWith('image/')) {
             const compressed = await compressImageFileToBase64(f);
             if (compressed) {
-              validFiles.push({ originalName: f.name, mimeType: compressed.mimeType, size: f.size, base64: compressed.base64 });
+              validFiles.push({
+                originalName: f.name,
+                mimeType: compressed.mimeType,
+                size: f.size,
+                base64: compressed.base64,
+                rawBlob: f, // Giữ lại file gốc từ Cam máy để lưu về điện thoại nét 100%
+                isDirectCapture: cfg.isCapture
+              });
               continue;
             }
           }
           const base64Data = await rawFileToBase64(f);
-          validFiles.push({ originalName: f.name, mimeType: f.type || 'video/mp4', size: f.size, base64: base64Data });
+          validFiles.push({
+            originalName: f.name,
+            mimeType: f.type || 'video/mp4',
+            size: f.size,
+            base64: base64Data,
+            rawBlob: f,
+            isDirectCapture: cfg.isCapture
+          });
         }
 
         handleProcessedMediaFiles(validFiles);
@@ -2267,7 +2081,12 @@
       } else {
         classEvidenceFiles = [...classEvidenceFiles, ...newFiles].slice(0, 5);
         renderEvidenceChips('class');
-        showToast('Đã đính kèm minh chứng vào mục Riêng mỗi Lớp!');
+        const hasDirect = newFiles.some(f => f.isDirectCapture);
+        if (hasDirect) {
+          showToast('Đã gán vào mục Lớp! Khi bấm XONG sẽ tự lưu minh chứng này về máy.');
+        } else {
+          showToast('Đã đính kèm minh chứng vào mục Riêng mỗi Lớp!');
+        }
       }
     }
 
@@ -2287,13 +2106,17 @@
       const container = document.getElementById(containerId);
 
       container.innerHTML = files.map((file, idx) => {
-        const isVideo = file.mimeType.startsWith('video/');
+        const isVideo = (file.mimeType || '').startsWith('video/');
         const iconClass = isVideo ? 'fa-solid fa-film text-red-600' : 'fa-solid fa-image text-red-600';
         const shortName = file.originalName.length > 18 ? file.originalName.substring(0, 15) + '...' : file.originalName;
+        const badgeTag = (targetCol === 'class' && file.isDirectCapture)
+          ? '<span class="px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">Tự lưu máy</span>'
+          : '';
         return `
-          <div class="inline-flex items-center gap-2.5 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xs text-xs font-medium">
+          <div class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xs text-xs font-medium">
             <i class="${iconClass} text-base"></i>
-            <span class="truncate max-w-[140px] text-slate-800 dark:text-slate-100" title="${file.originalName}">${shortName}</span>
+            <span class="truncate max-w-[130px] text-slate-800 dark:text-slate-100" title="${file.originalName}">${shortName}</span>
+            ${badgeTag}
             <button type="button" onclick="removeEvidenceFile('${targetCol}', ${idx})" class="text-slate-400 hover:text-red-600 ml-1 text-sm leading-none">
               <i class="fa-solid fa-xmark"></i>
             </button>
@@ -2451,7 +2274,14 @@
       const capturedFull = `${capturedDate} - ${capturedTime}`;
       const uniqueReqId = 'REQ_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
-      const filesToSend = [...studentEvidenceFiles];
+      // Chỉ lấy dữ liệu cần thiết gửi lên Server (loại bỏ rawBlob để serialize JSON chuẩn)
+      const filesToSend = studentEvidenceFiles.map(f => ({
+        originalName: f.originalName,
+        mimeType: f.mimeType,
+        size: f.size,
+        base64: f.base64
+      }));
+
       nameEl.value = '';
       classEl.value = '';
       violationEl.value = '';
@@ -2483,6 +2313,8 @@
       btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>XONG</span>';
     }
 
+    // XỬ LÝ NÚT XONG CỘT 2 (LỖI RIÊNG MỖI LỚP):
+    // Tự động lưu minh chứng về điện thoại nếu là ảnh/video Chụp hoặc Quay trực tiếp (trừ trường hợp tải lên từ bộ sưu tập)
     async function submitClassViolation() {
       if (!currentUserSession) return showToast('Vui lòng đăng nhập!', false);
       const classEl = document.getElementById('classOnlyName');
@@ -2501,7 +2333,22 @@
       const capturedFull = `${capturedDate} - ${capturedTime}`;
       const uniqueReqId = 'REQ_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
-      const filesToSend = [...classEvidenceFiles];
+      // Tự động lưu các minh chứng Quay/Chụp trực tiếp về máy của người nhập ngay khi bấm XONG
+      let directSavedCount = 0;
+      classEvidenceFiles.forEach((fileItem, idx) => {
+        if (fileItem.isDirectCapture) {
+          const savedOk = saveCapturedEvidenceToPhone(fileItem, lop, capturedDate, capturedTime, idx + 1);
+          if (savedOk) directSavedCount++;
+        }
+      });
+
+      const filesToSend = classEvidenceFiles.map(f => ({
+        originalName: f.originalName,
+        mimeType: f.mimeType,
+        size: f.size,
+        base64: f.base64
+      }));
+
       classEl.value = '';
       violationEl.value = '';
       classEvidenceFiles = [];
@@ -2527,6 +2374,10 @@
         thietBi: currentUserSession.deviceName,
         evidenceFiles: filesToSend
       });
+
+      if (directSavedCount > 0) {
+        showToast(`Đã ghi lỗi Lớp ${lop} & tự động lưu ${directSavedCount} minh chứng về máy!`);
+      }
 
       btn.disabled = false;
       btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>XONG</span>';
@@ -2950,23 +2801,2866 @@
         localStorage.removeItem('dl3_saved_session');
         localStorage.removeItem('dl3_saved_session_v4');
         localStorage.removeItem('dl3_saved_session_v5');
-        saved = JSON.parse(localStorage.getItem('dl3_saved_session_v6') || 'null');
+        localStorage.removeItem('dl3_saved_session_v6');
+        saved = JSON.parse(localStorage.getItem('dl3_saved_session_v7') || 'null');
       } catch (parseErr) {
         saved = null;
       }
 
-      const lastBuildSig = localStorage.getItem('dl3_last_build_sig_v6');
+      const lastBuildSig = localStorage.getItem('dl3_last_build_sig_v7');
 
-      // Chỉ khi mã nguồn trang web có sự thay đổi/cập nhật mới so với lần đăng nhập trước thì mới đăng xuất tất cả
       if (lastBuildSig && lastBuildSig !== CURRENT_WEB_BUILD_SIGNATURE) {
-        localStorage.removeItem('dl3_saved_session_v6');
-        localStorage.setItem('dl3_last_build_sig_v6', CURRENT_WEB_BUILD_SIGNATURE);
+        localStorage.removeItem('dl3_saved_session_v7');
+        localStorage.setItem('dl3_last_build_sig_v7', CURRENT_WEB_BUILD_SIGNATURE);
         currentUserSession = null;
         document.getElementById('loginScreen').classList.remove('hidden');
         return;
       }
 
-      localStorage.setItem('dl3_last_build_sig_v6', CURRENT_WEB_BUILD_SIGNATURE);
+      localStorage.setItem('dl3_last_build_sig_v7', CURRENT_WEB_BUILD_SIGNATURE);
+
+      if (saved && saved.username && saved.buildSignature === CURRENT_WEB_BUILD_SIGNATURE) {
+        currentUserSession = saved;
+        try {
+          applySessionUI();
+        } catch (uiErr) {
+          console.error(uiErr);
+        }
+      } else {
+        document.getElementById('loginScreen').classList.remove('hidden');
+      }
+    })();
+
+    setInterval(() => {
+      if (navigator.onLine) {
+        syncOfflineQueue(false);
+        fetchAdminDataFromCloud(false, false);
+      }
+    }, 15000);
+
+    fetchAdminDataFromCloud(false, true);
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Hệ thống Ghi Lỗi Vi Phạm - THPT Đô Lương 3</title>
+  <link rel="icon" type="image/jpeg" href="logo.jpg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' };
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f4f6fb;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+    html.dark body {
+      background-color: #0f172a;
+      color: #f1f5f9;
+    }
+    .header-gradient {
+      background: linear-gradient(90deg, #b91c1c 0%, #dc2626 55%, #ef4444 100%);
+    }
+    html.dark .header-gradient {
+      background: linear-gradient(90deg, #7f1d1d 0%, #991b1b 55%, #b91c1c 100%);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+    }
+    html.dark .glass-card {
+      background: rgba(30, 41, 59, 0.96);
+      border-color: rgba(71, 85, 105, 0.6);
+    }
+    .chip-btn {
+      transition: all 0.12s ease;
+    }
+    .chip-btn:active {
+      transform: scale(0.95);
+    }
+    .offscreen-input {
+      position: fixed;
+      top: -9999px;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+    #tutorialSpotlight {
+      position: fixed;
+      z-index: 90;
+      pointer-events: none;
+      border-radius: 16px;
+      box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.78), 0 0 25px 4px rgba(239, 68, 68, 0.85);
+      border: 2.5px solid #facc15;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #tutorialBotCard {
+      position: fixed;
+      z-index: 95;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800 dark:text-slate-100">
+
+  <!-- 3 INPUT KẾT NỐI TRỰC TIẾP VỚI CAMERA CỦA MÁY & BỘ SƯU TẬP (ẢNH + VIDEO) -->
+  <!-- 1. Mở trực tiếp Camera Chụp Ảnh của máy -->
+  <input type="file" id="NativePhotoCameraInput" accept="image/*" capture="environment" class="offscreen-input" />
+  <!-- 2. Mở trực tiếp Camera Quay Video của máy -->
+  <input type="file" id="NativeVideoCameraInput" accept="video/*" capture="environment" class="offscreen-input" />
+  <!-- 3. Mở Bộ sưu tập / Thư viện máy để chọn cả Ảnh và Video -->
+  <input type="file" id="GalleryUploadInput" accept="image/*,video/*,.mp4,.mov,.avi,.mkv,.webm,.jpg,.jpeg,.png,.heic" multiple class="offscreen-input" />
+
+  <input type="file" id="CustomBgFileInput" accept="image/*" class="offscreen-input" />
+  <input type="file" id="AvatarFileInput" accept="image/*" class="offscreen-input" />
+
+  <!-- ==================== MÀN HÌNH ĐĂNG NHẬP ==================== -->
+  <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/75 backdrop-blur-md">
+    <div class="glass-card w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div class="header-gradient p-6 text-center text-white">
+        <div class="w-20 h-20 rounded-full bg-white p-1 mx-auto shadow-lg flex items-center justify-center overflow-hidden">
+          <img src="logo.jpg" alt="Logo THPT Đô Lương 3" class="w-full h-full object-contain rounded-full" />
+        </div>
+        <p class="text-[11px] font-bold tracking-widest uppercase text-red-100 mt-3">
+          SỞ GD&ĐT NGHỆ AN • THPT ĐÔ LƯƠNG 3
+        </p>
+        <h2 class="text-xl font-extrabold uppercase tracking-tight mt-0.5">
+          ĐĂNG NHẬP HỆ THỐNG NỀ NẾP
+        </h2>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl">
+          <button type="button" id="tabRoleMember" onclick="switchLoginRole('member')"
+                  class="py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-red-600 text-white shadow transition">
+            <i class="fa-solid fa-user-check mr-1"></i> Thành viên
+          </button>
+          <button type="button" id="tabRoleAdmin" onclick="switchLoginRole('admin')"
+                  class="py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-300 hover:bg-white/50 transition">
+            <i class="fa-solid fa-user-shield mr-1"></i> Quản trị
+          </button>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
+            TÊN TÀI KHOẢN <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="w-10 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
+              <i class="fa-solid fa-id-badge"></i>
+            </span>
+            <input type="text" id="loginUsername"
+                   onkeydown="if(event.key==='Enter') handleLogin()"
+                   placeholder="Nhập tên tài khoản..."
+                   class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-semibold text-sm" />
+          </div>
+        </div>
+
+        <div>
+          <label id="loginPasswordLabel" class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
+            MẬT KHẨU TÀI KHOẢN <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <span class="w-10 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+            <input type="password" id="loginPassword"
+                   onkeydown="if(event.key==='Enter') handleLogin()"
+                   placeholder="Nhập mật khẩu..."
+                   class="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-semibold text-sm" />
+            <button type="button" onclick="togglePassVisibility('loginPassword', 'passEyeIcon')" class="w-10 h-full absolute right-0 top-0 flex items-center justify-center text-slate-400 hover:text-slate-600">
+              <i id="passEyeIcon" class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 px-3.5 py-2.5 rounded-xl border border-slate-200/60 dark:border-slate-700">
+          <span class="flex items-center gap-1.5 font-medium">
+            <i class="fa-solid fa-shield-halved text-red-500"></i> Tự động lưu & nhận diện theo Thiết bị / IP
+          </span>
+          <span class="font-bold text-emerald-600 dark:text-emerald-400">Đã bật</span>
+        </div>
+
+        <p id="loginErrorMsg" class="hidden text-xs font-semibold text-red-600 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 rounded-xl px-3.5 py-2.5"></p>
+
+        <button type="button" id="btnLoginSubmit" onclick="handleLogin()"
+                class="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-[0.99] text-white font-extrabold text-sm uppercase tracking-wider shadow-lg shadow-red-600/25 flex items-center justify-center gap-2 transition">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>VÀO HỆ THỐNG</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PHẦN THÂN TRANG WEB ==================== -->
+  <div>
+    <!-- HEADER CHÍNH -->
+    <header class="header-gradient text-white shadow-md sticky top-0 z-40">
+      <div class="max-w-6xl mx-auto px-3 sm:px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-full bg-white p-0.5 flex items-center justify-center shadow-md overflow-hidden shrink-0">
+            <img src="logo.jpg" alt="Logo THPT Đô Lương 3" class="w-full h-full object-contain rounded-full" />
+          </div>
+          <div>
+            <p class="text-[10px] font-bold tracking-wider uppercase text-red-100">
+              SỞ GD&ĐT NGHỆ AN • THPT ĐÔ LƯƠNG 3
+            </p>
+            <h1 class="text-sm sm:text-base md:text-lg font-extrabold tracking-tight uppercase leading-tight">
+              HỆ THỐNG GHI LỖI VI PHẠM
+            </h1>
+          </div>
+        </div>
+
+        <div id="headerToolbarGroup" class="flex items-center gap-1.5 sm:gap-2">
+          <!-- Nút Bot Hướng dẫn kiểu Game -->
+          <button type="button" id="btnStartTutorial" onclick="startGameTutorial()" title="Hướng dẫn sử dụng từng bước"
+                  class="px-2.5 py-2 rounded-xl bg-yellow-400/20 hover:bg-yellow-400/30 active:scale-95 border border-yellow-300/40 flex items-center gap-1.5 text-xs font-bold text-yellow-200 transition">
+            <i class="fa-solid fa-robot text-yellow-300 text-sm"></i>
+            <span class="hidden md:inline">Hướng dẫn</span>
+          </button>
+
+          <!-- 1. Máy ảnh: Mở trực tiếp Camera chụp ảnh của thiết bị -->
+          <label for="NativePhotoCameraInput" id="btnToolCamera" onclick="directTargetColumn = null;" title="Mở Camera chụp ảnh của thiết bị"
+                 class="cursor-pointer px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
+            <i class="fa-solid fa-camera text-yellow-300 text-sm"></i>
+            <span class="hidden md:inline">Máy ảnh</span>
+          </label>
+
+          <!-- 2. Máy quay: Mở trực tiếp Camera quay video của thiết bị -->
+          <label for="NativeVideoCameraInput" id="btnToolVideo" onclick="directTargetColumn = null;" title="Mở Camera quay video của thiết bị"
+                 class="cursor-pointer px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
+            <i class="fa-solid fa-video text-emerald-300 text-sm"></i>
+            <span class="hidden md:inline">Máy quay</span>
+          </label>
+
+          <!-- 3. Tải lên: Mở Bộ sưu tập chọn cả Ảnh và Video -->
+          <label for="GalleryUploadInput" id="btnToolUpload" onclick="directTargetColumn = null;" title="Tải Ảnh hoặc Video từ Bộ sưu tập của máy"
+                 class="cursor-pointer px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
+            <i class="fa-solid fa-cloud-arrow-up text-sky-200 text-sm"></i>
+            <span class="hidden md:inline">Tải lên</span>
+          </label>
+
+          <!-- 4. Nền cá nhân -->
+          <button type="button" id="btnToolBg" onclick="openBgCustomizerModal()" title="Tùy chỉnh hình nền cá nhân"
+                  class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center justify-center transition">
+            <i class="fa-solid fa-palette text-pink-200 text-sm"></i>
+          </button>
+
+          <!-- 5. Sáng / Tối -->
+          <button type="button" id="btnToolTheme" onclick="toggleDarkMode()" title="Đổi giao diện Sáng / Tối"
+                  class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center justify-center transition">
+            <i id="themeToggleIcon" class="fa-solid fa-moon text-yellow-200 text-sm"></i>
+          </button>
+
+          <!-- Báo hàng đợi Offline -->
+          <button type="button" id="offlineQueueBadge" onclick="forceSyncAndCleanOfflineQueue()"
+                  class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-extrabold shadow-sm">
+            <i class="fa-solid fa-cloud-arrow-up animate-bounce"></i>
+            <span id="queueCountText">0 chờ gửi</span>
+          </button>
+
+          <!-- Hồ sơ Tài khoản Cá nhân & Đăng xuất -->
+          <div class="flex items-center gap-1.5 pl-1.5 border-l border-white/20">
+            <button type="button" id="btnUserProfile" onclick="openProfileModal()" title="Xem & chỉnh sửa Hồ sơ tài khoản"
+                    class="flex items-center gap-2 px-2 py-1 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 transition">
+              <img id="headerUserAvatar" src="logo.jpg" alt="Avatar" class="w-7 h-7 rounded-full object-cover bg-white border border-white/40" />
+              <div class="hidden sm:block text-left leading-tight">
+                <p id="currentUserDisplay" class="text-xs font-extrabold truncate max-w-[110px]">---</p>
+                <p id="currentRoleDisplay" class="text-[10px] text-red-100 uppercase">Hồ sơ</p>
+              </div>
+            </button>
+            <button type="button" onclick="logoutSystem()" title="Đăng xuất tài khoản"
+                    class="w-9 h-9 rounded-xl bg-black/20 hover:bg-black/30 flex items-center justify-center text-white text-xs transition">
+              <i class="fa-solid fa-power-off"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-6xl mx-auto px-4 mt-6 space-y-8">
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- ==================== CỘT 1: GHI LỖI CÁ NHÂN HỌC SINH ==================== -->
+        <section id="cardStudentViolation" class="glass-card rounded-2xl shadow-sm border border-slate-200/80 p-5 md:p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
+              <div class="flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-full bg-red-600 text-white font-bold text-sm flex items-center justify-center">1</span>
+                <h2 class="font-bold text-base md:text-lg">Ghi lỗi Cá nhân Học sinh</h2>
+              </div>
+              <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-300 border border-red-200 dark:border-red-800">
+                Cá nhân
+              </span>
+            </div>
+
+            <div class="mt-4 space-y-4">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
+                  HỌC SINH <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
+                    <i class="fa-solid fa-user-graduate"></i>
+                  </span>
+                  <input type="text" id="studentName" placeholder="Nhập họ và tên học sinh vi phạm"
+                         class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-semibold text-sm" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
+                  LỚP <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
+                    <i class="fa-solid fa-users-rectangle"></i>
+                  </span>
+                  <input type="text" id="studentClass" placeholder="Nhập lớp"
+                         onblur="normalizeClassInput(this)"
+                         class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-bold text-red-600 dark:text-red-400 uppercase placeholder:normal-case placeholder:font-normal placeholder:text-slate-400 text-sm" />
+                </div>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                    LỖI VI PHẠM <span class="text-red-500">*</span>
+                  </label>
+                  <button type="button" onclick="document.getElementById('studentViolations').value = ''"
+                          class="text-xs text-slate-400 hover:text-red-600 font-medium">
+                    Xóa nhanh
+                  </button>
+                </div>
+                <div class="relative">
+                  <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-red-500">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                  </span>
+                  <input type="text" id="studentViolations" placeholder="Nhập lỗi hoặc chạm nhanh bên dưới..."
+                         class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-medium text-sm" />
+                </div>
+
+                <p class="text-[11px] font-semibold text-slate-400 mt-2 mb-1.5">Chạm để điền nhanh lỗi thường gặp:</p>
+                <div class="flex flex-wrap gap-1.5">
+                  <button type="button" onclick="appendViolation('studentViolations', 'Không sơ vin')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Không sơ vin</button>
+                  <button type="button" onclick="appendViolation('studentViolations', 'Vào lớp muộn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Vào lớp muộn</button>
+                  <button type="button" onclick="appendViolation('studentViolations', 'Đi học muộn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Đi học muộn</button>
+                  <button type="button" onclick="appendViolation('studentViolations', 'Quần sai quy định')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Quần sai quy định</button>
+                  <button type="button" onclick="appendViolation('studentViolations', 'Không đeo thẻ')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Không đeo thẻ</button>
+                  <button type="button" onclick="appendViolation('studentViolations', 'Sai đồng phục')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Sai đồng phục</button>
+                  <button type="button" onclick="appendViolation('studentViolations', 'Sai giày/dép')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Sai giày/dép</button>
+                  <button type="button" onclick="appendViolation('studentViolations', 'Tóc sai quy định')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Tóc sai quy định</button>
+                </div>
+              </div>
+
+              <!-- ĐÍNH KÈM MINH CHỨNG -->
+              <div class="pt-3 border-t border-slate-100 dark:border-slate-700">
+                <label class="block text-sm font-semibold text-slate-800 dark:text-slate-100">
+                  Minh chứng vi phạm (Ảnh / Video)
+                </label>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-2.5">
+                  Tải tối đa 5 tệp (Ảnh hoặc Video). Mỗi tệp tối đa 100 MB.
+                </p>
+
+                <div id="studentEvidenceList" class="flex flex-wrap gap-2 mb-2.5"></div>
+
+                <label for="GalleryUploadInput" onclick="directTargetColumn = 'student';"
+                       class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 text-blue-600 dark:text-blue-400 font-semibold text-xs shadow-sm transition">
+                  <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                  <span>Thêm tệp</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-3.5 border-t border-slate-100 dark:border-slate-700">
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400 font-medium">Thành viên:</span>
+                <span class="recorder-name font-bold text-red-600 dark:text-red-400 truncate max-w-[115px]">---</span>
+              </div>
+              <div class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400 font-medium">Thời gian:</span>
+                <span class="live-date font-bold">--/--/----</span>
+              </div>
+            </div>
+
+            <button type="button" id="btnSubmitStudent" onclick="submitStudentViolation()"
+                    class="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-[0.99] text-white font-extrabold text-sm uppercase tracking-wider shadow-md shadow-red-600/20 flex items-center justify-center gap-2 transition">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>XONG</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- ==================== CỘT 2: GHI LỖI RIÊNG MỖI LỚP ==================== -->
+        <section id="cardClassViolation" class="glass-card rounded-2xl shadow-sm border border-slate-200/80 p-5 md:p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700">
+              <div class="flex items-center gap-2.5">
+                <span class="w-7 h-7 rounded-full bg-red-600 text-white font-bold text-sm flex items-center justify-center">2</span>
+                <h2 class="font-bold text-base md:text-lg">Ghi lỗi Riêng mỗi Lớp</h2>
+              </div>
+              <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                Tập thể lớp
+              </span>
+            </div>
+
+            <div class="mt-4 space-y-4">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">
+                  LỚP <span class="text-red-500">*</span>
+                </label>
+                <div class="relative">
+                  <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-slate-400">
+                    <i class="fa-solid fa-school"></i>
+                  </span>
+                  <input type="text" id="classOnlyName" placeholder="Nhập lớp vi phạm"
+                         onblur="normalizeClassInput(this)"
+                         class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-bold text-red-600 dark:text-red-400 uppercase placeholder:normal-case placeholder:font-normal placeholder:text-slate-400 text-sm" />
+                </div>
+
+                <p class="text-[11px] font-semibold text-slate-400 mt-2 mb-1.5">Chạm nhanh Khối:</p>
+                <div class="flex flex-wrap gap-1.5">
+                  <button type="button" onclick="setClassPrefix('12')" class="chip-btn px-3 py-1 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-bold text-xs border border-red-200 dark:border-red-800">Khối 12 (12...)</button>
+                  <button type="button" onclick="setClassPrefix('11')" class="chip-btn px-3 py-1 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-bold text-xs border border-red-200 dark:border-red-800">Khối 11 (11...)</button>
+                  <button type="button" onclick="setClassPrefix('10')" class="chip-btn px-3 py-1 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-bold text-xs border border-red-200 dark:border-red-800">Khối 10 (10...)</button>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                    LỖI VI PHẠM CỦA LỚP <span class="text-red-500">*</span>
+                  </label>
+                  <button type="button" onclick="document.getElementById('classOnlyViolations').value = ''"
+                          class="text-xs text-slate-400 hover:text-red-600 font-medium">
+                    Xóa nhanh
+                  </button>
+                </div>
+                <div class="relative">
+                  <span class="w-9 h-full absolute left-0 top-0 flex items-center justify-center text-red-500">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                  </span>
+                  <input type="text" id="classOnlyViolations" placeholder="Nhập lỗi tập thể lớp hoặc chạm nhanh bên dưới..."
+                         class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none font-medium text-sm" />
+                </div>
+
+                <p class="text-[11px] font-semibold text-slate-400 mt-2 mb-1.5">Chạm để điền nhanh lỗi tập thể lớp:</p>
+                <div class="flex flex-wrap gap-1.5">
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Sinh hoạt ồn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Sinh hoạt ồn</button>
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Vệ sinh bẩn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Vệ sinh bẩn</button>
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Vào lớp muộn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Vào lớp muộn</button>
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Chưa đổ rác')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Chưa đổ rác</button>
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Hành lang bẩn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Hành lang bẩn</button>
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Chưa tắt quạt/điện')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Chưa tắt quạt/điện</button>
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Xếp hàng chậm')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Xếp hàng chậm</button>
+                  <button type="button" onclick="appendViolation('classOnlyViolations', 'Bàn ghế lộn xộn')" class="chip-btn px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-red-50 hover:text-red-600 text-xs font-medium">+ Bàn ghế lộn xộn</button>
+                </div>
+              </div>
+
+              <!-- ĐÍNH KÈM MINH CHỨNG CỦA LỚP -->
+              <div class="pt-3 border-t border-slate-100 dark:border-slate-700">
+                <label class="block text-sm font-semibold text-slate-800 dark:text-slate-100">
+                  Minh chứng vi phạm của Lớp (Ảnh / Video)
+                </label>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 mb-2.5">
+                  Chụp/quay trực tiếp sẽ tự động lưu bản sao về máy khi bấm XONG.
+                </p>
+
+                <div id="classEvidenceList" class="flex flex-wrap gap-2 mb-2.5"></div>
+
+                <label for="GalleryUploadInput" onclick="directTargetColumn = 'class';"
+                       class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-slate-50 text-blue-600 dark:text-blue-400 font-semibold text-xs shadow-sm transition">
+                  <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                  <span>Thêm tệp</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-3.5 border-t border-slate-100 dark:border-slate-700">
+            <div class="grid grid-cols-2 gap-3 mb-3">
+              <div class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400 font-medium">Thành viên:</span>
+                <span class="recorder-name font-bold text-red-600 dark:text-red-400 truncate max-w-[115px]">---</span>
+              </div>
+              <div class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 flex items-center justify-between text-xs">
+                <span class="text-slate-500 dark:text-slate-400 font-medium">Thời gian:</span>
+                <span class="live-date font-bold">--/--/----</span>
+              </div>
+            </div>
+
+            <button type="button" id="btnSubmitClass" onclick="submitClassViolation()"
+                    class="w-full py-3.5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-[0.99] text-white font-extrabold text-sm uppercase tracking-wider shadow-md shadow-red-600/20 flex items-center justify-center gap-2 transition">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>XONG</span>
+            </button>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ==================== TỔNG HỢP SỐ LỖI ĐÃ NHẬP CỦA THÀNH VIÊN ==================== -->
+      <section id="memberSummarySection" class="glass-card rounded-2xl shadow-sm border border-slate-200/80 p-5 md:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-700">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center shadow-sm">
+              <i class="fa-solid fa-clipboard-check"></i>
+            </div>
+            <div>
+              <h2 class="font-extrabold text-sm sm:text-base uppercase text-slate-800 dark:text-slate-100">
+                TỔNG HỢP SỐ LỖI ĐÃ NHẬP CỦA BẠN
+              </h2>
+              <p class="text-xs text-slate-500 dark:text-slate-400">
+                Theo dõi các lỗi bạn đã ghi nhận và bấm "Báo sai sót" nếu cần chỉnh sửa
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span class="px-3.5 py-1.5 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 font-extrabold text-xs">
+              Đã nhập: <span id="myTotalEnteredCount">0</span> lỗi
+            </span>
+            <button type="button" onclick="fetchAdminDataFromCloud(true, false)"
+                    class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-xs font-bold flex items-center gap-1.5">
+              <i class="fa-solid fa-arrows-rotate"></i> Làm mới
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-4 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase font-bold">
+                <th class="py-3 px-3">TT</th>
+                <th class="py-3 px-3">Thời gian ghi nhận</th>
+                <th class="py-3 px-3">Phân loại</th>
+                <th class="py-3 px-3">Học sinh vi phạm</th>
+                <th class="py-3 px-3">Lớp</th>
+                <th class="py-3 px-3">Lỗi vi phạm</th>
+                <th class="py-3 px-3 text-right">Báo sai sót</th>
+              </tr>
+            </thead>
+            <tbody id="memberMyLogsTableBody" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ==================== GIAO DIỆN QUẢN TRỊ VIÊN ==================== -->
+      <section id="adminDashboardSection" class="hidden space-y-6">
+        <div class="glass-card rounded-2xl shadow-md border-2 border-red-500/30 p-5 md:p-6 space-y-6">
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shadow">
+                <i class="fa-solid fa-user-shield text-lg"></i>
+              </div>
+              <div>
+                <h2 class="font-extrabold text-base md:text-lg uppercase text-red-600 dark:text-red-400">
+                  TRUNG TÂM ĐIỀU HÀNH & GIÁM SÁT QUẢN TRỊ VIÊN
+                </h2>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="syncMembersConfigToCloud(true)"
+                      class="px-3.5 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 text-blue-700 dark:text-blue-300 font-bold text-xs flex items-center gap-1.5 border border-blue-200 dark:border-blue-800">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Đồng bộ TK lên Cloud
+              </button>
+              <button type="button" onclick="fetchAdminDataFromCloud(true, true)"
+                      class="px-3.5 py-2 rounded-xl bg-red-50 dark:bg-red-950/60 hover:bg-red-100 text-red-600 dark:text-red-300 font-bold text-xs flex items-center gap-1.5 border border-red-200 dark:border-red-800">
+                <i class="fa-solid fa-arrows-rotate"></i> Làm mới dữ liệu
+              </button>
+            </div>
+          </div>
+
+          <!-- 4 Ô THỐNG KÊ -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="p-3.5 rounded-2xl bg-red-50/80 dark:bg-red-950/40 border border-red-200 dark:border-red-800">
+              <p class="text-[11px] font-bold uppercase text-red-600 dark:text-red-300">Tổng số Thành viên</p>
+              <div class="flex items-baseline justify-between mt-1">
+                <span id="statTotalMembers" class="text-2xl font-extrabold text-red-700 dark:text-red-200">0</span>
+                <span id="statMaxLimitText" class="text-xs font-semibold text-slate-500">/ 30 tối đa</span>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
+              <p class="text-[11px] font-bold uppercase text-emerald-700 dark:text-emerald-300">Đã kích hoạt Thiết bị</p>
+              <div class="flex items-baseline justify-between mt-1">
+                <span id="statBoundMembers" class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-200">0</span>
+                <span class="text-xs font-semibold text-emerald-600">Đang khóa IP/TB</span>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800">
+              <p class="text-[11px] font-bold uppercase text-blue-700 dark:text-blue-300">Chưa đăng nhập</p>
+              <div class="flex items-baseline justify-between mt-1">
+                <span id="statUnboundMembers" class="text-2xl font-extrabold text-blue-700 dark:text-blue-200">0</span>
+                <span class="text-xs font-semibold text-blue-600">Tài khoản trống</span>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
+              <p class="text-[11px] font-bold uppercase text-amber-700 dark:text-amber-300">Tổng lỗi đã nhập</p>
+              <div class="flex items-baseline justify-between mt-1">
+                <span id="statTotalViolations" class="text-2xl font-extrabold text-amber-700 dark:text-amber-200">0</span>
+                <span class="text-xs font-semibold text-amber-600">Trên hệ thống</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- KHỐI 1: KIỂM SOÁT SỐ LƯỢNG & CẤP / XÓA TÀI KHOẢN THÀNH VIÊN -->
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <h3 class="font-extrabold text-sm sm:text-base flex items-center gap-2 text-slate-800 dark:text-slate-100">
+                <i class="fa-solid fa-users-gear text-red-600"></i>
+                <span>Kiểm soát Số lượng & Cấp / Xóa Tài khoản Thành viên</span>
+              </h3>
+
+              <div class="flex items-center gap-2 text-xs bg-white dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                <span class="text-slate-500 font-semibold">Giới hạn đội:</span>
+                <input type="number" id="maxMemberLimitInput" min="1" max="200" value="30"
+                       onchange="updateMaxMemberLimit(this.value)"
+                       class="w-16 px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 font-extrabold text-center text-red-600" />
+                <span class="text-slate-500 font-semibold">người</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700">
+              <div class="md:col-span-3">
+                <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                  Tên tài khoản đăng nhập <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="newMemberAccountInput"
+                       onkeydown="if(event.key==='Enter') addMemberAccount()"
+                       placeholder="Nhập mã TK (VD: minhthu)"
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-xs font-semibold outline-none focus:border-red-500" />
+              </div>
+
+              <div class="md:col-span-4">
+                <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                  Tên Thành Viên hiển thị <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="newMemberFullNameInput"
+                       onkeydown="if(event.key==='Enter') addMemberAccount()"
+                       placeholder="Nhập họ tên (VD: Minh Thư)"
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-xs font-semibold outline-none focus:border-red-500" />
+              </div>
+
+              <div class="md:col-span-3">
+                <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                  Mật khẩu riêng
+                </label>
+                <input type="text" id="newMemberPasswordInput"
+                       onkeydown="if(event.key==='Enter') addMemberAccount()"
+                       placeholder="Để trống = mặc định 123456"
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-xs font-semibold outline-none focus:border-red-500" />
+              </div>
+
+              <div class="md:col-span-2 flex items-end">
+                <button type="button" id="btnGrantMember" onclick="addMemberAccount()"
+                        class="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-red-600/20 transition">
+                  <i class="fa-solid fa-user-plus"></i>
+                  <span>Cấp Tài Khoản</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 max-h-[420px] overflow-y-auto">
+              <table class="w-full min-w-[820px] text-left border-collapse text-xs">
+                <thead class="sticky top-0 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase font-bold border-b border-slate-200 dark:border-slate-700 z-10">
+                  <tr>
+                    <th class="py-3.5 px-4 w-14">STT</th>
+                    <th class="py-3.5 px-4">Tài khoản</th>
+                    <th class="py-3.5 px-4">Tên Thành Viên</th>
+                    <th class="py-3.5 px-4">
+                      <div class="inline-flex items-center gap-1.5">
+                        <span>Mật khẩu</span>
+                        <button type="button" onclick="toggleAllAdminPasswords()"
+                                class="w-6 h-6 rounded-lg bg-slate-200/80 dark:bg-slate-700 hover:bg-red-100 dark:hover:bg-red-900/50 text-slate-600 dark:text-slate-300 hover:text-red-600 flex items-center justify-center transition"
+                                title="Ẩn / Hiện toàn bộ mật khẩu thành viên">
+                          <i id="headerPassEyeIcon" class="fa-regular fa-eye text-[11px]"></i>
+                        </button>
+                      </div>
+                    </th>
+                    <th class="py-3.5 px-4">Trạng thái Thiết bị & IP</th>
+                    <th class="py-3.5 px-4 text-center">Đã nhập</th>
+                    <th class="py-3.5 px-4 text-right">Thao tác quản lý</th>
+                  </tr>
+                </thead>
+                <tbody id="memberAccountsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- KHỐI 2: BẢNG GIÁM SÁT HOẠT ĐỘNG NHẬP LỖI -->
+          <div class="pt-2">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <h3 class="font-extrabold text-sm sm:text-base flex items-center gap-2">
+                <i class="fa-solid fa-list-check text-red-600"></i>
+                <span>Bảng Giám sát Hoạt động Nhập lỗi</span>
+              </h3>
+              <input type="text" id="adminFilterMember" oninput="renderAdminActivityTable()"
+                     placeholder="Tìm theo Tên Thành Viên, học sinh, lớp hoặc lỗi..."
+                     class="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 text-xs outline-none w-72" />
+            </div>
+
+            <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
+              <table class="w-full min-w-[760px] text-left border-collapse text-xs">
+                <thead>
+                  <tr class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase font-bold">
+                    <th class="py-3 px-4">TT</th>
+                    <th class="py-3 px-4">Ngày / Giờ chi tiết</th>
+                    <th class="py-3 px-4">Thành viên nhập</th>
+                    <th class="py-3 px-4">Phân loại</th>
+                    <th class="py-3 px-4">Học sinh vi phạm</th>
+                    <th class="py-3 px-4">Lớp</th>
+                    <th class="py-3 px-4">Lỗi vi phạm</th>
+                  </tr>
+                </thead>
+                <tbody id="adminActivityTableBody" class="divide-y divide-slate-200 dark:divide-slate-700"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- KHỐI 3: CẢNH BÁO THIẾT BỊ LẠ & BÁO CÁO SAI SÓT TỪ THÀNH VIÊN -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+            <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-extrabold text-xs sm:text-sm uppercase flex items-center gap-2 text-amber-800 dark:text-amber-300">
+                  <i class="fa-solid fa-mobile-screen-button"></i>
+                  <span>Cảnh báo Đăng nhập Thiết bị lạ</span>
+                </h3>
+                <button type="button" onclick="clearSecurityLogs()" class="text-xs text-amber-700 dark:text-amber-300 hover:underline font-bold">
+                  Xóa tất cả
+                </button>
+              </div>
+              <div id="deviceSecurityLogsBox" class="max-h-56 overflow-y-auto space-y-2 text-xs"></div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800">
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-extrabold text-xs sm:text-sm uppercase flex items-center gap-2 text-rose-800 dark:text-rose-300">
+                  <i class="fa-solid fa-flag"></i>
+                  <span>Báo cáo sai sót từ Thành viên</span>
+                </h3>
+                <button type="button" onclick="clearMistakeReports()" class="text-xs text-rose-700 dark:text-rose-300 hover:underline font-bold">
+                  Xóa tất cả
+                </button>
+              </div>
+              <div id="mistakeReportsBox" class="max-h-56 overflow-y-auto space-y-2 text-xs"></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==================== FOOTER TÁC GIẢ ==================== -->
+  <footer class="mt-12 py-5 border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+      <div class="flex items-center gap-2 font-semibold text-slate-700 dark:text-slate-300">
+        <img src="logo.jpg" alt="Logo" class="w-5 h-5 rounded-full object-contain" />
+        <span>Đội Nề Nếp • Trường THPT Đô Lương 3</span>
+      </div>
+      <p class="font-medium text-center sm:text-right">
+        Trang web này được phát triển và thực hiện bởi <span class="font-extrabold text-red-600 dark:text-red-400">Nguyễn Phúc Nguyên</span>
+      </p>
+    </div>
+  </footer>
+
+  <!-- ==================== MODAL HỒ SƠ CÁ NHÂN ==================== -->
+  <div id="profileModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div class="header-gradient px-5 py-4 text-white flex items-center justify-between">
+        <h3 class="font-extrabold text-sm uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-user-pen"></i> Hồ sơ Tài khoản Cá nhân
+        </h3>
+        <button type="button" onclick="closeProfileModal()" class="text-white/80 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <div class="flex flex-col items-center">
+          <label for="AvatarFileInput" class="relative group cursor-pointer">
+            <img id="profileAvatarPreview" src="logo.jpg" alt="Avatar"
+                 class="w-24 h-24 rounded-full object-cover border-4 border-red-500/30 shadow-md bg-white" />
+            <div class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center absolute bottom-0 right-0 shadow border-2 border-white">
+              <i class="fa-solid fa-camera text-xs"></i>
+            </div>
+          </label>
+          <label for="AvatarFileInput" class="cursor-pointer mt-2 text-xs font-bold text-red-600 dark:text-red-400 hover:underline">
+            Thay đổi ảnh đại diện cá nhân
+          </label>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">
+            TÊN TÀI KHOẢN ĐĂNG NHẬP
+          </label>
+          <input type="text" id="profileUsernameInput"
+                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 text-sm font-bold outline-none focus:border-red-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">
+            TÊN THÀNH VIÊN (HIỂN THỊ KHI NHẬP LỖI)
+          </label>
+          <input type="text" id="profileFullNameInput" placeholder="Nhập họ và tên hiển thị..."
+                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 text-sm font-semibold outline-none focus:border-red-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">
+            MẬT KHẨU CÁ NHÂN
+          </label>
+          <div class="relative">
+            <input type="password" id="profilePasswordInput"
+                   class="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-800 text-sm font-semibold outline-none focus:border-red-500" />
+            <button type="button" onclick="togglePassVisibility('profilePasswordInput', 'profileEyeIcon')"
+                    class="w-10 h-full absolute right-0 top-0 flex items-center justify-center text-slate-400">
+              <i id="profileEyeIcon" class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="button" id="btnSaveProfile" onclick="saveUserProfile()"
+                class="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs uppercase tracking-wider shadow-md flex items-center justify-center gap-2">
+          <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi Hồ sơ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== HỆ THỐNG BOT HƯỚNG DẪN TỪNG BƯỚC KIỂU GAME ==================== -->
+  <div id="tutorialOverlay" class="fixed inset-0 z-[85] hidden">
+    <div id="tutorialSpotlight"></div>
+    <div id="tutorialBotCard" class="w-[92%] max-w-sm glass-card rounded-2xl shadow-2xl border-2 border-yellow-400 p-4 text-slate-800 dark:text-slate-100">
+      <div class="flex items-start gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-600 to-amber-500 text-white flex items-center justify-center shadow-md shrink-0 text-xl">
+          <i class="fa-solid fa-robot animate-bounce"></i>
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-red-600 dark:text-yellow-400">
+              Bot Trợ Lý Đội Nề Nếp
+            </span>
+            <span id="tutorialStepBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200">
+              Bước 1/5
+            </span>
+          </div>
+          <h4 id="tutorialStepTitle" class="font-extrabold text-sm mt-1">Tiêu đề bước</h4>
+          <p id="tutorialStepDesc" class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+            Nội dung hướng dẫn chi tiết từng bước...
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-200 dark:border-slate-700">
+        <button type="button" onclick="endGameTutorial()" class="text-xs font-bold text-slate-400 hover:text-red-600">
+          Bỏ qua hướng dẫn
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" id="btnTutPrev" onclick="prevTutorialStep()"
+                  class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold">
+            Quay lại
+          </button>
+          <button type="button" id="btnTutNext" onclick="nextTutorialStep()"
+                  class="px-4 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-extrabold shadow">
+            Tiếp theo <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CHỌN NƠI GÁN MINH CHỨNG -->
+  <div id="assignEvidenceModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div class="header-gradient px-5 py-4 text-white flex items-center justify-between">
+        <h3 class="font-extrabold text-sm uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-photo-film"></i> Chọn mục gán Minh chứng
+        </h3>
+        <button type="button" onclick="closeAssignModal()" class="text-white/80 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div class="p-5 space-y-4">
+        <p id="pendingFilesSummary" class="text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-3.5 py-2.5 rounded-xl"></p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">
+          Bạn muốn gán ảnh/video minh chứng vừa chọn vào mục nào dưới đây?
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button type="button" onclick="confirmAssignEvidence('student')"
+                  class="p-4 rounded-2xl border-2 border-red-200 dark:border-red-800 hover:border-red-600 bg-red-50/60 dark:bg-red-950/40 flex flex-col items-center text-center gap-2 transition">
+            <div class="w-11 h-11 rounded-full bg-red-600 text-white flex items-center justify-center text-lg shadow">
+              <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <span class="font-extrabold text-xs uppercase text-red-700 dark:text-red-300">1. Lỗi Cá nhân Học sinh</span>
+          </button>
+
+          <button type="button" onclick="confirmAssignEvidence('class')"
+                  class="p-4 rounded-2xl border-2 border-amber-200 dark:border-amber-800 hover:border-amber-600 bg-amber-50/60 dark:bg-amber-950/40 flex flex-col items-center text-center gap-2 transition">
+            <div class="w-11 h-11 rounded-full bg-amber-600 text-white flex items-center justify-center text-lg shadow">
+              <i class="fa-solid fa-school"></i>
+            </div>
+            <span class="font-extrabold text-xs uppercase text-amber-700 dark:text-amber-300">2. Lỗi Riêng mỗi Lớp</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL TÙY CHỈNH NỀN -->
+  <div id="bgCustomizerModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="glass-card w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div class="header-gradient px-5 py-4 text-white flex items-center justify-between">
+        <h3 class="font-extrabold text-sm uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-palette"></i> Thay đổi Nền Website Cá nhân
+        </h3>
+        <button type="button" onclick="closeBgCustomizerModal()" class="text-white/80 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div class="p-5 space-y-4">
+        <p class="text-xs font-semibold text-slate-600 dark:text-slate-300">Chọn nhanh chủ đề nền:</p>
+        <div class="grid grid-cols-3 gap-2.5 text-xs font-bold">
+          <button type="button" onclick="applyCustomBackground('default')" class="p-3 rounded-xl border border-slate-200 bg-[#f4f6fb] text-slate-800">Mặc định</button>
+          <button type="button" onclick="applyCustomBackground('linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%)')" class="p-3 rounded-xl border border-rose-200 bg-rose-100 text-rose-900">Hồng Phấn</button>
+          <button type="button" onclick="applyCustomBackground('linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)')" class="p-3 rounded-xl border border-blue-200 bg-blue-100 text-blue-900">Xanh Dương</button>
+          <button type="button" onclick="applyCustomBackground('linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)')" class="p-3 rounded-xl border border-emerald-200 bg-emerald-100 text-emerald-900">Xanh Ngọc</button>
+          <button type="button" onclick="applyCustomBackground('linear-gradient(135deg, #fefce8 0%, #fef3c7 100%)')" class="p-3 rounded-xl border border-amber-200 bg-amber-100 text-amber-900">Vàng Nắng</button>
+          <button type="button" onclick="applyCustomBackground('linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)')" class="p-3 rounded-xl border border-indigo-500 bg-indigo-950 text-white">Đêm Sao</button>
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 dark:border-slate-700">
+          <p class="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">Hoặc tải ảnh nền cá nhân từ thiết bị của bạn:</p>
+          <label for="CustomBgFileInput"
+                 class="cursor-pointer w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 font-bold text-xs flex items-center justify-center gap-2">
+            <i class="fa-regular fa-image text-red-500"></i> Chọn ảnh từ máy làm hình nền
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST THÔNG BÁO -->
+  <div id="toastBox" class="fixed bottom-5 right-5 z-50 hidden items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg bg-slate-900 text-white text-xs sm:text-sm font-semibold max-w-sm">
+    <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="toastText">Đã đồng bộ!</span>
+  </div>
+
+  <script id="mainAppScript">
+    /*************************************************************************
+     * 1. KHỞI TẠO BIẾN TRẠNG THÁI & BẢO MẬT MÃ NGUỒN
+     *************************************************************************/
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSTYrnxaOFaw1-nUEzYV2zL1DAxzhoRCrSXSgKlZYgtEdTIuwoUkK5868d89CLoV-Mfg/exec';
+    const IDB_NAME = 'DL3_Offline_Database';
+    const IDB_STORE = 'offline_queue';
+
+    let cachedPublicIP = localStorage.getItem('dl3_cached_ip') || '';
+    let isSyncingOffline = false;
+    let lastSyncStartTime = 0;
+    let selectedLoginRole = 'member';
+    let currentUserSession = null;
+    let lastMemberModifyTimestamp = 0;
+    let pendingAvatarDataUrl = '';
+    let currentTutorialIndex = 0;
+
+    let studentEvidenceFiles = [];
+    let classEvidenceFiles = [];
+    let pendingPickedFiles = [];
+    let directTargetColumn = null;
+
+    const revealedMemberPasswords = new Set();
+    let revealAllMemberPasswords = false;
+
+    // Chặn phím tắt xem mã nguồn (Ctrl+U, F12, Ctrl+Shift+I/J/C)
+    document.addEventListener('keydown', function(e) {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && (e.key === 'u' || e.key === 'U')) ||
+        (e.ctrlKey && e.shiftKey && ['I', 'i', 'J', 'j', 'C', 'c'].includes(e.key))
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    function computeSecurityDigest(str) {
+      const s = String(str || '').normalize('NFC');
+      const L = s.length;
+      let s1 = 0, s2 = 0, s3 = 0;
+      for (let i = 0; i < L; i++) {
+        const c = s.charCodeAt(i);
+        s1 += c * (i + 1);
+        s2 += c * (L - i);
+        s3 = (s3 * 31 + c) % 10007;
+      }
+      return `${L}-${s1}-${s2}-${s3}`;
+    }
+
+    // Chữ ký mã nguồn chuẩn hóa: Giữ nguyên phiên khi tải lại trang (F5),
+    // nhưng tự động đăng xuất 100% tài khoản khi trang web có bản cập nhật code mới
+    const CURRENT_WEB_BUILD_SIGNATURE = (function() {
+      const rawScript = (document.getElementById('mainAppScript')?.textContent || '').replace(/\s+/g, '');
+      return 'BUILD_V7_' + computeSecurityDigest(rawScript);
+    })();
+
+    const ADMIN_SECURITY_DIGESTS = {
+      allowedUsers: ['22-316747-95712-7387', '7-2629-3027-5838'],
+      passDigest: '15-9101-10211-5612'
+    };
+
+    /*************************************************************************
+     * 2. NHẬN DIỆN THIẾT BỊ VẬT LÝ & ĐỊA CHỈ IP
+     *************************************************************************/
+    async function fetchPublicIP() {
+      try {
+        const controller = new AbortController();
+        const t = setTimeout(() => controller.abort(), 3500);
+        const res = await fetch('https://api.ipify.org?format=json', { signal: controller.signal });
+        clearTimeout(t);
+        const data = await res.json();
+        if (data && data.ip) {
+          cachedPublicIP = data.ip;
+          localStorage.setItem('dl3_cached_ip', cachedPublicIP);
+          return cachedPublicIP;
+        }
+      } catch (e) {}
+      return cachedPublicIP || 'IP-Local';
+    }
+    fetchPublicIP();
+
+    function getHardwareSignature() {
+      const ua = navigator.userAgent || '';
+      let os = 'Other';
+      if (/iPhone|iPad|iPod/i.test(ua)) os = 'iOS';
+      else if (/Android/i.test(ua)) os = 'Android';
+      else if (/Windows/i.test(ua)) os = 'Windows';
+      else if (/Macintosh|Mac OS/i.test(ua)) os = 'MacOS';
+
+      const w = Math.min(window.screen.width || 0, window.screen.height || 0);
+      const h = Math.max(window.screen.width || 0, window.screen.height || 0);
+      const dpr = Math.round((window.devicePixelRatio || 1) * 10);
+      return `${os}_${w}x${h}_${dpr}`;
+    }
+
+    function getDeviceReadableName(ipAddr) {
+      const ua = navigator.userAgent || '';
+      let os = 'Thiết bị';
+      if (/iPhone|iPad|iPod/i.test(ua)) os = 'iPhone/iPad (iOS)';
+      else if (/Android/i.test(ua)) os = 'Android';
+      else if (/Windows/i.test(ua)) os = 'Windows PC';
+      else if (/Macintosh|Mac OS/i.test(ua)) os = 'MacBook/iMac';
+      return `${os} • IP: ${ipAddr || cachedPublicIP || 'Đang cập nhật'}`;
+    }
+
+    function isSameDeviceOrIP(memberObj, currentHwSig, currentIP) {
+      if (!memberObj.hwSig && !memberObj.boundIP) return true;
+      if (memberObj.hwSig && memberObj.hwSig === currentHwSig) return true;
+      const savedOS = (memberObj.hwSig || '').split('_')[0];
+      const currentOS = (currentHwSig || '').split('_')[0];
+      if (memberObj.boundIP && currentIP && memberObj.boundIP === currentIP && savedOS === currentOS) {
+        return true;
+      }
+      return false;
+    }
+
+    /*************************************************************************
+     * 3. QUẢN LÝ DANH SÁCH THÀNH VIÊN TRÊN HỆ THỐNG
+     *************************************************************************/
+    function normalizeMemberList(rawList, legacyBindings = {}) {
+      if (!Array.isArray(rawList)) return [];
+      return rawList.map((item, idx) => {
+        if (typeof item === 'string') {
+          const cleanUser = item.trim();
+          const legacyBind = legacyBindings[cleanUser.toLowerCase()] || {};
+          return {
+            id: 'MEM_' + cleanUser.toLowerCase(),
+            username: cleanUser,
+            fullName: cleanUser,
+            password: '123456',
+            avatar: '',
+            hwSig: legacyBind.hwSig || '',
+            boundIP: legacyBind.boundIP || '',
+            deviceName: legacyBind.deviceName || ''
+          };
+        }
+        return {
+          id: item.id || ('MEM_' + (item.username || idx)),
+          username: String(item.username || '').trim(),
+          fullName: String(item.fullName || item.username || '').trim(),
+          password: String(item.password || '123456'),
+          avatar: item.avatar || '',
+          hwSig: item.hwSig || '',
+          boundIP: item.boundIP || '',
+          deviceName: item.deviceName || ''
+        };
+      });
+    }
+
+    function getMemberAccounts() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('dl3_members_v4') || 'null');
+        if (Array.isArray(saved)) return normalizeMemberList(saved);
+      } catch (e) {}
+      return [];
+    }
+
+    function saveMemberAccounts(list) {
+      localStorage.setItem('dl3_members_v4', JSON.stringify(list));
+    }
+
+    function resolveMemberDisplayName(rawRecorder) {
+      if (!rawRecorder) return '';
+      const list = getMemberAccounts();
+      const found = list.find(
+        m => m.username.toLowerCase() === String(rawRecorder).trim().toLowerCase() ||
+             m.fullName.toLowerCase() === String(rawRecorder).trim().toLowerCase()
+      );
+      return found ? found.fullName : rawRecorder;
+    }
+
+    /*************************************************************************
+     * 4. KHO LƯU TRỮ OFFLINE INDEXED-DB & CHỐNG TRÙNG LẶP / CHỐNG KẸT HÀNG ĐỢI
+     *************************************************************************/
+    function openOfflineDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(IDB_NAME, 1);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(IDB_STORE)) {
+            db.createObjectStore(IDB_STORE, { keyPath: 'id', autoIncrement: true });
+          }
+        };
+        req.onsuccess = (e) => resolve(e.target.result);
+        req.onerror = (e) => reject(e.target.error);
+      });
+    }
+
+    function makeViolationSignatureKey(p) {
+      if (!p) return '';
+      const t = String(p.thoiGianChiTiet || '').trim().toLowerCase();
+      const l = String(p.lop || '').trim().toLowerCase();
+      const h = String(p.hoVaTen || '').trim().toLowerCase();
+      const v = String(p.loiViPham || '').trim().toLowerCase();
+      return `${t}|${l}|${h}|${v}`;
+    }
+
+    function getSentRequestIds() {
+      try {
+        return new Set(JSON.parse(localStorage.getItem('dl3_sent_req_ids') || '[]'));
+      } catch (e) {
+        return new Set();
+      }
+    }
+
+    function markRequestIdAsSent(reqId, sigKey) {
+      try {
+        const arr = JSON.parse(localStorage.getItem('dl3_sent_req_ids') || '[]');
+        if (reqId && !arr.includes(reqId)) arr.unshift(reqId);
+        if (sigKey && !arr.includes(sigKey)) arr.unshift(sigKey);
+        localStorage.setItem('dl3_sent_req_ids', JSON.stringify(arr.slice(0, 500)));
+      } catch (e) {}
+    }
+
+    function isAlreadyOnSheetOrSent(payload, cloudLogs) {
+      if (!payload) return true;
+      const sentSet = getSentRequestIds();
+      const sigKey = makeViolationSignatureKey(payload);
+      if (payload.requestId && sentSet.has(payload.requestId)) return true;
+      if (sigKey && sentSet.has(sigKey)) return true;
+
+      const logsToCheck = Array.isArray(cloudLogs) ? cloudLogs : getLocalActivityLogs();
+      return logsToCheck.some(row => {
+        if (row.isLocalPending) return false;
+        return makeViolationSignatureKey(row) === sigKey;
+      });
+    }
+
+    async function addToOfflineDB(payload) {
+      try {
+        const currentItems = await getAllOfflineDB();
+        const newSig = makeViolationSignatureKey(payload);
+        const alreadyQueued = currentItems.some(item =>
+          (item.payload?.requestId && item.payload.requestId === payload.requestId) ||
+          makeViolationSignatureKey(item.payload) === newSig
+        );
+        if (alreadyQueued) {
+          await refreshOfflineBadge();
+          return;
+        }
+
+        const db = await openOfflineDB();
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction(IDB_STORE, 'readwrite');
+          tx.objectStore(IDB_STORE).add({ payload, retryCount: 0, createdAt: Date.now() });
+          tx.oncomplete = resolve;
+          tx.onerror = reject;
+        });
+        await refreshOfflineBadge();
+      } catch (err) {}
+    }
+
+    async function updateOfflineDBItemRetry(id, itemObj) {
+      try {
+        const db = await openOfflineDB();
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction(IDB_STORE, 'readwrite');
+          tx.objectStore(IDB_STORE).put(itemObj);
+          tx.oncomplete = resolve;
+          tx.onerror = reject;
+        });
+      } catch (err) {}
+    }
+
+    async function getAllOfflineDB() {
+      try {
+        const db = await openOfflineDB();
+        return await new Promise((resolve) => {
+          const tx = db.transaction(IDB_STORE, 'readonly');
+          const req = tx.objectStore(IDB_STORE).getAll();
+          req.onsuccess = () => resolve(req.result || []);
+          req.onerror = () => resolve([]);
+        });
+      } catch (err) {
+        return [];
+      }
+    }
+
+    async function deleteFromOfflineDB(id) {
+      try {
+        const db = await openOfflineDB();
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction(IDB_STORE, 'readwrite');
+          tx.objectStore(IDB_STORE).delete(id);
+          tx.oncomplete = resolve;
+          tx.onerror = reject;
+        });
+        await refreshOfflineBadge();
+      } catch (err) {}
+    }
+
+    async function refreshOfflineBadge() {
+      const items = await getAllOfflineDB();
+      const badge = document.getElementById('offlineQueueBadge');
+      const countText = document.getElementById('queueCountText');
+      if (items.length > 0) {
+        badge.classList.remove('hidden');
+        badge.classList.add('flex');
+        countText.textContent = `${items.length} chờ gửi`;
+      } else {
+        badge.classList.add('hidden');
+        badge.classList.remove('flex');
+      }
+    }
+
+    window.addEventListener('online', () => {
+      setTimeout(() => syncOfflineQueue(true), 800);
+    });
+    refreshOfflineBadge();
+
+    /*************************************************************************
+     * 5. ĐỒNG BỘ VỚI GOOGLE SHEET & XỬ LÝ TRIỆT ĐỂ KẸT / TRÙNG HÀNG ĐỢI OFFLINE
+     *************************************************************************/
+    async function sendDirectToSheetVerified(payload) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          redirect: 'follow',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        const text = await response.text();
+        try {
+          const json = JSON.parse(text);
+          if (json && (json.status === 'success' || json.status === 'ok' || json.status === 'synced' || json.status === 'logged')) {
+            return { ok: true, data: json };
+          }
+          return { ok: false, error: (json && json.message) || 'Lỗi phản hồi' };
+        } catch (parseErr) {
+          if (response.ok) return { ok: true, data: {} };
+          return { ok: false, error: 'Phản hồi không hợp lệ' };
+        }
+      } catch (err) {
+        clearTimeout(timeoutId);
+        return { ok: false, error: err.message || 'Mất kết nối mạng', networkError: true };
+      }
+    }
+
+    async function syncOfflineQueue(showNotification = false) {
+      if (isSyncingOffline && (Date.now() - lastSyncStartTime < 40000)) return;
+      if (!navigator.onLine) {
+        if (showNotification) showToast('Điện thoại đang không có mạng!', false);
+        return;
+      }
+
+      const initialItems = await getAllOfflineDB();
+      if (initialItems.length === 0) {
+        await refreshOfflineBadge();
+        return;
+      }
+
+      isSyncingOffline = true;
+      lastSyncStartTime = Date.now();
+
+      try {
+        if (showNotification) {
+          showToast(`Đang kiểm tra & đồng bộ ${initialItems.length} lỗi chờ gửi...`);
+        }
+
+        let latestSheetLogs = [];
+        const cloudCheck = await sendDirectToSheetVerified({ action: 'getAdminData' });
+        if (cloudCheck.ok && cloudCheck.data && Array.isArray(cloudCheck.data.logs)) {
+          latestSheetLogs = cloudCheck.data.logs;
+          localStorage.setItem('dl3_activity_logs', JSON.stringify(latestSheetLogs));
+        }
+
+        const queueItems = await getAllOfflineDB();
+        const seenSignaturesInBatch = new Set();
+        let syncedCount = 0;
+
+        for (const item of queueItems) {
+          const p = item.payload;
+          if (!p) {
+            await deleteFromOfflineDB(item.id);
+            continue;
+          }
+
+          const sigKey = makeViolationSignatureKey(p);
+
+          if (seenSignaturesInBatch.has(sigKey) || isAlreadyOnSheetOrSent(p, latestSheetLogs)) {
+            markRequestIdAsSent(p.requestId, sigKey);
+            await deleteFromOfflineDB(item.id);
+            syncedCount++;
+            continue;
+          }
+          seenSignaturesInBatch.add(sigKey);
+
+          const res = await sendDirectToSheetVerified(p);
+          if (res.ok) {
+            markRequestIdAsSent(p.requestId, sigKey);
+            await deleteFromOfflineDB(item.id);
+            syncedCount++;
+            continue;
+          }
+
+          const verifyRes = await sendDirectToSheetVerified({ action: 'getAdminData' });
+          if (verifyRes.ok && verifyRes.data && Array.isArray(verifyRes.data.logs)) {
+            latestSheetLogs = verifyRes.data.logs;
+            localStorage.setItem('dl3_activity_logs', JSON.stringify(latestSheetLogs));
+            if (isAlreadyOnSheetOrSent(p, latestSheetLogs)) {
+              markRequestIdAsSent(p.requestId, sigKey);
+              await deleteFromOfflineDB(item.id);
+              syncedCount++;
+              continue;
+            }
+          }
+
+          item.retryCount = (item.retryCount || 0) + 1;
+          if (item.retryCount >= 2 && Array.isArray(p.evidenceFiles) && p.evidenceFiles.length > 0) {
+            const lightPayload = { ...p, evidenceFiles: [] };
+            const lightRes = await sendDirectToSheetVerified(lightPayload);
+            if (lightRes.ok) {
+              markRequestIdAsSent(p.requestId, sigKey);
+              await deleteFromOfflineDB(item.id);
+              syncedCount++;
+              continue;
+            }
+          }
+
+          if (item.retryCount >= 5) {
+            await deleteFromOfflineDB(item.id);
+          } else {
+            await updateOfflineDBItemRetry(item.id, item);
+          }
+        }
+
+        await refreshOfflineBadge();
+        if (syncedCount > 0) {
+          showToast(`Đã đồng bộ xong ${syncedCount} lỗi lên hệ thống!`);
+          await fetchAdminDataFromCloud(false, false);
+        }
+      } finally {
+        isSyncingOffline = false;
+      }
+    }
+
+    async function forceSyncAndCleanOfflineQueue() {
+      await syncOfflineQueue(true);
+    }
+
+    /*************************************************************************
+     * 6. ĐĂNG NHẬP, LƯU PHIÊN CỐ ĐỊNH & ĐỒNG BỘ TÀI KHOẢN
+     *************************************************************************/
+    function getMaxMemberLimit() {
+      return parseInt(localStorage.getItem('dl3_max_member_limit') || '30', 10);
+    }
+
+    async function updateMaxMemberLimit(val) {
+      const num = Math.max(1, parseInt(val || '30', 10));
+      localStorage.setItem('dl3_max_member_limit', String(num));
+      renderMemberAccountsAdmin();
+      await syncMembersConfigToCloud(false);
+      showToast(`Đã đặt giới hạn tối đa ${num} thành viên!`);
+    }
+
+    function getSecurityLogs() {
+      try {
+        return JSON.parse(localStorage.getItem('dl3_security_logs') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function addSecurityLog(entry) {
+      const logs = getSecurityLogs();
+      logs.unshift(entry);
+      localStorage.setItem('dl3_security_logs', JSON.stringify(logs.slice(0, 200)));
+      sendDirectToSheetVerified({
+        action: 'deviceAlert',
+        thoiGianChiTiet: getFullDateTimeString(),
+        taiKhoan: entry.username,
+        thietBi: entry.device,
+        noiDungCanhBao: entry.message
+      });
+    }
+
+    function clearSecurityLogs() {
+      localStorage.removeItem('dl3_security_logs');
+      renderSecurityLogsAdmin();
+      showToast('Đã xóa lịch sử cảnh báo thiết bị!');
+    }
+
+    async function syncMembersConfigToCloud(showMsg = false) {
+      lastMemberModifyTimestamp = Date.now();
+      let currentMembers = getMemberAccounts();
+
+      if (currentMembers.length === 0 && navigator.onLine) {
+        const checkCloud = await sendDirectToSheetVerified({ action: 'getAdminData' });
+        if (checkCloud.ok && checkCloud.data && Array.isArray(checkCloud.data.members) && checkCloud.data.members.length > 0) {
+          currentMembers = normalizeMemberList(checkCloud.data.members, checkCloud.data.bindings || {});
+          saveMemberAccounts(currentMembers);
+          renderMemberAccountsAdmin();
+          if (showMsg) {
+            showToast(`Đã khôi phục & đồng bộ ${currentMembers.length} tài khoản từ Google Sheet!`);
+          }
+          return checkCloud;
+        }
+      }
+
+      const res = await sendDirectToSheetVerified({
+        action: 'syncMembers',
+        members: currentMembers,
+        maxLimit: getMaxMemberLimit()
+      });
+      if (showMsg) {
+        if (res.ok) showToast(`Đã đồng bộ ${currentMembers.length} tài khoản lên Cloud thành công!`);
+        else showToast('Chưa đồng bộ được lên Cloud!', false);
+      }
+      return res;
+    }
+
+    function switchLoginRole(role) {
+      selectedLoginRole = role;
+      const btnMember = document.getElementById('tabRoleMember');
+      const btnAdmin = document.getElementById('tabRoleAdmin');
+      const passLabel = document.getElementById('loginPasswordLabel');
+      document.getElementById('loginErrorMsg').classList.add('hidden');
+
+      if (role === 'admin') {
+        btnAdmin.className = 'py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-red-600 text-white shadow transition';
+        btnMember.className = 'py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-300 hover:bg-white/50 transition';
+        passLabel.innerHTML = 'MẬT KHẨU QUẢN TRỊ <span class="text-red-500">*</span>';
+      } else {
+        btnMember.className = 'py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider bg-red-600 text-white shadow transition';
+        btnAdmin.className = 'py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider text-slate-600 dark:text-slate-300 hover:bg-white/50 transition';
+        passLabel.innerHTML = 'MẬT KHẨU TÀI KHOẢN <span class="text-red-500">*</span>';
+      }
+    }
+
+    function togglePassVisibility(inputId, iconId) {
+      const passInput = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        icon.className = 'fa-regular fa-eye-slash';
+      } else {
+        passInput.type = 'password';
+        icon.className = 'fa-regular fa-eye';
+      }
+    }
+
+    async function handleLogin() {
+      const rawUser = document.getElementById('loginUsername').value.trim();
+      const rawPass = document.getElementById('loginPassword').value.trim();
+      const errEl = document.getElementById('loginErrorMsg');
+      const btnSubmit = document.getElementById('btnLoginSubmit');
+      errEl.classList.add('hidden');
+
+      if (!rawUser || !rawPass) {
+        errEl.textContent = 'Vui lòng nhập đầy đủ Tên tài khoản và Mật khẩu!';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>ĐANG ĐĂNG NHẬP...</span>';
+
+      const myHwSig = getHardwareSignature();
+      const myIP = await fetchPublicIP();
+      const myDeviceDesc = getDeviceReadableName(myIP);
+
+      if (selectedLoginRole === 'admin') {
+        const userDigest = computeSecurityDigest(rawUser.toLowerCase());
+        const passDigest = computeSecurityDigest(rawPass);
+
+        const isValidAdmin =
+          ADMIN_SECURITY_DIGESTS.allowedUsers.includes(userDigest) &&
+          passDigest === ADMIN_SECURITY_DIGESTS.passDigest;
+
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>VÀO HỆ THỐNG</span>';
+
+        if (!isValidAdmin) {
+          errEl.textContent = 'Tên tài khoản hoặc mật khẩu Quản trị không chính xác!';
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        currentUserSession = {
+          id: 'ADMIN_MASTER',
+          username: rawUser,
+          fullName: 'BAN AN NINH TRƯỜNG HỌC',
+          password: '',
+          avatar: localStorage.getItem('dl3_admin_avatar') || 'logo.jpg',
+          role: 'admin',
+          hwSig: myHwSig,
+          boundIP: myIP,
+          deviceName: myDeviceDesc,
+          buildSignature: CURRENT_WEB_BUILD_SIGNATURE
+        };
+      } else {
+        if (navigator.onLine) {
+          await fetchAdminDataFromCloud(false, true);
+        }
+
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>VÀO HỆ THỐNG</span>';
+
+        const members = getMemberAccounts();
+        const memberIdx = members.findIndex(m => m.username.toLowerCase() === rawUser.toLowerCase());
+
+        if (memberIdx === -1) {
+          errEl.textContent = 'Tài khoản thành viên này chưa được Quản trị viên cấp hoặc đã bị thu hồi!';
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        const matchedMember = members[memberIdx];
+
+        if (matchedMember.password !== rawPass) {
+          errEl.textContent = 'Mật khẩu không chính xác! Vui lòng kiểm tra lại.';
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        if (!isSameDeviceOrIP(matchedMember, myHwSig, myIP)) {
+          addSecurityLog({
+            time: getFullDateTimeString(),
+            username: `${matchedMember.fullName} (${matchedMember.username})`,
+            device: myDeviceDesc,
+            status: 'CẢNH BÁO THIẾT BỊ LẠ',
+            message: `Đăng nhập từ thiết bị khác (${myDeviceDesc}), khác với thiết bị gốc (${matchedMember.deviceName}).`
+          });
+
+          errEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Tài khoản <b>${matchedMember.username}</b> đã được khóa cố định trên thiết bị gốc (${matchedMember.deviceName}). Nếu bạn đổi điện thoại mới, hãy báo Quản trị viên bấm "Đổi TB"!`;
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        matchedMember.hwSig = myHwSig;
+        matchedMember.boundIP = myIP;
+        matchedMember.deviceName = myDeviceDesc;
+        members[memberIdx] = matchedMember;
+        saveMemberAccounts(members);
+        syncMembersConfigToCloud(false);
+
+        currentUserSession = {
+          id: matchedMember.id,
+          username: matchedMember.username,
+          fullName: matchedMember.fullName || matchedMember.username,
+          password: matchedMember.password,
+          avatar: matchedMember.avatar || 'logo.jpg',
+          role: 'member',
+          hwSig: myHwSig,
+          boundIP: myIP,
+          deviceName: myDeviceDesc,
+          buildSignature: CURRENT_WEB_BUILD_SIGNATURE
+        };
+      }
+
+      localStorage.setItem('dl3_saved_session_v7', JSON.stringify(currentUserSession));
+      localStorage.setItem('dl3_last_build_sig_v7', CURRENT_WEB_BUILD_SIGNATURE);
+      applySessionUI();
+      showToast(`Xin chào ${currentUserSession.fullName}!`);
+
+      if (currentUserSession.role === 'member' && !localStorage.getItem('dl3_tutorial_done')) {
+        setTimeout(() => startGameTutorial(), 600);
+      }
+    }
+
+    function applySessionUI() {
+      if (!currentUserSession) {
+        document.getElementById('loginScreen').classList.remove('hidden');
+        return;
+      }
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('currentUserDisplay').textContent = currentUserSession.fullName || currentUserSession.username;
+      document.getElementById('currentRoleDisplay').textContent =
+        currentUserSession.role === 'admin' ? 'Quản trị viên' : `@${currentUserSession.username}`;
+      document.getElementById('headerUserAvatar').src = currentUserSession.avatar || 'logo.jpg';
+
+      document.querySelectorAll('.recorder-name').forEach(el => {
+        el.textContent = currentUserSession.fullName || currentUserSession.username;
+      });
+
+      renderMyViolationSummaryTable();
+
+      const adminSection = document.getElementById('adminDashboardSection');
+      if (currentUserSession.role === 'admin') {
+        adminSection.classList.remove('hidden');
+        document.getElementById('maxMemberLimitInput').value = getMaxMemberLimit();
+        renderMemberAccountsAdmin();
+        renderSecurityLogsAdmin();
+        renderMistakeReportsAdmin();
+        renderAdminActivityTable();
+        fetchAdminDataFromCloud(false, true);
+      } else {
+        adminSection.classList.add('hidden');
+        fetchAdminDataFromCloud(false, false);
+      }
+    }
+
+    function logoutSystem() {
+      localStorage.removeItem('dl3_saved_session');
+      localStorage.removeItem('dl3_saved_session_v4');
+      localStorage.removeItem('dl3_saved_session_v5');
+      localStorage.removeItem('dl3_saved_session_v6');
+      localStorage.removeItem('dl3_saved_session_v7');
+      currentUserSession = null;
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('loginScreen').classList.remove('hidden');
+    }
+
+    /*************************************************************************
+     * 7. HỒ SƠ TÀI KHOẢN CÁ NHÂN
+     *************************************************************************/
+    function openProfileModal() {
+      if (!currentUserSession) return;
+      pendingAvatarDataUrl = currentUserSession.avatar || 'logo.jpg';
+      document.getElementById('profileAvatarPreview').src = pendingAvatarDataUrl;
+      document.getElementById('profileUsernameInput').value = currentUserSession.username || '';
+      document.getElementById('profileFullNameInput').value = currentUserSession.fullName || '';
+      document.getElementById('profilePasswordInput').value = currentUserSession.password || '';
+      document.getElementById('profileModal').classList.remove('hidden');
+      document.getElementById('profileModal').classList.add('flex');
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModal').classList.add('hidden');
+      document.getElementById('profileModal').classList.remove('flex');
+    }
+
+    document.getElementById('AvatarFileInput').addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const size = 120;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          const minSide = Math.min(img.width, img.height);
+          const sx = (img.width - minSide) / 2;
+          const sy = (img.height - minSide) / 2;
+          ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+          pendingAvatarDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+          document.getElementById('profileAvatarPreview').src = pendingAvatarDataUrl;
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    });
+
+    async function saveUserProfile() {
+      if (!currentUserSession) return;
+      const newUsername = document.getElementById('profileUsernameInput').value.trim();
+      const newFullName = document.getElementById('profileFullNameInput').value.trim();
+      const newPassword = document.getElementById('profilePasswordInput').value.trim();
+
+      if (!newUsername || !newFullName) {
+        return showToast('Vui lòng không để trống Tên tài khoản hoặc Tên Thành Viên!', false);
+      }
+
+      const btn = document.getElementById('btnSaveProfile');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang cập nhật...';
+
+      if (currentUserSession.role === 'admin') {
+        currentUserSession.fullName = newFullName;
+        currentUserSession.avatar = pendingAvatarDataUrl;
+        localStorage.setItem('dl3_admin_avatar', pendingAvatarDataUrl);
+      } else {
+        if (!newPassword) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi Hồ sơ';
+          return showToast('Vui lòng nhập mật khẩu cá nhân!', false);
+        }
+
+        const members = getMemberAccounts();
+        const duplicate = members.find(
+          m => m.id !== currentUserSession.id &&
+               m.username.toLowerCase() !== currentUserSession.username.toLowerCase() &&
+               m.username.toLowerCase() === newUsername.toLowerCase()
+        );
+        if (duplicate) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi Hồ sơ';
+          return showToast('Tên tài khoản này đã có người sử dụng!', false);
+        }
+
+        const idx = members.findIndex(
+          m => m.id === currentUserSession.id || m.username.toLowerCase() === currentUserSession.username.toLowerCase()
+        );
+        if (idx !== -1) {
+          members[idx].username = newUsername;
+          members[idx].fullName = newFullName;
+          members[idx].password = newPassword;
+          members[idx].avatar = pendingAvatarDataUrl;
+          saveMemberAccounts(members);
+          await syncMembersConfigToCloud(false);
+        }
+
+        currentUserSession.username = newUsername;
+        currentUserSession.fullName = newFullName;
+        currentUserSession.password = newPassword;
+        currentUserSession.avatar = pendingAvatarDataUrl;
+      }
+
+      currentUserSession.buildSignature = CURRENT_WEB_BUILD_SIGNATURE;
+      localStorage.setItem('dl3_saved_session_v7', JSON.stringify(currentUserSession));
+      applySessionUI();
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi Hồ sơ';
+      closeProfileModal();
+      showToast('Đã cập nhật Hồ sơ cá nhân & đồng bộ về Quản trị viên!');
+    }
+
+    /*************************************************************************
+     * 8. BOT HƯỚNG DẪN TỪNG BƯỚC KIỂU GAME
+     *************************************************************************/
+    const TUTORIAL_STEPS = [
+      {
+        targetId: 'headerToolbarGroup',
+        title: '1. Thanh công cụ Minh chứng & Giao diện',
+        desc: 'Bấm "Máy ảnh" để kết nối thẳng với Cam chụp ảnh của máy, "Máy quay" để mở Cam quay video của máy, hoặc "Tải lên" để chọn cả Video và Ảnh từ Bộ sưu tập.'
+      },
+      {
+        targetId: 'cardStudentViolation',
+        title: '2. Ghi lỗi Cá nhân Học sinh',
+        desc: 'Khi bắt lỗi từng học sinh: Nhập Họ tên, Lớp, chọn nhanh Lỗi vi phạm (hoặc tự gõ), đính kèm ảnh/video minh chứng nếu có rồi bấm nút "XONG".'
+      },
+      {
+        targetId: 'cardClassViolation',
+        title: '3. Ghi lỗi Riêng mỗi Lớp (Tự lưu minh chứng về máy)',
+        desc: 'Khi chụp/quay trực tiếp và nhập lỗi cho Lớp: Hệ thống vừa gửi lên hệ thống vừa tự động lưu bản sao ảnh/video đó về điện thoại của bạn khi bấm "XONG".'
+      },
+      {
+        targetId: 'memberSummarySection',
+        title: '4. Tổng hợp số lỗi đã nhập & Báo sai sót',
+        desc: 'Ở cuối trang là danh sách toàn bộ các lỗi chính bạn đã nhập. Nếu lỡ nhập nhầm thông tin, bạn chỉ cần bấm nút "Báo sai sót" ở dòng đó để báo Quản trị viên.'
+      },
+      {
+        targetId: 'btnUserProfile',
+        title: '5. Hồ sơ Tài khoản Cá nhân',
+        desc: 'Bấm vào ảnh đại diện và tên của bạn ở góc phải trên cùng để thay đổi Ảnh đại diện, đổi Tên tài khoản, Tên Thành Viên hoặc đổi Mật khẩu riêng!'
+      }
+    ];
+
+    function startGameTutorial() {
+      currentTutorialIndex = 0;
+      document.getElementById('tutorialOverlay').classList.remove('hidden');
+      showTutorialStep(currentTutorialIndex);
+    }
+
+    function endGameTutorial() {
+      document.getElementById('tutorialOverlay').classList.add('hidden');
+      localStorage.setItem('dl3_tutorial_done', '1');
+    }
+
+    function nextTutorialStep() {
+      if (currentTutorialIndex < TUTORIAL_STEPS.length - 1) {
+        currentTutorialIndex++;
+        showTutorialStep(currentTutorialIndex);
+      } else {
+        endGameTutorial();
+        showToast('Bạn đã hoàn thành hướng dẫn sử dụng!');
+      }
+    }
+
+    function prevTutorialStep() {
+      if (currentTutorialIndex > 0) {
+        currentTutorialIndex--;
+        showTutorialStep(currentTutorialIndex);
+      }
+    }
+
+    function showTutorialStep(idx) {
+      const step = TUTORIAL_STEPS[idx];
+      const el = document.getElementById(step.targetId);
+      if (!el) return;
+
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      setTimeout(() => {
+        const rect = el.getBoundingClientRect();
+        const spot = document.getElementById('tutorialSpotlight');
+        const botCard = document.getElementById('tutorialBotCard');
+
+        const pad = 6;
+        spot.style.top = Math.max(4, rect.top - pad) + 'px';
+        spot.style.left = Math.max(4, rect.left - pad) + 'px';
+        spot.style.width = Math.min(window.innerWidth - 8, rect.width + pad * 2) + 'px';
+        spot.style.height = (rect.height + pad * 2) + 'px';
+
+        document.getElementById('tutorialStepBadge').textContent = `Bước ${idx + 1}/${TUTORIAL_STEPS.length}`;
+        document.getElementById('tutorialStepTitle').textContent = step.title;
+        document.getElementById('tutorialStepDesc').textContent = step.desc;
+
+        document.getElementById('btnTutPrev').style.visibility = idx === 0 ? 'hidden' : 'visible';
+        document.getElementById('btnTutNext').innerHTML =
+          idx === TUTORIAL_STEPS.length - 1
+            ? 'Hoàn thành <i class="fa-solid fa-check ml-1"></i>'
+            : 'Tiếp theo <i class="fa-solid fa-arrow-right ml-1"></i>';
+
+        const cardHeight = 190;
+        let topPos = rect.bottom + 16;
+        if (topPos + cardHeight > window.innerHeight) {
+          topPos = Math.max(16, rect.top - cardHeight - 16);
+        }
+        botCard.style.top = topPos + 'px';
+        botCard.style.left = Math.max(16, Math.min(window.innerWidth - 360, rect.left)) + 'px';
+      }, 300);
+    }
+
+    /*************************************************************************
+     * 9. GIAO DIỆN SÁNG / TỐI & NỀN CÁ NHÂN
+     *************************************************************************/
+    function toggleDarkMode() {
+      const htmlEl = document.documentElement;
+      const isDark = htmlEl.classList.toggle('dark');
+      localStorage.setItem('dl3_theme_mode', isDark ? 'dark' : 'light');
+      updateThemeIcon(isDark);
+    }
+
+    function updateThemeIcon(isDark) {
+      const icon = document.getElementById('themeToggleIcon');
+      icon.className = isDark
+        ? 'fa-solid fa-sun text-yellow-300 text-sm'
+        : 'fa-solid fa-moon text-yellow-200 text-sm';
+    }
+
+    (function initSavedThemeAndBg() {
+      if (localStorage.getItem('dl3_theme_mode') === 'dark') {
+        document.documentElement.classList.add('dark');
+        updateThemeIcon(true);
+      }
+      const savedBg = localStorage.getItem('dl3_custom_bg');
+      if (savedBg && savedBg !== 'default') {
+        document.body.style.backgroundImage = savedBg.startsWith('data:image')
+          ? `url('${savedBg}')`
+          : savedBg;
+      }
+    })();
+
+    function openBgCustomizerModal() {
+      document.getElementById('bgCustomizerModal').classList.remove('hidden');
+      document.getElementById('bgCustomizerModal').classList.add('flex');
+    }
+
+    function closeBgCustomizerModal() {
+      document.getElementById('bgCustomizerModal').classList.add('hidden');
+      document.getElementById('bgCustomizerModal').classList.remove('flex');
+    }
+
+    function applyCustomBackground(bgValue) {
+      if (bgValue === 'default') {
+        document.body.style.backgroundImage = '';
+        localStorage.removeItem('dl3_custom_bg');
+      } else {
+        document.body.style.backgroundImage = bgValue;
+        localStorage.setItem('dl3_custom_bg', bgValue);
+      }
+      closeBgCustomizerModal();
+      showToast('Đã cập nhật nền website cá nhân!');
+    }
+
+    document.getElementById('CustomBgFileInput').addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const dataUrl = ev.target.result;
+        document.body.style.backgroundImage = `url('${dataUrl}')`;
+        try { localStorage.setItem('dl3_custom_bg', dataUrl); } catch (err) {}
+        closeBgCustomizerModal();
+        showToast('Đã áp dụng ảnh nền cá nhân!');
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    });
+
+    /*************************************************************************
+     * 10. KẾT NỐI TRỰC TIẾP VỚI CAMERA CỦA MÁY • BỘ SƯU TẬP • TỰ LƯU VỀ MÁY CHO LỖI LỚP
+     *************************************************************************/
+    function compressImageFileToBase64(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const maxDim = 1280;
+            let w = img.width, h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+              else { w = Math.round((w * maxDim) / h); h = maxDim; }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+            resolve({ base64: dataUrl.split(',')[1] || '', mimeType: 'image/jpeg' });
+          };
+          img.onerror = () => resolve(null);
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function rawFileToBase64(fileOrBlob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || '').split(',')[1] || '');
+        reader.onerror = reject;
+        reader.readAsDataURL(fileOrBlob);
+      });
+    }
+
+    // Chuyển chuỗi Base64 về Blob để lưu file gốc về điện thoại khi cần
+    function base64ToBlob(base64Data, contentType) {
+      try {
+        const byteCharacters = atob(base64Data);
+        const byteArrays = [];
+        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+          const slice = byteCharacters.slice(offset, offset + 512);
+          const byteNumbers = new Array(slice.length);
+          for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+          }
+          byteArrays.push(new Uint8Array(byteNumbers));
+        }
+        return new Blob(byteArrays, { type: contentType || 'application/octet-stream' });
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Tự động lưu file ảnh/video minh chứng về điện thoại người nhập (Dành riêng cho Lỗi Lớp khi Chụp/Quay trực tiếp)
+    function saveCapturedEvidenceToPhone(fileItem, className, dateStr, timeStr, indexNum) {
+      try {
+        if (!fileItem || !fileItem.isDirectCapture) return false;
+        const isVideo = (fileItem.mimeType || '').startsWith('video/');
+        let ext = isVideo ? 'mp4' : 'jpg';
+        if (fileItem.originalName && fileItem.originalName.includes('.')) {
+          ext = fileItem.originalName.split('.').pop().toLowerCase() || ext;
+        }
+
+        const safeDate = String(dateStr || '').replace(/\//g, '-');
+        const safeTime = String(timeStr || '').replace(/:/g, '-');
+        const downloadFileName = `MinhChung_Lop_${className}_${safeDate}_${safeTime}${indexNum > 1 ? '_' + indexNum : ''}.${ext}`;
+
+        const blobToSave = fileItem.rawBlob || base64ToBlob(fileItem.base64, fileItem.mimeType);
+        if (!blobToSave) return false;
+
+        const blobUrl = URL.createObjectURL(blobToSave);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = blobUrl;
+        a.download = downloadFileName;
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(blobUrl);
+        }, 12000);
+        return true;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    function handleProcessedMediaFiles(validFiles) {
+      if (!validFiles || validFiles.length === 0) return;
+      if (directTargetColumn) {
+        attachFilesToTarget(directTargetColumn, validFiles);
+        directTargetColumn = null;
+      } else {
+        pendingPickedFiles = validFiles;
+        const sourceLabel = validFiles[0].isDirectCapture ? 'Quay/Chụp trực tiếp từ máy' : 'Tải lên từ bộ sưu tập';
+        document.getElementById('pendingFilesSummary').textContent =
+          `Đã nhận ${validFiles.length} tệp (${sourceLabel}: ${validFiles.map(f => f.originalName).join(', ')})`;
+        document.getElementById('assignEvidenceModal').classList.remove('hidden');
+        document.getElementById('assignEvidenceModal').classList.add('flex');
+      }
+    }
+
+    // Xử lý 3 nguồn input:
+    // - NativePhotoCameraInput -> isDirectCapture = true (Chụp ảnh trực tiếp bằng Cam máy)
+    // - NativeVideoCameraInput -> isDirectCapture = true (Quay video trực tiếp bằng Cam máy)
+    // - GalleryUploadInput     -> isDirectCapture = false (Tải lên Ảnh/Video từ bộ sưu tập)
+    [
+      { id: 'NativePhotoCameraInput', isCapture: true },
+      { id: 'NativeVideoCameraInput', isCapture: true },
+      { id: 'GalleryUploadInput', isCapture: false }
+    ].forEach(cfg => {
+      document.getElementById(cfg.id).addEventListener('change', async (e) => {
+        const files = Array.from(e.target.files || []);
+        e.target.value = '';
+        if (files.length === 0) return;
+
+        showToast('Đang xử lý tệp minh chứng...');
+        const validFiles = [];
+        for (const f of files) {
+          if (f.size > 100 * 1024 * 1024) {
+            showToast(`Tệp "${f.name}" vượt quá 100MB!`, false);
+            continue;
+          }
+          if (f.type && f.type.startsWith('image/')) {
+            const compressed = await compressImageFileToBase64(f);
+            if (compressed) {
+              validFiles.push({
+                originalName: f.name,
+                mimeType: compressed.mimeType,
+                size: f.size,
+                base64: compressed.base64,
+                rawBlob: f, // Giữ lại file gốc từ Cam máy để lưu về điện thoại nét 100%
+                isDirectCapture: cfg.isCapture
+              });
+              continue;
+            }
+          }
+          const base64Data = await rawFileToBase64(f);
+          validFiles.push({
+            originalName: f.name,
+            mimeType: f.type || 'video/mp4',
+            size: f.size,
+            base64: base64Data,
+            rawBlob: f,
+            isDirectCapture: cfg.isCapture
+          });
+        }
+
+        handleProcessedMediaFiles(validFiles);
+      });
+    });
+
+    function closeAssignModal() {
+      pendingPickedFiles = [];
+      document.getElementById('assignEvidenceModal').classList.add('hidden');
+      document.getElementById('assignEvidenceModal').classList.remove('flex');
+    }
+
+    function confirmAssignEvidence(targetCol) {
+      if (pendingPickedFiles.length > 0) attachFilesToTarget(targetCol, pendingPickedFiles);
+      closeAssignModal();
+    }
+
+    function attachFilesToTarget(targetCol, newFiles) {
+      if (targetCol === 'student') {
+        studentEvidenceFiles = [...studentEvidenceFiles, ...newFiles].slice(0, 5);
+        renderEvidenceChips('student');
+        showToast('Đã đính kèm minh chứng vào mục Cá nhân Học sinh!');
+      } else {
+        classEvidenceFiles = [...classEvidenceFiles, ...newFiles].slice(0, 5);
+        renderEvidenceChips('class');
+        const hasDirect = newFiles.some(f => f.isDirectCapture);
+        if (hasDirect) {
+          showToast('Đã gán vào mục Lớp! Khi bấm XONG sẽ tự lưu minh chứng này về máy.');
+        } else {
+          showToast('Đã đính kèm minh chứng vào mục Riêng mỗi Lớp!');
+        }
+      }
+    }
+
+    function removeEvidenceFile(targetCol, index) {
+      if (targetCol === 'student') {
+        studentEvidenceFiles.splice(index, 1);
+        renderEvidenceChips('student');
+      } else {
+        classEvidenceFiles.splice(index, 1);
+        renderEvidenceChips('class');
+      }
+    }
+
+    function renderEvidenceChips(targetCol) {
+      const containerId = targetCol === 'student' ? 'studentEvidenceList' : 'classEvidenceList';
+      const files = targetCol === 'student' ? studentEvidenceFiles : classEvidenceFiles;
+      const container = document.getElementById(containerId);
+
+      container.innerHTML = files.map((file, idx) => {
+        const isVideo = (file.mimeType || '').startsWith('video/');
+        const iconClass = isVideo ? 'fa-solid fa-film text-red-600' : 'fa-solid fa-image text-red-600';
+        const shortName = file.originalName.length > 18 ? file.originalName.substring(0, 15) + '...' : file.originalName;
+        const badgeTag = (targetCol === 'class' && file.isDirectCapture)
+          ? '<span class="px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold">Tự lưu máy</span>'
+          : '';
+        return `
+          <div class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xs text-xs font-medium">
+            <i class="${iconClass} text-base"></i>
+            <span class="truncate max-w-[130px] text-slate-800 dark:text-slate-100" title="${file.originalName}">${shortName}</span>
+            ${badgeTag}
+            <button type="button" onclick="removeEvidenceFile('${targetCol}', ${idx})" class="text-slate-400 hover:text-red-600 ml-1 text-sm leading-none">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /*************************************************************************
+     * 11. GHI NHẬN THỜI GIAN CHÍNH XÁC LÚC NHẬP & CHỐNG TRÙNG TUYỆT ĐỐI
+     *************************************************************************/
+    function getTodayDateString() {
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()}`;
+    }
+
+    function getDetailedTimeString() {
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${now.getHours()}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    }
+
+    function getFullDateTimeString() {
+      return `${getTodayDateString()} - ${getDetailedTimeString()}`;
+    }
+
+    setInterval(() => {
+      const t = getFullDateTimeString();
+      document.querySelectorAll('.live-date').forEach(el => el.textContent = t);
+    }, 1000);
+    document.querySelectorAll('.live-date').forEach(el => el.textContent = getFullDateTimeString());
+
+    function showToast(message, isSuccess = true) {
+      const box = document.getElementById('toastBox');
+      const icon = document.getElementById('toastIcon');
+      const text = document.getElementById('toastText');
+      text.textContent = message;
+      icon.className = isSuccess
+        ? 'fa-solid fa-circle-check text-emerald-400 shrink-0'
+        : 'fa-solid fa-circle-exclamation text-amber-400 shrink-0';
+      box.classList.remove('hidden');
+      box.classList.add('flex');
+      setTimeout(() => {
+        box.classList.add('hidden');
+        box.classList.remove('flex');
+      }, 3600);
+    }
+
+    function appendViolation(inputId, text) {
+      const input = document.getElementById(inputId);
+      const current = input.value.trim();
+      if (!current) input.value = text;
+      else if (!current.toLowerCase().includes(text.toLowerCase())) input.value = current + ', ' + text;
+    }
+
+    function setClassPrefix(prefix) {
+      const input = document.getElementById('classOnlyName');
+      input.value = prefix;
+      input.focus();
+    }
+
+    function normalizeClassInput(inputEl) {
+      let val = inputEl.value.trim().toUpperCase();
+      if (val) inputEl.value = val.replace(/\s+/g, '');
+    }
+
+    function getLocalActivityLogs() {
+      try {
+        return JSON.parse(localStorage.getItem('dl3_activity_logs') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveLocalActivityLog(item, isPending = false) {
+      const lightCopy = {
+        requestId: item.requestId || '',
+        tt: item.tt || '',
+        ngay: item.ngay,
+        gioChiTiet: item.gioChiTiet,
+        thoiGianChiTiet: item.thoiGianChiTiet,
+        hoVaTen: item.hoVaTen,
+        lop: item.lop,
+        loiViPham: item.loiViPham,
+        nguoiGhiLoi: item.tenThanhVien || item.nguoiGhiLoi,
+        usernameGhiLoi: item.usernameGhiLoi || '',
+        isLocalPending: isPending
+      };
+      const logs = getLocalActivityLogs();
+      const sigKey = makeViolationSignatureKey(lightCopy);
+      const existsIdx = logs.findIndex(row => makeViolationSignatureKey(row) === sigKey);
+      if (existsIdx !== -1) {
+        logs[existsIdx] = lightCopy;
+      } else {
+        logs.unshift(lightCopy);
+      }
+      localStorage.setItem('dl3_activity_logs', JSON.stringify(logs.slice(0, 400)));
+      renderMyViolationSummaryTable();
+      if (currentUserSession && currentUserSession.role === 'admin') {
+        renderMemberAccountsAdmin();
+        renderAdminActivityTable();
+      }
+    }
+
+    async function submitDataToSystem(payload) {
+      const sigKey = makeViolationSignatureKey(payload);
+
+      if (navigator.onLine) {
+        const res = await sendDirectToSheetVerified(payload);
+        if (res.ok) {
+          payload.tt = res.data?.tt || '';
+          markRequestIdAsSent(payload.requestId, sigKey);
+          saveLocalActivityLog(payload, false);
+          showToast('Đã ghi nhận lỗi thành công!');
+          syncOfflineQueue(false);
+          fetchAdminDataFromCloud(false, false);
+          return;
+        }
+
+        const verifyRes = await sendDirectToSheetVerified({ action: 'getAdminData' });
+        if (verifyRes.ok && verifyRes.data && Array.isArray(verifyRes.data.logs)) {
+          localStorage.setItem('dl3_activity_logs', JSON.stringify(verifyRes.data.logs));
+          if (isAlreadyOnSheetOrSent(payload, verifyRes.data.logs)) {
+            markRequestIdAsSent(payload.requestId, sigKey);
+            saveLocalActivityLog(payload, false);
+            showToast('Đã ghi nhận lỗi thành công!');
+            return;
+          }
+        }
+      }
+
+      await addToOfflineDB(payload);
+      saveLocalActivityLog(payload, true);
+      showToast(`Đang ngoại tuyến! Đã lưu lỗi lúc ${payload.gioChiTiet}, tự động gửi đúng giờ này khi có mạng.`, false);
+    }
+
+    async function submitStudentViolation() {
+      if (!currentUserSession) return showToast('Vui lòng đăng nhập!', false);
+      const nameEl = document.getElementById('studentName');
+      const classEl = document.getElementById('studentClass');
+      const violationEl = document.getElementById('studentViolations');
+      const btn = document.getElementById('btnSubmitStudent');
+
+      const hoVaTen = nameEl.value.trim();
+      const lop = classEl.value.trim().toUpperCase();
+      const loiViPham = violationEl.value.trim();
+
+      if (!hoVaTen || !lop || !loiViPham) {
+        return showToast('Vui lòng điền đủ: Học sinh, Lớp và Lỗi vi phạm!', false);
+      }
+
+      const capturedDate = getTodayDateString();
+      const capturedTime = getDetailedTimeString();
+      const capturedFull = `${capturedDate} - ${capturedTime}`;
+      const uniqueReqId = 'REQ_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+      // Chỉ lấy dữ liệu cần thiết gửi lên Server (loại bỏ rawBlob để serialize JSON chuẩn)
+      const filesToSend = studentEvidenceFiles.map(f => ({
+        originalName: f.originalName,
+        mimeType: f.mimeType,
+        size: f.size,
+        base64: f.base64
+      }));
+
+      nameEl.value = '';
+      classEl.value = '';
+      violationEl.value = '';
+      studentEvidenceFiles = [];
+      renderEvidenceChips('student');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>ĐANG LƯU...</span>';
+
+      await submitDataToSystem({
+        action: 'recordViolation',
+        requestId: uniqueReqId,
+        loaiViPham: 'Cá nhân học sinh',
+        ngay: capturedDate,
+        gioChiTiet: capturedTime,
+        thoiGianChiTiet: capturedFull,
+        hoVaTen: hoVaTen,
+        lop: lop,
+        loiViPham: loiViPham,
+        diemTru: '',
+        nguoiGhiLoi: currentUserSession.fullName || currentUserSession.username,
+        tenThanhVien: currentUserSession.fullName || currentUserSession.username,
+        usernameGhiLoi: currentUserSession.username,
+        thietBi: currentUserSession.deviceName,
+        evidenceFiles: filesToSend
+      });
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>XONG</span>';
+    }
+
+    // XỬ LÝ NÚT XONG CỘT 2 (LỖI RIÊNG MỖI LỚP):
+    // Tự động lưu minh chứng về điện thoại nếu là ảnh/video Chụp hoặc Quay trực tiếp (trừ trường hợp tải lên từ bộ sưu tập)
+    async function submitClassViolation() {
+      if (!currentUserSession) return showToast('Vui lòng đăng nhập!', false);
+      const classEl = document.getElementById('classOnlyName');
+      const violationEl = document.getElementById('classOnlyViolations');
+      const btn = document.getElementById('btnSubmitClass');
+
+      const lop = classEl.value.trim().toUpperCase();
+      const loiViPham = violationEl.value.trim();
+
+      if (!lop || !loiViPham) {
+        return showToast('Vui lòng nhập Lớp và Lỗi vi phạm của lớp!', false);
+      }
+
+      const capturedDate = getTodayDateString();
+      const capturedTime = getDetailedTimeString();
+      const capturedFull = `${capturedDate} - ${capturedTime}`;
+      const uniqueReqId = 'REQ_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+      // Tự động lưu các minh chứng Quay/Chụp trực tiếp về máy của người nhập ngay khi bấm XONG
+      let directSavedCount = 0;
+      classEvidenceFiles.forEach((fileItem, idx) => {
+        if (fileItem.isDirectCapture) {
+          const savedOk = saveCapturedEvidenceToPhone(fileItem, lop, capturedDate, capturedTime, idx + 1);
+          if (savedOk) directSavedCount++;
+        }
+      });
+
+      const filesToSend = classEvidenceFiles.map(f => ({
+        originalName: f.originalName,
+        mimeType: f.mimeType,
+        size: f.size,
+        base64: f.base64
+      }));
+
+      classEl.value = '';
+      violationEl.value = '';
+      classEvidenceFiles = [];
+      renderEvidenceChips('class');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>ĐANG LƯU...</span>';
+
+      await submitDataToSystem({
+        action: 'recordViolation',
+        requestId: uniqueReqId,
+        loaiViPham: 'Tập thể lớp',
+        ngay: capturedDate,
+        gioChiTiet: capturedTime,
+        thoiGianChiTiet: capturedFull,
+        hoVaTen: '',
+        lop: lop,
+        loiViPham: loiViPham,
+        diemTru: '',
+        nguoiGhiLoi: currentUserSession.fullName || currentUserSession.username,
+        tenThanhVien: currentUserSession.fullName || currentUserSession.username,
+        usernameGhiLoi: currentUserSession.username,
+        thietBi: currentUserSession.deviceName,
+        evidenceFiles: filesToSend
+      });
+
+      if (directSavedCount > 0) {
+        showToast(`Đã ghi lỗi Lớp ${lop} & tự động lưu ${directSavedCount} minh chứng về máy!`);
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>XONG</span>';
+    }
+
+    /*************************************************************************
+     * 12. TỔNG HỢP SỐ LỖI ĐÃ NHẬP CỦA THÀNH VIÊN & BÁO LẠI SAI SÓT
+     *************************************************************************/
+    function renderMyViolationSummaryTable() {
+      const tbody = document.getElementById('memberMyLogsTableBody');
+      const countEl = document.getElementById('myTotalEnteredCount');
+      if (!tbody || !currentUserSession) return;
+
+      const myUsername = (currentUserSession.username || '').trim().toLowerCase();
+      const myFullName = (currentUserSession.fullName || '').trim().toLowerCase();
+
+      const allLogs = getLocalActivityLogs();
+      const myLogs = allLogs.filter(item => {
+        const rec = String(item.nguoiGhiLoi || '').trim().toLowerCase();
+        const uRec = String(item.usernameGhiLoi || '').trim().toLowerCase();
+        return rec === myFullName || rec === myUsername || (uRec && uRec === myUsername);
+      });
+
+      if (countEl) countEl.textContent = myLogs.length;
+
+      if (myLogs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400 italic">Bạn chưa nhập lỗi vi phạm nào.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = myLogs.map((item, idx) => {
+        const displayTT = item.tt || (myLogs.length - idx);
+        const infoSummary = `TT #${displayTT} (${item.thoiGianChiTiet}) - ${item.hoVaTen || 'Tập thể lớp'} - Lớp ${item.lop}: ${item.loiViPham}`;
+        return `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+            <td class="py-2.5 px-3 font-extrabold text-red-600">#${displayTT}</td>
+            <td class="py-2.5 px-3 font-semibold whitespace-nowrap">${item.thoiGianChiTiet || ''}</td>
+            <td class="py-2.5 px-3">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${item.hoVaTen ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-800'}">
+                ${item.hoVaTen ? 'Cá nhân HS' : 'Riêng Lớp'}
+              </span>
+            </td>
+            <td class="py-2.5 px-3 font-semibold">${item.hoVaTen || '<span class="text-slate-400 italic">(Lỗi Lớp)</span>'}</td>
+            <td class="py-2.5 px-3 font-extrabold text-red-600">${item.lop || ''}</td>
+            <td class="py-2.5 px-3">${item.loiViPham || ''}</td>
+            <td class="py-2.5 px-3 text-right">
+              <button type="button" onclick="reportViolationMistake('${infoSummary.replace(/'/g, "\\'")}')"
+                      class="px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-[11px] transition">
+                <i class="fa-solid fa-flag mr-1"></i>Báo sai sót
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function reportViolationMistake(violationInfo) {
+      if (!currentUserSession) return;
+      const reason = prompt(`Báo lại sai sót cho mục:\n[${violationInfo}]\n\nNhập nội dung sai sót cần báo lại Quản trị viên:`);
+      if (!reason || !reason.trim()) return;
+
+      const reportEntry = {
+        action: 'reportMistake',
+        time: getFullDateTimeString(),
+        memberName: currentUserSession.fullName || currentUserSession.username,
+        username: currentUserSession.username,
+        violationInfo: violationInfo,
+        reason: reason.trim()
+      };
+
+      const savedReports = JSON.parse(localStorage.getItem('dl3_mistake_reports') || '[]');
+      savedReports.unshift(reportEntry);
+      localStorage.setItem('dl3_mistake_reports', JSON.stringify(savedReports));
+
+      await sendDirectToSheetVerified(reportEntry);
+      renderMistakeReportsAdmin();
+      showToast('Đã gửi báo cáo sai sót về cho Quản trị viên!');
+    }
+
+    /*************************************************************************
+     * 13. BẢNG QUẢN TRỊ VIÊN & ẨN/HIỆN MẬT KHẨU BẰNG DẤU CHẤM TRÒN
+     *************************************************************************/
+    function toggleSingleMemberPassword(username) {
+      const key = String(username || '').toLowerCase();
+      if (revealedMemberPasswords.has(key)) revealedMemberPasswords.delete(key);
+      else revealedMemberPasswords.add(key);
+      renderMemberAccountsAdmin();
+    }
+
+    function toggleAllAdminPasswords() {
+      revealAllMemberPasswords = !revealAllMemberPasswords;
+      const list = getMemberAccounts();
+      if (revealAllMemberPasswords) list.forEach(m => revealedMemberPasswords.add(m.username.toLowerCase()));
+      else revealedMemberPasswords.clear();
+      const headerIcon = document.getElementById('headerPassEyeIcon');
+      if (headerIcon) {
+        headerIcon.className = revealAllMemberPasswords
+          ? 'fa-regular fa-eye-slash text-[11px] text-red-600'
+          : 'fa-regular fa-eye text-[11px]';
+      }
+      renderMemberAccountsAdmin();
+    }
+
+    async function addMemberAccount() {
+      const userInp = document.getElementById('newMemberAccountInput');
+      const fullNameInp = document.getElementById('newMemberFullNameInput');
+      const passInp = document.getElementById('newMemberPasswordInput');
+      const btn = document.getElementById('btnGrantMember');
+
+      const rawUser = userInp.value.trim();
+      const rawFullName = fullNameInp.value.trim() || rawUser;
+      const rawPass = passInp.value.trim() || '123456';
+
+      if (!rawUser) return showToast('Vui lòng nhập Tên tài khoản cần cấp!', false);
+
+      const list = getMemberAccounts();
+      const maxLimit = getMaxMemberLimit();
+
+      if (list.length >= maxLimit) {
+        return showToast(`Đã đạt giới hạn tối đa ${maxLimit} thành viên!`, false);
+      }
+
+      const existingIdx = list.findIndex(m => m.username.toLowerCase() === rawUser.toLowerCase());
+      if (existingIdx !== -1) {
+        list[existingIdx].fullName = rawFullName;
+        list[existingIdx].password = rawPass;
+      } else {
+        list.unshift({
+          id: 'MEM_' + Date.now(),
+          username: rawUser,
+          fullName: rawFullName,
+          password: rawPass,
+          avatar: '',
+          hwSig: '',
+          boundIP: '',
+          deviceName: ''
+        });
+      }
+
+      saveMemberAccounts(list);
+      renderMemberAccountsAdmin();
+      userInp.value = '';
+      fullNameInp.value = '';
+      passInp.value = '';
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...';
+      }
+      await syncMembersConfigToCloud(false);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> <span>Cấp Tài Khoản</span>';
+      }
+      showToast(`Đã cấp tài khoản "${rawUser}" (${rawFullName})!`);
+    }
+
+    async function editMemberByAdmin(username) {
+      const list = getMemberAccounts();
+      const idx = list.findIndex(m => m.username === username);
+      if (idx === -1) return;
+
+      const m = list[idx];
+      const newFullName = prompt(`Đổi Tên Thành Viên cho tài khoản "${m.username}":`, m.fullName);
+      if (newFullName === null) return;
+      const newPass = prompt(`Đổi Mật khẩu cho thành viên "${newFullName || m.fullName}":`, m.password);
+      if (newPass === null) return;
+
+      list[idx].fullName = newFullName.trim() || m.fullName;
+      list[idx].password = newPass.trim() || m.password;
+      saveMemberAccounts(list);
+      renderMemberAccountsAdmin();
+      renderAdminActivityTable();
+      await syncMembersConfigToCloud(false);
+      showToast(`Đã cập nhật thông tin thành viên ${list[idx].fullName}!`);
+    }
+
+    async function removeMemberAccount(username) {
+      const list = getMemberAccounts().filter(m => m.username !== username);
+      revealedMemberPasswords.delete(String(username || '').toLowerCase());
+      saveMemberAccounts(list);
+      renderMemberAccountsAdmin();
+      await syncMembersConfigToCloud(false);
+      showToast(`Đã xóa tài khoản: ${username}`);
+    }
+
+    async function resetDeviceBinding(username) {
+      const list = getMemberAccounts();
+      const idx = list.findIndex(m => m.username === username);
+      if (idx !== -1) {
+        list[idx].hwSig = '';
+        list[idx].boundIP = '';
+        list[idx].deviceName = '';
+        saveMemberAccounts(list);
+        renderMemberAccountsAdmin();
+        await syncMembersConfigToCloud(false);
+        showToast(`Đã mở khóa Thiết bị & IP cho: ${list[idx].fullName}`);
+      }
+    }
+
+    function renderMemberAccountsAdmin() {
+      const tbody = document.getElementById('memberAccountsTableBody');
+      if (!tbody) return;
+
+      const list = getMemberAccounts();
+      const logs = getLocalActivityLogs();
+      const maxLimit = getMaxMemberLimit();
+
+      const countByMember = {};
+      logs.forEach(item => {
+        const rec = (item.nguoiGhiLoi || '').trim().toLowerCase();
+        const uRec = (item.usernameGhiLoi || '').trim().toLowerCase();
+        list.forEach(m => {
+          const mUser = m.username.toLowerCase();
+          const mFull = m.fullName.toLowerCase();
+          if (rec === mUser || rec === mFull || (uRec && uRec === mUser)) {
+            countByMember[mUser] = (countByMember[mUser] || 0) + 1;
+          }
+        });
+      });
+
+      let boundCount = 0;
+      list.forEach(m => { if (m.hwSig || m.boundIP) boundCount++; });
+
+      document.getElementById('statTotalMembers').textContent = list.length;
+      document.getElementById('statMaxLimitText').textContent = `/ ${maxLimit} tối đa`;
+      document.getElementById('statBoundMembers').textContent = boundCount;
+      document.getElementById('statUnboundMembers').textContent = Math.max(0, list.length - boundCount);
+      document.getElementById('statTotalViolations').textContent = logs.length;
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400 italic">Chưa có tài khoản thành viên nào. Hãy bấm "Làm mới dữ liệu" hoặc cấp tài khoản mới ở trên!</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map((m, idx) => {
+        const isBound = Boolean(m.hwSig || m.boundIP);
+        const userKey = m.username.toLowerCase();
+        const recordedCount = countByMember[userKey] || 0;
+        const avatarSrc = m.avatar || 'logo.jpg';
+        const isPassVisible = revealedMemberPasswords.has(userKey);
+        const safeUserEscaped = m.username.replace(/'/g, "\\'");
+
+        return `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
+            <td class="py-3 px-4 font-bold text-slate-400 whitespace-nowrap">${idx + 1}</td>
+            <td class="py-3 px-4 whitespace-nowrap">
+              <div class="flex items-center gap-2.5">
+                <img src="${avatarSrc}" alt="Avatar" class="w-7 h-7 rounded-full object-cover border border-slate-300 bg-white shrink-0" />
+                <span class="font-extrabold text-slate-800 dark:text-slate-100">${m.username}</span>
+              </div>
+            </td>
+            <td class="py-3 px-4 font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">${m.fullName}</td>
+            <td class="py-3 px-4 whitespace-nowrap">
+              <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700">
+                <span class="font-mono font-bold ${isPassVisible ? 'text-red-600 dark:text-red-400' : 'text-slate-500 dark:text-slate-400 tracking-widest'}">
+                  ${isPassVisible ? m.password : '••••••••'}
+                </span>
+                <button type="button" onclick="toggleSingleMemberPassword('${safeUserEscaped}')"
+                        class="text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition"
+                        title="${isPassVisible ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}">
+                  <i class="fa-regular ${isPassVisible ? 'fa-eye-slash' : 'fa-eye'} text-[11px]"></i>
+                </button>
+              </div>
+            </td>
+            <td class="py-3 px-4 whitespace-nowrap">
+              ${isBound
+                ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-semibold text-xs">
+                     <i class="fa-solid fa-lock text-[10px]"></i> ${m.deviceName || 'Đã khóa TB'}
+                   </span>`
+                : `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 font-medium text-xs">
+                     Chưa đăng nhập
+                   </span>`
+              }
+            </td>
+            <td class="py-3 px-4 text-center whitespace-nowrap">
+              <span class="px-2.5 py-1 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-300 font-extrabold text-xs">${recordedCount} lỗi</span>
+            </td>
+            <td class="py-3 px-4 text-right whitespace-nowrap space-x-1.5">
+              <button type="button" onclick="editMemberByAdmin('${safeUserEscaped}')" class="px-3 py-1.5 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold text-xs transition">Sửa</button>
+              ${isBound
+                ? `<button type="button" onclick="resetDeviceBinding('${safeUserEscaped}')" class="px-3 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold text-xs transition">Đổi TB</button>`
+                : ''
+              }
+              <button type="button" onclick="removeMemberAccount('${safeUserEscaped}')" class="px-3 py-1.5 rounded-lg bg-red-100 hover:bg-red-600 hover:text-white text-red-700 font-bold text-xs transition">Xóa TK</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderSecurityLogsAdmin() {
+      const box = document.getElementById('deviceSecurityLogsBox');
+      if (!box) return;
+      const logs = getSecurityLogs();
+      if (logs.length === 0) {
+        box.innerHTML = `<p class="text-slate-400 italic py-4 text-center">Chưa có cảnh báo thiết bị lạ.</p>`;
+        return;
+      }
+      box.innerHTML = logs.map(l => `
+        <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-800">
+          <div class="flex items-center justify-between font-bold">
+            <span class="text-red-600">${l.username}</span>
+            <span class="text-[10px] text-slate-400">${l.time}</span>
+          </div>
+          <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">${l.message}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderMistakeReportsAdmin() {
+      const box = document.getElementById('mistakeReportsBox');
+      if (!box) return;
+      const reports = JSON.parse(localStorage.getItem('dl3_mistake_reports') || '[]');
+      if (reports.length === 0) {
+        box.innerHTML = `<p class="text-slate-400 italic py-4 text-center">Chưa có báo cáo sai sót nào.</p>`;
+        return;
+      }
+      box.innerHTML = reports.map(r => `
+        <div class="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-rose-300 dark:border-rose-800">
+          <div class="flex items-center justify-between font-bold">
+            <span class="text-rose-600">${r.memberName}</span>
+            <span class="text-[10px] text-slate-400">${r.time}</span>
+          </div>
+          <p class="text-[10px] font-semibold text-slate-500 mt-0.5">${r.violationInfo}</p>
+          <p class="text-[11px] font-bold text-slate-800 dark:text-slate-100 mt-0.5">Lý do: ${r.reason}</p>
+        </div>
+      `).join('');
+    }
+
+    async function clearMistakeReports() {
+      localStorage.removeItem('dl3_mistake_reports');
+      renderMistakeReportsAdmin();
+      await sendDirectToSheetVerified({ action: 'clearMistakeReports' });
+      showToast('Đã xóa danh sách báo cáo sai sót!');
+    }
+
+    function renderAdminActivityTable() {
+      const tbody = document.getElementById('adminActivityTableBody');
+      if (!tbody) return;
+      const filterText = (document.getElementById('adminFilterMember')?.value || '').trim().toLowerCase();
+      const logs = getLocalActivityLogs().filter(item => {
+        const displayName = resolveMemberDisplayName(item.nguoiGhiLoi);
+        if (!filterText) return true;
+        const combined = `${displayName} ${item.nguoiGhiLoi} ${item.hoVaTen} ${item.lop} ${item.loiViPham} ${item.thoiGianChiTiet}`.toLowerCase();
+        return combined.includes(filterText);
+      });
+
+      document.getElementById('statTotalViolations').textContent = logs.length;
+
+      if (logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400 italic">Chưa có dữ liệu hoạt động nào.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = logs.map((item, idx) => {
+        const displayIndex = item.tt || (logs.length - idx);
+        const memberDisplayName = resolveMemberDisplayName(item.nguoiGhiLoi);
+        return `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+            <td class="py-3 px-4 font-extrabold text-red-600 whitespace-nowrap">#${displayIndex}</td>
+            <td class="py-3 px-4 font-semibold whitespace-nowrap">${item.thoiGianChiTiet || ''}</td>
+            <td class="py-3 px-4 font-bold text-blue-600 dark:text-blue-400 whitespace-nowrap">${memberDisplayName}</td>
+            <td class="py-3 px-4 whitespace-nowrap">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${item.hoVaTen ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-800'}">
+                ${item.hoVaTen ? 'Cá nhân HS' : 'Riêng Lớp'}
+              </span>
+            </td>
+            <td class="py-3 px-4 font-semibold">${item.hoVaTen || '<span class="text-slate-400 italic">(Trống - Lỗi Lớp)</span>'}</td>
+            <td class="py-3 px-4 font-extrabold text-red-600 whitespace-nowrap">${item.lop || ''}</td>
+            <td class="py-3 px-4">${item.loiViPham || ''}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function fetchAdminDataFromCloud(showMsg = false, forcePullMembers = false) {
+      try {
+        const res = await sendDirectToSheetVerified({ action: 'getAdminData' });
+        if (!res.ok || !res.data) return;
+        const data = res.data;
+        if (Array.isArray(data.logs)) {
+          localStorage.setItem('dl3_activity_logs', JSON.stringify(data.logs));
+          const queuedItems = await getAllOfflineDB();
+          for (const qItem of queuedItems) {
+            if (isAlreadyOnSheetOrSent(qItem.payload, data.logs)) {
+              markRequestIdAsSent(qItem.payload?.requestId, makeViolationSignatureKey(qItem.payload));
+              await deleteFromOfflineDB(qItem.id);
+            }
+          }
+        }
+        if (forcePullMembers || (Date.now() - lastMemberModifyTimestamp > 8000)) {
+          if (Array.isArray(data.members) && data.members.length > 0) {
+            const normalized = normalizeMemberList(data.members, data.bindings || {});
+            saveMemberAccounts(normalized);
+          }
+        }
+        if (Array.isArray(data.securityLogs)) {
+          localStorage.setItem('dl3_security_logs', JSON.stringify(data.securityLogs));
+        }
+        if (Array.isArray(data.mistakeReports)) {
+          localStorage.setItem('dl3_mistake_reports', JSON.stringify(data.mistakeReports));
+        }
+        renderMyViolationSummaryTable();
+        if (currentUserSession && currentUserSession.role === 'admin') {
+          renderMemberAccountsAdmin();
+          renderSecurityLogsAdmin();
+          renderMistakeReportsAdmin();
+          renderAdminActivityTable();
+        }
+        if (showMsg) showToast('Đã làm mới dữ liệu!');
+      } catch (e) {}
+    }
+
+    /*************************************************************************
+     * 14. TỰ ĐỘNG ĐĂNG NHẬP KHI RELOAD & CHỈ ĐĂNG XUẤT KHI WEB CẬP NHẬT CODE MỚI
+     *************************************************************************/
+    (function initSessionAndEnforceUpdateLogout() {
+      let saved = null;
+      try {
+        localStorage.removeItem('dl3_saved_session');
+        localStorage.removeItem('dl3_saved_session_v4');
+        localStorage.removeItem('dl3_saved_session_v5');
+        localStorage.removeItem('dl3_saved_session_v6');
+        saved = JSON.parse(localStorage.getItem('dl3_saved_session_v7') || 'null');
+      } catch (parseErr) {
+        saved = null;
+      }
+
+      const lastBuildSig = localStorage.getItem('dl3_last_build_sig_v7');
+
+      if (lastBuildSig && lastBuildSig !== CURRENT_WEB_BUILD_SIGNATURE) {
+        localStorage.removeItem('dl3_saved_session_v7');
+        localStorage.setItem('dl3_last_build_sig_v7', CURRENT_WEB_BUILD_SIGNATURE);
+        currentUserSession = null;
+        document.getElementById('loginScreen').classList.remove('hidden');
+        return;
+      }
+
+      localStorage.setItem('dl3_last_build_sig_v7', CURRENT_WEB_BUILD_SIGNATURE);
 
       if (saved && saved.username && saved.buildSignature === CURRENT_WEB_BUILD_SIGNATURE) {
         currentUserSession = saved;
