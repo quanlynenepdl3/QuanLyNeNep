@@ -44,6 +44,16 @@
     .chip-btn:active {
       transform: scale(0.95);
     }
+    /* Đặt input file ra ngoài màn hình thay vì display:none để tương thích 100% trên iOS/Android khi Offline */
+    .offscreen-input {
+      position: fixed;
+      top: -9999px;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
     /* Hiệu ứng Spotlight cho Bot hướng dẫn kiểu Game */
     #tutorialSpotlight {
       position: fixed;
@@ -63,12 +73,12 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between text-slate-800 dark:text-slate-100">
 
-  <!-- INPUT FILE ẨN -->
-  <input type="file" id="QuickPhotoInput" accept="image/*" capture="environment" class="hidden" />
-  <input type="file" id="QuickVideoInput" accept="video/*" capture="environment" class="hidden" />
-  <input type="file" id="QuickUploadInput" accept="image/*,video/*" multiple class="hidden" />
-  <input type="file" id="CustomBgFileInput" accept="image/*" class="hidden" />
-  <input type="file" id="AvatarFileInput" accept="image/*" class="hidden" />
+  <!-- 3 INPUT TÁCH BIỆT RÕ RÀNG: 1. CAM CHỤP ẢNH | 2. CAM QUAY VIDEO | 3. BỘ SƯU TẬP (ẢNH & VIDEO) -->
+  <input type="file" id="NativePhotoCameraInput" accept="image/*" capture="environment" class="offscreen-input" />
+  <input type="file" id="NativeVideoCameraInput" accept="video/*" capture="environment" class="offscreen-input" />
+  <input type="file" id="GalleryUploadInput" accept="image/*,video/*" multiple class="offscreen-input" />
+  <input type="file" id="CustomBgFileInput" accept="image/*" class="offscreen-input" />
+  <input type="file" id="AvatarFileInput" accept="image/*" class="offscreen-input" />
 
   <!-- ==================== MÀN HÌNH ĐĂNG NHẬP ==================== -->
   <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/75 backdrop-blur-md">
@@ -175,22 +185,22 @@
             <span class="hidden md:inline">Hướng dẫn</span>
           </button>
 
-          <!-- 1. Máy ảnh -->
-          <button type="button" id="btnToolCamera" onclick="openMediaCapture('photo')" title="Chụp ảnh minh chứng"
+          <!-- 1. Máy ảnh (Mở trực tiếp Cam chụp ảnh) -->
+          <button type="button" id="btnToolCamera" onclick="openMediaCapture('photo')" title="Mở Camera chụp ảnh minh chứng"
                   class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
             <i class="fa-solid fa-camera text-yellow-300 text-sm"></i>
             <span class="hidden md:inline">Máy ảnh</span>
           </button>
 
-          <!-- 2. Máy quay -->
-          <button type="button" id="btnToolVideo" onclick="openMediaCapture('video')" title="Quay video minh chứng"
+          <!-- 2. Máy quay (Mở trực tiếp Cam quay video) -->
+          <button type="button" id="btnToolVideo" onclick="openMediaCapture('video')" title="Mở Camera quay video minh chứng"
                   class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
             <i class="fa-solid fa-video text-emerald-300 text-sm"></i>
             <span class="hidden md:inline">Máy quay</span>
           </button>
 
-          <!-- 3. Tải lên -->
-          <button type="button" id="btnToolUpload" onclick="openMediaCapture('upload')" title="Tải ảnh hoặc video minh chứng lên"
+          <!-- 3. Tải lên (Mở Bộ sưu tập Ảnh & Video trong máy) -->
+          <button type="button" id="btnToolUpload" onclick="openMediaCapture('upload')" title="Chọn Ảnh hoặc Video từ Bộ sưu tập trong máy"
                   class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
             <i class="fa-solid fa-cloud-arrow-up text-sky-200 text-sm"></i>
             <span class="hidden md:inline">Tải lên</span>
@@ -209,7 +219,7 @@
           </button>
 
           <!-- Báo hàng đợi Offline -->
-          <button type="button" id="offlineQueueBadge" onclick="syncOfflineQueue(true)"
+          <button type="button" id="offlineQueueBadge" onclick="forceSyncAndCleanOfflineQueue()"
                   class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-extrabold shadow-sm">
             <i class="fa-solid fa-cloud-arrow-up animate-bounce"></i>
             <span id="queueCountText">0 chờ gửi</span>
@@ -508,7 +518,6 @@
       <!-- ==================== GIAO DIỆN QUẢN TRỊ VIÊN ==================== -->
       <section id="adminDashboardSection" class="hidden space-y-6">
         <div class="glass-card rounded-2xl shadow-md border-2 border-red-500/30 p-5 md:p-6 space-y-6">
-          <!-- Tiêu đề Quản trị -->
           <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-700">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shadow">
@@ -568,7 +577,7 @@
             </div>
           </div>
 
-          <!-- KHỐI 1 (TOÀN CHIỀU NGANG RỘNG RÃI): KIỂM SOÁT SỐ LƯỢNG & CẤP / XÓA TÀI KHOẢN THÀNH VIÊN -->
+          <!-- KHỐI 1: KIỂM SOÁT SỐ LƯỢNG & CẤP / XÓA TÀI KHOẢN THÀNH VIÊN -->
           <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-3">
               <h3 class="font-extrabold text-sm sm:text-base flex items-center gap-2 text-slate-800 dark:text-slate-100">
@@ -585,7 +594,6 @@
               </div>
             </div>
 
-            <!-- Khung nhập Cấp Tài Khoản Mới rộng rãi, có nhãn rõ ràng -->
             <div class="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700">
               <div class="md:col-span-3">
                 <label class="block text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 mb-1">
@@ -603,7 +611,7 @@
                 </label>
                 <input type="text" id="newMemberFullNameInput"
                        onkeydown="if(event.key==='Enter') addMemberAccount()"
-                       placeholder="Nhập họ tên (VD: Nguyễn Văn A)"
+                       placeholder="Nhập họ tên (VD: Minh Thư)"
                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-xs font-semibold outline-none focus:border-red-500" />
               </div>
 
@@ -626,7 +634,6 @@
               </div>
             </div>
 
-            <!-- Bảng danh sách thành viên rộng toàn màn hình (CÓ NÚT ẨN/HIỆN MẬT KHẨU BẰNG DẤU CHẤM TRÒN) -->
             <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 max-h-[420px] overflow-y-auto">
               <table class="w-full min-w-[820px] text-left border-collapse text-xs">
                 <thead class="sticky top-0 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 uppercase font-bold border-b border-slate-200 dark:border-slate-700 z-10">
@@ -684,7 +691,7 @@
             </div>
           </div>
 
-          <!-- KHỐI 3 (ĐƯA XUỐNG PHÍA DƯỚI CÙNG): CẢNH BÁO THIẾT BỊ LẠ & BÁO CÁO SAI SÓT TỪ THÀNH VIÊN -->
+          <!-- KHỐI 3: CẢNH BÁO THIẾT BỊ LẠ & BÁO CÁO SAI SÓT TỪ THÀNH VIÊN -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
             <div class="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
               <div class="flex items-center justify-between mb-3">
@@ -731,6 +738,64 @@
       </p>
     </div>
   </footer>
+
+  <!-- ==================== MODAL CAMERA CHỤP ẢNH / QUAY VIDEO TRỰC TIẾP (HOẠT ĐỘNG 100% CẢ KHI OFFLINE) ==================== -->
+  <div id="liveCameraModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+    <div class="glass-card w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div class="header-gradient px-5 py-3.5 text-white flex items-center justify-between">
+        <h3 id="liveCameraModalTitle" class="font-extrabold text-sm uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-camera"></i> Camera Chụp Ảnh Minh Chứng
+        </h3>
+        <button type="button" onclick="closeLiveCameraModal()" class="text-white/80 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-4 space-y-3 bg-slate-950 text-white">
+        <div class="relative w-full aspect-[4/3] bg-black rounded-2xl overflow-hidden flex items-center justify-center border border-slate-800">
+          <video id="liveCameraVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
+
+          <!-- Đồng hồ đếm giờ khi đang quay video -->
+          <div id="videoRecTimerBadge" class="hidden absolute top-3 left-3 items-center gap-2 px-3 py-1 rounded-full bg-red-600 text-white font-extrabold text-xs shadow">
+            <span class="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
+            <span id="videoRecTimerText">00:00</span>
+          </div>
+
+          <!-- Nút đổi Camera Trước / Sau -->
+          <button type="button" onclick="switchCameraFacing()" title="Đổi Camera Trước / Sau"
+                  class="absolute top-3 right-3 w-10 h-10 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center border border-white/20">
+            <i class="fa-solid fa-camera-rotate"></i>
+          </button>
+        </div>
+
+        <!-- Điều khiển Chụp Ảnh -->
+        <div id="photoCaptureControls" class="flex flex-col sm:flex-row items-center gap-2.5">
+          <button type="button" onclick="snapLivePhoto()"
+                  class="w-full py-3.5 rounded-2xl bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg">
+            <i class="fa-solid fa-camera text-lg"></i>
+            <span>CHỤP ẢNH NGAY</span>
+          </button>
+          <button type="button" onclick="triggerNativeSystemCamera('photo')"
+                  class="w-full sm:w-auto px-4 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs whitespace-nowrap">
+            Mở Cam gốc của máy
+          </button>
+        </div>
+
+        <!-- Điều khiển Quay Video -->
+        <div id="videoCaptureControls" class="hidden flex-col sm:flex-row items-center gap-2.5">
+          <button type="button" id="btnStartStopVideoRec" onclick="toggleLiveVideoRecording()"
+                  class="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg">
+            <i class="fa-solid fa-circle-dot text-lg"></i>
+            <span>BẮT ĐẦU QUAY VIDEO</span>
+          </button>
+          <button type="button" onclick="triggerNativeSystemCamera('video')"
+                  class="w-full sm:w-auto px-4 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs whitespace-nowrap">
+            Mở Cam quay gốc
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== MODAL HỒ SƠ CÁ NHÂN ==================== -->
   <div id="profileModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
@@ -915,13 +980,12 @@
     <span id="toastText">Đã đồng bộ!</span>
   </div>
 
-  <script>
+  <script id="mainAppScript">
     /*************************************************************************
-     * 1. BẢO MẬT MÃ NGUỒN (CHẶN CTRL+U, F12 & MÃ HÓA BĂM 1 CHIỀU TÀI KHOẢN QUẢN TRỊ)
+     * 1. BẢO MẬT MÃ NGUỒN & TỰ ĐỘNG ĐĂNG XUẤT 100% KHI WEB CẬP NHẬT
      *************************************************************************/
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSTYrnxaOFaw1-nUEzYV2zL1DAxzhoRCrSXSgKlZYgtEdTIuwoUkK5868d89CLoV-Mfg/exec';
 
-    // Chặn phím tắt xem mã nguồn (Ctrl+U, F12, Ctrl+Shift+I/J/C)
     document.addEventListener('keydown', function(e) {
       if (
         e.key === 'F12' ||
@@ -933,7 +997,6 @@
       }
     });
 
-    // Hàm băm một chiều (Không lưu chữ rõ tên tài khoản hay mật khẩu Quản trị trong code)
     function computeSecurityDigest(str) {
       const s = String(str || '').normalize('NFC');
       const L = s.length;
@@ -947,14 +1010,20 @@
       return `${L}-${s1}-${s2}-${s3}`;
     }
 
-    // Mã băm một chiều của duy nhất 2 tên đăng nhập Quản trị và mật khẩu Quản trị (Không thể dịch ngược)
+    // Tự động tính chữ ký của toàn bộ mã nguồn trang web hiện tại:
+    // Bất cứ khi nào file index.html trên GitHub thay đổi dù chỉ 1 ký tự, chữ ký này sẽ đổi và tự động đăng xuất 100% tài khoản!
+    const CURRENT_WEB_BUILD_SIGNATURE = (function() {
+      const scriptText = document.getElementById('mainAppScript')?.textContent || document.documentElement.innerHTML.slice(0, 5000);
+      return 'BUILD_V5_' + computeSecurityDigest(scriptText);
+    })();
+
     const ADMIN_SECURITY_DIGESTS = {
       allowedUsers: ['22-316747-95712-7387', '7-2629-3027-5838'],
       passDigest: '15-9101-10211-5612'
     };
 
     /*************************************************************************
-     * 2. NHẬN DIỆN THIẾT BỊ VẬT LÝ & ĐỊA CHỈ IP (CHO PHÉP ĐỔI TRÌNH DUYỆT CÙNG MÁY)
+     * 2. NHẬN DIỆN THIẾT BỊ VẬT LÝ & ĐỊA CHỈ IP
      *************************************************************************/
     let cachedPublicIP = localStorage.getItem('dl3_cached_ip') || '';
 
@@ -1011,7 +1080,7 @@
     }
 
     /*************************************************************************
-     * 3. QUẢN LÝ DANH SÁCH THÀNH VIÊN TRÊN HỆ THỐNG (KHÔNG GÕ CỨNG TRONG CODE)
+     * 3. QUẢN LÝ DANH SÁCH THÀNH VIÊN TRÊN HỆ THỐNG
      *************************************************************************/
     function normalizeMemberList(rawList, legacyBindings = {}) {
       if (!Array.isArray(rawList)) return [];
@@ -1066,7 +1135,7 @@
     }
 
     /*************************************************************************
-     * 4. KHO LƯU TRỮ OFFLINE INDEXED-DB (GIỮ NGUYÊN GIỜ LÚC BẤM NÚT 7H05)
+     * 4. KHO LƯU TRỮ OFFLINE INDEXED-DB & CHỐNG TRÙNG LẶP / CHỐNG KẸT HÀNG ĐỢI
      *************************************************************************/
     const IDB_NAME = 'DL3_Offline_Database';
     const IDB_STORE = 'offline_queue';
@@ -1085,16 +1154,82 @@
       });
     }
 
+    // Tạo khóa nhận diện duy nhất cho mỗi lỗi (Thời gian + Lớp + Họ tên + Lỗi)
+    function makeViolationSignatureKey(p) {
+      if (!p) return '';
+      const t = String(p.thoiGianChiTiet || '').trim().toLowerCase();
+      const l = String(p.lop || '').trim().toLowerCase();
+      const h = String(p.hoVaTen || '').trim().toLowerCase();
+      const v = String(p.loiViPham || '').trim().toLowerCase();
+      return `${t}|${l}|${h}|${v}`;
+    }
+
+    function getSentRequestIds() {
+      try {
+        return new Set(JSON.parse(localStorage.getItem('dl3_sent_req_ids') || '[]'));
+      } catch (e) {
+        return new Set();
+      }
+    }
+
+    function markRequestIdAsSent(reqId, sigKey) {
+      try {
+        const arr = JSON.parse(localStorage.getItem('dl3_sent_req_ids') || '[]');
+        if (reqId && !arr.includes(reqId)) arr.unshift(reqId);
+        if (sigKey && !arr.includes(sigKey)) arr.unshift(sigKey);
+        localStorage.setItem('dl3_sent_req_ids', JSON.stringify(arr.slice(0, 500)));
+      } catch (e) {}
+    }
+
+    // Kiểm tra xem lỗi này đã tồn tại trên Google Sheet hoặc đã gửi thành công chưa
+    function isAlreadyOnSheetOrSent(payload, cloudLogs) {
+      if (!payload) return true;
+      const sentSet = getSentRequestIds();
+      const sigKey = makeViolationSignatureKey(payload);
+      if (payload.requestId && sentSet.has(payload.requestId)) return true;
+      if (sigKey && sentSet.has(sigKey)) return true;
+
+      const logsToCheck = Array.isArray(cloudLogs) ? cloudLogs : getLocalActivityLogs();
+      return logsToCheck.some(row => {
+        if (row.isLocalPending) return false;
+        return makeViolationSignatureKey(row) === sigKey;
+      });
+    }
+
     async function addToOfflineDB(payload) {
       try {
+        const currentItems = await getAllOfflineDB();
+        const newSig = makeViolationSignatureKey(payload);
+        // Không lưu trùng vào IndexedDB nếu cùng 1 lỗi đã nằm trong hàng đợi
+        const alreadyQueued = currentItems.some(item =>
+          (item.payload?.requestId && item.payload.requestId === payload.requestId) ||
+          makeViolationSignatureKey(item.payload) === newSig
+        );
+        if (alreadyQueued) {
+          await refreshOfflineBadge();
+          return;
+        }
+
         const db = await openOfflineDB();
         await new Promise((resolve, reject) => {
           const tx = db.transaction(IDB_STORE, 'readwrite');
-          tx.objectStore(IDB_STORE).add({ payload, createdAt: Date.now() });
+          tx.objectStore(IDB_STORE).add({ payload, retryCount: 0, createdAt: Date.now() });
           tx.oncomplete = resolve;
           tx.onerror = reject;
         });
         await refreshOfflineBadge();
+      } catch (err) {}
+    }
+
+    async function updateOfflineDBItemRetry(id, itemObj) {
+      try {
+        const db = await openOfflineDB();
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction(IDB_STORE, 'readwrite');
+          tx.objectStore(IDB_STORE).put(itemObj);
+          tx.oncomplete = resolve;
+          tx.onerror = reject;
+        });
       } catch (err) {}
     }
 
@@ -1139,15 +1274,17 @@
       }
     }
 
-    window.addEventListener('online', () => syncOfflineQueue(true));
+    window.addEventListener('online', () => {
+      setTimeout(() => syncOfflineQueue(true), 800);
+    });
     refreshOfflineBadge();
 
     /*************************************************************************
-     * 5. ĐỒNG BỘ VỚI GOOGLE SHEET & DRIVE QUA POST
+     * 5. ĐỒNG BỘ VỚI GOOGLE SHEET & XỬ LÝ TRIỆT ĐỂ KẸT / TRÙNG HÀNG ĐỢI OFFLINE
      *************************************************************************/
     async function sendDirectToSheetVerified(payload) {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 25000);
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
 
       try {
         const response = await fetch(APPS_SCRIPT_URL, {
@@ -1160,48 +1297,136 @@
         clearTimeout(timeoutId);
 
         const text = await response.text();
-        const json = JSON.parse(text);
-        if (json && (json.status === 'success' || json.status === 'ok' || json.status === 'synced' || json.status === 'logged')) {
-          return { ok: true, data: json };
+        try {
+          const json = JSON.parse(text);
+          if (json && (json.status === 'success' || json.status === 'ok' || json.status === 'synced' || json.status === 'logged')) {
+            return { ok: true, data: json };
+          }
+          return { ok: false, error: (json && json.message) || 'Lỗi phản hồi' };
+        } catch (parseErr) {
+          if (response.ok) return { ok: true, data: {} };
+          return { ok: false, error: 'Phản hồi không hợp lệ' };
         }
-        return { ok: false, error: (json && json.message) || 'Lỗi phản hồi' };
       } catch (err) {
         clearTimeout(timeoutId);
-        return { ok: false, error: err.message || 'Mất kết nối mạng' };
+        return { ok: false, error: err.message || 'Mất kết nối mạng', networkError: true };
       }
     }
 
     let isSyncingOffline = false;
+    let lastSyncStartTime = 0;
+
     async function syncOfflineQueue(showNotification = false) {
-      if (isSyncingOffline || !navigator.onLine) return;
-      const items = await getAllOfflineDB();
-      if (items.length === 0) return;
+      // Tự động mở khóa nếu lần đồng bộ trước bị treo quá 40 giây
+      if (isSyncingOffline && (Date.now() - lastSyncStartTime < 40000)) return;
+      if (!navigator.onLine) {
+        if (showNotification) showToast('Điện thoại đang không có mạng!', false);
+        return;
+      }
+
+      const initialItems = await getAllOfflineDB();
+      if (initialItems.length === 0) {
+        await refreshOfflineBadge();
+        return;
+      }
 
       isSyncingOffline = true;
-      if (showNotification) {
-        showToast(`Đang đồng bộ ${items.length} lỗi lưu offline lên Sheet...`);
-      }
+      lastSyncStartTime = Date.now();
 
-      let syncedCount = 0;
-      for (const item of items) {
-        const res = await sendDirectToSheetVerified(item.payload);
-        if (res.ok) {
-          await deleteFromOfflineDB(item.id);
-          syncedCount++;
-        } else {
-          break;
+      try {
+        if (showNotification) {
+          showToast(`Đang kiểm tra & đồng bộ ${initialItems.length} lỗi chờ gửi...`);
         }
-      }
 
-      isSyncingOffline = false;
-      if (syncedCount > 0) {
-        showToast(`Đã đồng bộ ${syncedCount} lỗi offline (giữ nguyên giờ nhập ban đầu)!`);
-        fetchAdminDataFromCloud(false, false);
+        // Bước 1: Tải danh sách lỗi hiện có trên Google Sheet về trước để lọc bỏ các lỗi thực tế đã lên Sheet rồi
+        let latestSheetLogs = [];
+        const cloudCheck = await sendDirectToSheetVerified({ action: 'getAdminData' });
+        if (cloudCheck.ok && cloudCheck.data && Array.isArray(cloudCheck.data.logs)) {
+          latestSheetLogs = cloudCheck.data.logs;
+          localStorage.setItem('dl3_activity_logs', JSON.stringify(latestSheetLogs));
+        }
+
+        const queueItems = await getAllOfflineDB();
+        const seenSignaturesInBatch = new Set();
+        let syncedCount = 0;
+
+        for (const item of queueItems) {
+          const p = item.payload;
+          if (!p) {
+            await deleteFromOfflineDB(item.id);
+            continue;
+          }
+
+          const sigKey = makeViolationSignatureKey(p);
+
+          // Nếu lỗi này bị trùng ngay trong hàng đợi hoặc đã có mặt trên Google Sheet -> Xóa ngay khỏi hàng đợi, KHÔNG gửi lại!
+          if (seenSignaturesInBatch.has(sigKey) || isAlreadyOnSheetOrSent(p, latestSheetLogs)) {
+            markRequestIdAsSent(p.requestId, sigKey);
+            await deleteFromOfflineDB(item.id);
+            syncedCount++;
+            continue;
+          }
+          seenSignaturesInBatch.add(sigKey);
+
+          // Bước 2: Gửi lỗi lên Google Sheet
+          const res = await sendDirectToSheetVerified(p);
+          if (res.ok) {
+            markRequestIdAsSent(p.requestId, sigKey);
+            await deleteFromOfflineDB(item.id);
+            syncedCount++;
+            continue;
+          }
+
+          // Bước 3: Nếu trình duyệt báo lỗi Redirect nhưng có thể Sheet đã ghi xong -> Kiểm tra lại trên Sheet ngay!
+          const verifyRes = await sendDirectToSheetVerified({ action: 'getAdminData' });
+          if (verifyRes.ok && verifyRes.data && Array.isArray(verifyRes.data.logs)) {
+            latestSheetLogs = verifyRes.data.logs;
+            localStorage.setItem('dl3_activity_logs', JSON.stringify(latestSheetLogs));
+            if (isAlreadyOnSheetOrSent(p, latestSheetLogs)) {
+              markRequestIdAsSent(p.requestId, sigKey);
+              await deleteFromOfflineDB(item.id);
+              syncedCount++;
+              continue;
+            }
+          }
+
+          // Bước 4: Nếu chưa lên được Sheet do file video/ảnh đính kèm quá nặng làm nghẽn mạng -> Tự động gửi bản rút gọn để không bao giờ kẹt hàng đợi!
+          item.retryCount = (item.retryCount || 0) + 1;
+          if (item.retryCount >= 2 && Array.isArray(p.evidenceFiles) && p.evidenceFiles.length > 0) {
+            const lightPayload = { ...p, evidenceFiles: [] };
+            const lightRes = await sendDirectToSheetVerified(lightPayload);
+            if (lightRes.ok) {
+              markRequestIdAsSent(p.requestId, sigKey);
+              await deleteFromOfflineDB(item.id);
+              syncedCount++;
+              continue;
+            }
+          }
+
+          // Nếu lỗi hỏng sau 5 lần thử -> Xóa để giải phóng hàng đợi
+          if (item.retryCount >= 5) {
+            await deleteFromOfflineDB(item.id);
+          } else {
+            await updateOfflineDBItemRetry(item.id, item);
+          }
+        }
+
+        await refreshOfflineBadge();
+        if (syncedCount > 0) {
+          showToast(`Đã đồng bộ xong ${syncedCount} lỗi lên hệ thống!`);
+          await fetchAdminDataFromCloud(false, false);
+        }
+      } finally {
+        isSyncingOffline = false;
       }
     }
 
+    async function forceSyncAndCleanOfflineQueue() {
+      await syncOfflineQueue(true);
+    }
+
     /*************************************************************************
-     * 6. ĐĂNG NHẬP, HỒ SƠ CÁ NHÂN & QUẢN LÝ PHIÊN
+     * 6. ĐĂNG NHẬP, TỰ ĐỘNG ĐĂNG XUẤT KHI WEB CẬP NHẬT & ĐỒNG BỘ TÀI KHOẢN
      *************************************************************************/
     let selectedLoginRole = 'member';
     let currentUserSession = null;
@@ -1246,15 +1471,31 @@
       showToast('Đã xóa lịch sử cảnh báo thiết bị!');
     }
 
+    // Đồng bộ tài khoản với Cloud (Đảm bảo nếu máy mới chưa tải kịp danh sách thì tự lấy từ Sheet về trước, không bao giờ ghi đè rỗng)
     async function syncMembersConfigToCloud(showMsg = false) {
       lastMemberModifyTimestamp = Date.now();
+      let currentMembers = getMemberAccounts();
+
+      if (currentMembers.length === 0 && navigator.onLine) {
+        const checkCloud = await sendDirectToSheetVerified({ action: 'getAdminData' });
+        if (checkCloud.ok && checkCloud.data && Array.isArray(checkCloud.data.members) && checkCloud.data.members.length > 0) {
+          currentMembers = normalizeMemberList(checkCloud.data.members, checkCloud.data.bindings || {});
+          saveMemberAccounts(currentMembers);
+          renderMemberAccountsAdmin();
+          if (showMsg) {
+            showToast(`Đã khôi phục & đồng bộ ${currentMembers.length} tài khoản từ Google Sheet!`);
+          }
+          return checkCloud;
+        }
+      }
+
       const res = await sendDirectToSheetVerified({
         action: 'syncMembers',
-        members: getMemberAccounts(),
+        members: currentMembers,
         maxLimit: getMaxMemberLimit()
       });
       if (showMsg) {
-        if (res.ok) showToast('Đã đồng bộ danh sách tài khoản lên Cloud!');
+        if (res.ok) showToast(`Đã đồng bộ ${currentMembers.length} tài khoản lên Cloud thành công!`);
         else showToast('Chưa đồng bộ được lên Cloud!', false);
       }
       return res;
@@ -1336,7 +1577,8 @@
           role: 'admin',
           hwSig: myHwSig,
           boundIP: myIP,
-          deviceName: myDeviceDesc
+          deviceName: myDeviceDesc,
+          buildSignature: CURRENT_WEB_BUILD_SIGNATURE
         };
       } else {
         if (navigator.onLine) {
@@ -1393,11 +1635,13 @@
           role: 'member',
           hwSig: myHwSig,
           boundIP: myIP,
-          deviceName: myDeviceDesc
+          deviceName: myDeviceDesc,
+          buildSignature: CURRENT_WEB_BUILD_SIGNATURE
         };
       }
 
-      localStorage.setItem('dl3_saved_session_v4', JSON.stringify(currentUserSession));
+      localStorage.setItem('dl3_saved_session_v5', JSON.stringify(currentUserSession));
+      localStorage.setItem('dl3_last_build_sig', CURRENT_WEB_BUILD_SIGNATURE);
       applySessionUI();
       showToast(`Xin chào ${currentUserSession.fullName}!`);
 
@@ -1431,7 +1675,7 @@
         renderSecurityLogsAdmin();
         renderMistakeReportsAdmin();
         renderAdminActivityTable();
-        fetchAdminDataFromCloud(false, false);
+        fetchAdminDataFromCloud(false, true);
       } else {
         adminSection.classList.add('hidden');
         fetchAdminDataFromCloud(false, false);
@@ -1439,20 +1683,40 @@
     }
 
     function logoutSystem() {
+      localStorage.removeItem('dl3_saved_session');
       localStorage.removeItem('dl3_saved_session_v4');
+      localStorage.removeItem('dl3_saved_session_v5');
       currentUserSession = null;
       document.getElementById('loginPassword').value = '';
       document.getElementById('loginScreen').classList.remove('hidden');
     }
 
-    (function checkAutoLogin() {
+    // KIỂM TRA PHIÊN BẢN WEB KHI MỞ TRANG:
+    // Nếu code trang web vừa có bất kỳ cập nhật/thay đổi nào -> Tự động đăng xuất 100% mọi tài khoản (kể cả Quản trị)
+    (function checkAutoLoginAndEnforceUpdateLogout() {
       try {
-        const saved = JSON.parse(localStorage.getItem('dl3_saved_session_v4') || 'null');
+        // Xóa triệt để các phiên đăng nhập từ bản cũ
+        localStorage.removeItem('dl3_saved_session');
+        localStorage.removeItem('dl3_saved_session_v4');
+
+        const lastBuildSig = localStorage.getItem('dl3_last_build_sig');
+        const saved = JSON.parse(localStorage.getItem('dl3_saved_session_v5') || 'null');
+
+        if (lastBuildSig !== CURRENT_WEB_BUILD_SIGNATURE || !saved || saved.buildSignature !== CURRENT_WEB_BUILD_SIGNATURE) {
+          localStorage.removeItem('dl3_saved_session_v5');
+          localStorage.setItem('dl3_last_build_sig', CURRENT_WEB_BUILD_SIGNATURE);
+          currentUserSession = null;
+          document.getElementById('loginScreen').classList.remove('hidden');
+          return;
+        }
+
         if (saved && saved.username) {
           currentUserSession = saved;
           applySessionUI();
         }
-      } catch (e) {}
+      } catch (e) {
+        logoutSystem();
+      }
     })();
 
     /*************************************************************************
@@ -1556,7 +1820,7 @@
         currentUserSession.avatar = pendingAvatarDataUrl;
       }
 
-      localStorage.setItem('dl3_saved_session_v4', JSON.stringify(currentUserSession));
+      localStorage.setItem('dl3_saved_session_v5', JSON.stringify(currentUserSession));
       applySessionUI();
 
       btn.disabled = false;
@@ -1572,7 +1836,7 @@
       {
         targetId: 'headerToolbarGroup',
         title: '1. Thanh công cụ Minh chứng & Giao diện',
-        desc: 'Tại đây bạn có thể bấm "Máy ảnh" để chụp ảnh nhanh, "Máy quay" để quay video vi phạm, "Tải lên" tệp từ máy, hoặc đổi hình nền cá nhân và chế độ Sáng/Tối.'
+        desc: 'Bấm "Máy ảnh" để mở Cam chụp ảnh, "Máy quay" để mở Cam quay video, "Tải lên" để chọn Ảnh/Video từ Bộ sưu tập trong máy, hoặc đổi hình nền và chế độ Sáng/Tối.'
       },
       {
         targetId: 'cardStudentViolation',
@@ -1732,23 +1996,230 @@
     });
 
     /*************************************************************************
-     * 10. XỬ LÝ ẢNH / VIDEO MINH CHỨNG
+     * 10. HỆ THỐNG CAMERA CHỤP ẢNH • CAMERA QUAY VIDEO • TẢI LÊN TỪ BỘ SƯU TẬP (HOẠT ĐỘNG 100% CẢ KHI OFFLINE)
      *************************************************************************/
     let studentEvidenceFiles = [];
     let classEvidenceFiles = [];
     let pendingPickedFiles = [];
     let directTargetColumn = null;
 
-    function openMediaCapture(mode) {
+    let liveMediaStream = null;
+    let currentCameraFacing = 'environment';
+    let currentCameraMode = 'photo';
+    let mediaRecorderInstance = null;
+    let recordedVideoChunks = [];
+    let videoTimerInterval = null;
+    let videoSecondsElapsed = 0;
+
+    // Phân luồng chính xác 3 nút chức năng:
+    // - 'photo'  -> Mở Camera Chụp Ảnh
+    // - 'video'  -> Mở Camera Quay Video
+    // - 'upload' -> Mở Bộ sưu tập (Ảnh & Video trong điện thoại / máy tính)
+    async function openMediaCapture(mode) {
       directTargetColumn = null;
-      if (mode === 'photo') document.getElementById('QuickPhotoInput').click();
-      else if (mode === 'video') document.getElementById('QuickVideoInput').click();
-      else document.getElementById('QuickUploadInput').click();
+      if (mode === 'upload') {
+        document.getElementById('GalleryUploadInput').click();
+        return;
+      }
+      await startLiveCameraModal(mode);
     }
 
+    // Khi bấm nút "+ Thêm tệp" ở từng cột -> Mở thẳng Bộ sưu tập Ảnh & Video trong máy
     function triggerDirectAddFile(targetCol) {
       directTargetColumn = targetCol;
-      document.getElementById('QuickUploadInput').click();
+      document.getElementById('GalleryUploadInput').click();
+    }
+
+    function triggerNativeSystemCamera(mode) {
+      closeLiveCameraModal();
+      if (mode === 'photo') {
+        document.getElementById('NativePhotoCameraInput').click();
+      } else {
+        document.getElementById('NativeVideoCameraInput').click();
+      }
+    }
+
+    async function startLiveCameraModal(mode) {
+      currentCameraMode = mode;
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        triggerNativeSystemCamera(mode);
+        return;
+      }
+
+      try {
+        stopLiveStreamTracks();
+        const constraints = {
+          video: { facingMode: { ideal: currentCameraFacing }, width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: mode === 'video'
+        };
+        liveMediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+
+        const videoEl = document.getElementById('liveCameraVideo');
+        videoEl.srcObject = liveMediaStream;
+
+        const titleEl = document.getElementById('liveCameraModalTitle');
+        const photoControls = document.getElementById('photoCaptureControls');
+        const videoControls = document.getElementById('videoCaptureControls');
+        const timerBadge = document.getElementById('videoRecTimerBadge');
+
+        timerBadge.classList.add('hidden');
+        timerBadge.classList.remove('flex');
+
+        if (mode === 'photo') {
+          titleEl.innerHTML = '<i class="fa-solid fa-camera text-yellow-300"></i> <span>Camera Chụp Ảnh Minh Chứng</span>';
+          photoControls.classList.remove('hidden');
+          photoControls.classList.add('flex');
+          videoControls.classList.add('hidden');
+          videoControls.classList.remove('flex');
+        } else {
+          titleEl.innerHTML = '<i class="fa-solid fa-video text-emerald-300"></i> <span>Camera Quay Video Minh Chứng</span>';
+          photoControls.classList.add('hidden');
+          photoControls.classList.remove('flex');
+          videoControls.classList.remove('hidden');
+          videoControls.classList.add('flex');
+          resetVideoRecButtonUI(false);
+        }
+
+        const modal = document.getElementById('liveCameraModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      } catch (err) {
+        // Nếu trình duyệt chặn quyền camera trực tiếp -> Tự động mở Camera gốc của điện thoại
+        triggerNativeSystemCamera(mode);
+      }
+    }
+
+    async function switchCameraFacing() {
+      currentCameraFacing = currentCameraFacing === 'environment' ? 'user' : 'environment';
+      await startLiveCameraModal(currentCameraMode);
+    }
+
+    function stopLiveStreamTracks() {
+      if (videoTimerInterval) {
+        clearInterval(videoTimerInterval);
+        videoTimerInterval = null;
+      }
+      if (liveMediaStream) {
+        liveMediaStream.getTracks().forEach(t => t.stop());
+        liveMediaStream = null;
+      }
+    }
+
+    function closeLiveCameraModal() {
+      if (mediaRecorderInstance && mediaRecorderInstance.state === 'recording') {
+        try { mediaRecorderInstance.stop(); } catch (e) {}
+      }
+      stopLiveStreamTracks();
+      const modal = document.getElementById('liveCameraModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function snapLivePhoto() {
+      const videoEl = document.getElementById('liveCameraVideo');
+      if (!videoEl || !videoEl.videoWidth) {
+        return triggerNativeSystemCamera('photo');
+      }
+
+      const maxDim = 1280;
+      let w = videoEl.videoWidth;
+      let h = videoEl.videoHeight;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+        else { w = Math.round((w * maxDim) / h); h = maxDim; }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext('2d').drawImage(videoEl, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      const base64Clean = dataUrl.split(',')[1] || '';
+
+      closeLiveCameraModal();
+
+      const photoFileObj = {
+        originalName: `Anh_${getDetailedTimeString().replace(/:/g, '-')}.jpg`,
+        mimeType: 'image/jpeg',
+        size: Math.round(base64Clean.length * 0.75),
+        base64: base64Clean
+      };
+
+      handleProcessedMediaFiles([photoFileObj]);
+    }
+
+    function resetVideoRecButtonUI(isRecording) {
+      const btn = document.getElementById('btnStartStopVideoRec');
+      const timerBadge = document.getElementById('videoRecTimerBadge');
+      if (isRecording) {
+        btn.className = 'w-full py-3.5 rounded-2xl bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg animate-pulse';
+        btn.innerHTML = '<i class="fa-solid fa-stop text-lg"></i> <span>DỪNG & LƯU VIDEO</span>';
+        timerBadge.classList.remove('hidden');
+        timerBadge.classList.add('flex');
+      } else {
+        btn.className = 'w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg';
+        btn.innerHTML = '<i class="fa-solid fa-circle-dot text-lg"></i> <span>BẮT ĐẦU QUAY VIDEO</span>';
+        timerBadge.classList.add('hidden');
+        timerBadge.classList.remove('flex');
+      }
+    }
+
+    function toggleLiveVideoRecording() {
+      if (!liveMediaStream) return triggerNativeSystemCamera('video');
+
+      if (mediaRecorderInstance && mediaRecorderInstance.state === 'recording') {
+        mediaRecorderInstance.stop();
+        return;
+      }
+
+      recordedVideoChunks = [];
+      let options = {};
+      if (typeof MediaRecorder !== 'undefined') {
+        if (MediaRecorder.isTypeSupported('video/mp4')) options = { mimeType: 'video/mp4', videoBitsPerSecond: 1200000 };
+        else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) options = { mimeType: 'video/webm;codecs=vp8,opus', videoBitsPerSecond: 1200000 };
+        else if (MediaRecorder.isTypeSupported('video/webm')) options = { mimeType: 'video/webm', videoBitsPerSecond: 1200000 };
+      } else {
+        return triggerNativeSystemCamera('video');
+      }
+
+      try {
+        mediaRecorderInstance = new MediaRecorder(liveMediaStream, options);
+      } catch (e) {
+        mediaRecorderInstance = new MediaRecorder(liveMediaStream);
+      }
+
+      mediaRecorderInstance.ondataavailable = (ev) => {
+        if (ev.data && ev.data.size > 0) recordedVideoChunks.push(ev.data);
+      };
+
+      mediaRecorderInstance.onstop = async () => {
+        const mime = mediaRecorderInstance.mimeType || 'video/mp4';
+        const ext = mime.includes('webm') ? 'webm' : 'mp4';
+        const blob = new Blob(recordedVideoChunks, { type: mime });
+        closeLiveCameraModal();
+
+        showToast('Đang xử lý video vừa quay...');
+        const base64Data = await rawFileToBase64(blob);
+        const videoFileObj = {
+          originalName: `Video_${getDetailedTimeString().replace(/:/g, '-')}.${ext}`,
+          mimeType: mime,
+          size: blob.size,
+          base64: base64Data
+        };
+        handleProcessedMediaFiles([videoFileObj]);
+      };
+
+      mediaRecorderInstance.start(250);
+      videoSecondsElapsed = 0;
+      document.getElementById('videoRecTimerText').textContent = '00:00';
+      resetVideoRecButtonUI(true);
+
+      videoTimerInterval = setInterval(() => {
+        videoSecondsElapsed++;
+        const m = String(Math.floor(videoSecondsElapsed / 60)).padStart(2, '0');
+        const s = String(videoSecondsElapsed % 60).padStart(2, '0');
+        document.getElementById('videoRecTimerText').textContent = `${m}:${s}`;
+      }, 1000);
     }
 
     function compressImageFileToBase64(file) {
@@ -1776,16 +2247,30 @@
       });
     }
 
-    function rawFileToBase64(file) {
+    function rawFileToBase64(fileOrBlob) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(String(reader.result || '').split(',')[1] || '');
         reader.onerror = reject;
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(fileOrBlob);
       });
     }
 
-    ['QuickPhotoInput', 'QuickVideoInput', 'QuickUploadInput'].forEach(id => {
+    function handleProcessedMediaFiles(validFiles) {
+      if (!validFiles || validFiles.length === 0) return;
+      if (directTargetColumn) {
+        attachFilesToTarget(directTargetColumn, validFiles);
+        directTargetColumn = null;
+      } else {
+        pendingPickedFiles = validFiles;
+        document.getElementById('pendingFilesSummary').textContent =
+          `Đã chuẩn bị ${validFiles.length} tệp minh chứng (${validFiles.map(f => f.originalName).join(', ')})`;
+        document.getElementById('assignEvidenceModal').classList.remove('hidden');
+        document.getElementById('assignEvidenceModal').classList.add('flex');
+      }
+    }
+
+    ['NativePhotoCameraInput', 'NativeVideoCameraInput', 'GalleryUploadInput'].forEach(id => {
       document.getElementById(id).addEventListener('change', async (e) => {
         const files = Array.from(e.target.files || []);
         e.target.value = '';
@@ -1809,17 +2294,7 @@
           validFiles.push({ originalName: f.name, mimeType: f.type || 'video/mp4', size: f.size, base64: base64Data });
         }
 
-        if (validFiles.length === 0) return;
-        if (directTargetColumn) {
-          attachFilesToTarget(directTargetColumn, validFiles);
-          directTargetColumn = null;
-        } else {
-          pendingPickedFiles = validFiles;
-          document.getElementById('pendingFilesSummary').textContent =
-            `Đã chọn ${validFiles.length} tệp minh chứng (${validFiles.map(f => f.originalName).join(', ')})`;
-          document.getElementById('assignEvidenceModal').classList.remove('hidden');
-          document.getElementById('assignEvidenceModal').classList.add('flex');
-        }
+        handleProcessedMediaFiles(validFiles);
       });
     });
 
@@ -1878,7 +2353,7 @@
     }
 
     /*************************************************************************
-     * 11. GHI NHẬN THỜI GIAN CHÍNH XÁC LÚC NHẬP (GIỮ NGUYÊN GIỜ KHI LƯU OFFLINE)
+     * 11. GHI NHẬN THỜI GIAN CHÍNH XÁC LÚC NHẬP & CHỐNG TRÙNG TUYỆT ĐỐI
      *************************************************************************/
     function getTodayDateString() {
       const now = new Date();
@@ -1944,8 +2419,9 @@
       }
     }
 
-    function saveLocalActivityLog(item) {
+    function saveLocalActivityLog(item, isPending = false) {
       const lightCopy = {
+        requestId: item.requestId || '',
         tt: item.tt || '',
         ngay: item.ngay,
         gioChiTiet: item.gioChiTiet,
@@ -1954,10 +2430,17 @@
         lop: item.lop,
         loiViPham: item.loiViPham,
         nguoiGhiLoi: item.tenThanhVien || item.nguoiGhiLoi,
-        usernameGhiLoi: item.usernameGhiLoi || ''
+        usernameGhiLoi: item.usernameGhiLoi || '',
+        isLocalPending: isPending
       };
       const logs = getLocalActivityLogs();
-      logs.unshift(lightCopy);
+      const sigKey = makeViolationSignatureKey(lightCopy);
+      const existsIdx = logs.findIndex(row => makeViolationSignatureKey(row) === sigKey);
+      if (existsIdx !== -1) {
+        logs[existsIdx] = lightCopy;
+      } else {
+        logs.unshift(lightCopy);
+      }
       localStorage.setItem('dl3_activity_logs', JSON.stringify(logs.slice(0, 400)));
       renderMyViolationSummaryTable();
       if (currentUserSession && currentUserSession.role === 'admin') {
@@ -1967,21 +2450,37 @@
     }
 
     async function submitDataToSystem(payload) {
+      const sigKey = makeViolationSignatureKey(payload);
+
       if (navigator.onLine) {
         const res = await sendDirectToSheetVerified(payload);
         if (res.ok) {
           payload.tt = res.data?.tt || '';
-          saveLocalActivityLog(payload);
+          markRequestIdAsSent(payload.requestId, sigKey);
+          saveLocalActivityLog(payload, false);
           showToast('Đã ghi nhận lỗi thành công!');
           syncOfflineQueue(false);
           fetchAdminDataFromCloud(false, false);
           return;
         }
+
+        // Nếu trình duyệt báo lỗi Redirect nhưng thực tế Sheet đã ghi xong -> Kiểm tra lại trên Sheet
+        const verifyRes = await sendDirectToSheetVerified({ action: 'getAdminData' });
+        if (verifyRes.ok && verifyRes.data && Array.isArray(verifyRes.data.logs)) {
+          localStorage.setItem('dl3_activity_logs', JSON.stringify(verifyRes.data.logs));
+          if (isAlreadyOnSheetOrSent(payload, verifyRes.data.logs)) {
+            markRequestIdAsSent(payload.requestId, sigKey);
+            saveLocalActivityLog(payload, false);
+            showToast('Đã ghi nhận lỗi thành công!');
+            return;
+          }
+        }
       }
 
+      // Lưu vào hàng đợi Offline kèm requestId duy nhất để không bao giờ bị gửi trùng
       await addToOfflineDB(payload);
-      saveLocalActivityLog(payload);
-      showToast(`Đang ngoại tuyến! Đã lưu lỗi lúc ${payload.gioChiTiet}, sẽ tự đồng bộ đúng giờ này khi có mạng.`, false);
+      saveLocalActivityLog(payload, true);
+      showToast(`Đang ngoại tuyến! Đã lưu lỗi lúc ${payload.gioChiTiet}, tự động gửi đúng giờ này khi có mạng.`, false);
     }
 
     async function submitStudentViolation() {
@@ -2002,12 +2501,21 @@
       const capturedDate = getTodayDateString();
       const capturedTime = getDetailedTimeString();
       const capturedFull = `${capturedDate} - ${capturedTime}`;
+      const uniqueReqId = 'REQ_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+      const filesToSend = [...studentEvidenceFiles];
+      nameEl.value = '';
+      classEl.value = '';
+      violationEl.value = '';
+      studentEvidenceFiles = [];
+      renderEvidenceChips('student');
 
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>ĐANG LƯU...</span>';
 
       await submitDataToSystem({
         action: 'recordViolation',
+        requestId: uniqueReqId,
         loaiViPham: 'Cá nhân học sinh',
         ngay: capturedDate,
         gioChiTiet: capturedTime,
@@ -2020,17 +2528,11 @@
         tenThanhVien: currentUserSession.fullName || currentUserSession.username,
         usernameGhiLoi: currentUserSession.username,
         thietBi: currentUserSession.deviceName,
-        evidenceFiles: studentEvidenceFiles
+        evidenceFiles: filesToSend
       });
 
       btn.disabled = false;
       btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>XONG</span>';
-
-      nameEl.value = '';
-      classEl.value = '';
-      violationEl.value = '';
-      studentEvidenceFiles = [];
-      renderEvidenceChips('student');
     }
 
     async function submitClassViolation() {
@@ -2049,12 +2551,20 @@
       const capturedDate = getTodayDateString();
       const capturedTime = getDetailedTimeString();
       const capturedFull = `${capturedDate} - ${capturedTime}`;
+      const uniqueReqId = 'REQ_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+      const filesToSend = [...classEvidenceFiles];
+      classEl.value = '';
+      violationEl.value = '';
+      classEvidenceFiles = [];
+      renderEvidenceChips('class');
 
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>ĐANG LƯU...</span>';
 
       await submitDataToSystem({
         action: 'recordViolation',
+        requestId: uniqueReqId,
         loaiViPham: 'Tập thể lớp',
         ngay: capturedDate,
         gioChiTiet: capturedTime,
@@ -2067,16 +2577,11 @@
         tenThanhVien: currentUserSession.fullName || currentUserSession.username,
         usernameGhiLoi: currentUserSession.username,
         thietBi: currentUserSession.deviceName,
-        evidenceFiles: classEvidenceFiles
+        evidenceFiles: filesToSend
       });
 
       btn.disabled = false;
       btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> <span>XONG</span>';
-
-      classEl.value = '';
-      violationEl.value = '';
-      classEvidenceFiles = [];
-      renderEvidenceChips('class');
     }
 
     /*************************************************************************
@@ -2154,29 +2659,23 @@
     }
 
     /*************************************************************************
-     * 13. BẢNG QUẢN TRỊ VIÊN & TÍNH NĂNG ẨN/HIỆN MẬT KHẨU BẰNG DẤU CHẤM TRÒN
+     * 13. BẢNG QUẢN TRỊ VIÊN & ẨN/HIỆN MẬT KHẨU BẰNG DẤU CHẤM TRÒN
      *************************************************************************/
     const revealedMemberPasswords = new Set();
     let revealAllMemberPasswords = false;
 
     function toggleSingleMemberPassword(username) {
       const key = String(username || '').toLowerCase();
-      if (revealedMemberPasswords.has(key)) {
-        revealedMemberPasswords.delete(key);
-      } else {
-        revealedMemberPasswords.add(key);
-      }
+      if (revealedMemberPasswords.has(key)) revealedMemberPasswords.delete(key);
+      else revealedMemberPasswords.add(key);
       renderMemberAccountsAdmin();
     }
 
     function toggleAllAdminPasswords() {
       revealAllMemberPasswords = !revealAllMemberPasswords;
       const list = getMemberAccounts();
-      if (revealAllMemberPasswords) {
-        list.forEach(m => revealedMemberPasswords.add(m.username.toLowerCase()));
-      } else {
-        revealedMemberPasswords.clear();
-      }
+      if (revealAllMemberPasswords) list.forEach(m => revealedMemberPasswords.add(m.username.toLowerCase()));
+      else revealedMemberPasswords.clear();
       const headerIcon = document.getElementById('headerPassEyeIcon');
       if (headerIcon) {
         headerIcon.className = revealAllMemberPasswords
@@ -2314,7 +2813,7 @@
       document.getElementById('statTotalViolations').textContent = logs.length;
 
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400 italic">Chưa có tài khoản thành viên nào. Hãy nhập thông tin ở khung trên và bấm "Cấp Tài Khoản"!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400 italic">Chưa có tài khoản thành viên nào. Hãy bấm "Làm mới dữ liệu" hoặc cấp tài khoản mới ở trên!</td></tr>`;
         return;
       }
 
@@ -2466,9 +2965,17 @@
         const data = res.data;
         if (Array.isArray(data.logs)) {
           localStorage.setItem('dl3_activity_logs', JSON.stringify(data.logs));
+          // Tự động dọn ngay các mục trong hàng đợi Offline nếu thấy đã có mặt trên Sheet
+          const queuedItems = await getAllOfflineDB();
+          for (const qItem of queuedItems) {
+            if (isAlreadyOnSheetOrSent(qItem.payload, data.logs)) {
+              markRequestIdAsSent(qItem.payload?.requestId, makeViolationSignatureKey(qItem.payload));
+              await deleteFromOfflineDB(qItem.id);
+            }
+          }
         }
         if (forcePullMembers || (Date.now() - lastMemberModifyTimestamp > 8000)) {
-          if (Array.isArray(data.members)) {
+          if (Array.isArray(data.members) && data.members.length > 0) {
             const normalized = normalizeMemberList(data.members, data.bindings || {});
             saveMemberAccounts(normalized);
           }
