@@ -44,7 +44,6 @@
     .chip-btn:active {
       transform: scale(0.95);
     }
-    /* Đặt input file ra ngoài màn hình thay vì display:none để tương thích 100% trên iOS/Android khi Offline */
     .offscreen-input {
       position: fixed;
       top: -9999px;
@@ -54,7 +53,6 @@
       opacity: 0;
       pointer-events: none;
     }
-    /* Hiệu ứng Spotlight cho Bot hướng dẫn kiểu Game */
     #tutorialSpotlight {
       position: fixed;
       z-index: 90;
@@ -185,21 +183,21 @@
             <span class="hidden md:inline">Hướng dẫn</span>
           </button>
 
-          <!-- 1. Máy ảnh (Mở trực tiếp Cam chụp ảnh) -->
+          <!-- 1. Máy ảnh -->
           <button type="button" id="btnToolCamera" onclick="openMediaCapture('photo')" title="Mở Camera chụp ảnh minh chứng"
                   class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
             <i class="fa-solid fa-camera text-yellow-300 text-sm"></i>
             <span class="hidden md:inline">Máy ảnh</span>
           </button>
 
-          <!-- 2. Máy quay (Mở trực tiếp Cam quay video) -->
+          <!-- 2. Máy quay -->
           <button type="button" id="btnToolVideo" onclick="openMediaCapture('video')" title="Mở Camera quay video minh chứng"
                   class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
             <i class="fa-solid fa-video text-emerald-300 text-sm"></i>
             <span class="hidden md:inline">Máy quay</span>
           </button>
 
-          <!-- 3. Tải lên (Mở Bộ sưu tập Ảnh & Video trong máy) -->
+          <!-- 3. Tải lên -->
           <button type="button" id="btnToolUpload" onclick="openMediaCapture('upload')" title="Chọn Ảnh hoặc Video từ Bộ sưu tập trong máy"
                   class="px-2.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 active:scale-95 border border-white/20 flex items-center gap-1.5 text-xs font-bold transition">
             <i class="fa-solid fa-cloud-arrow-up text-sky-200 text-sm"></i>
@@ -739,7 +737,7 @@
     </div>
   </footer>
 
-  <!-- ==================== MODAL CAMERA CHỤP ẢNH / QUAY VIDEO TRỰC TIẾP (HOẠT ĐỘNG 100% CẢ KHI OFFLINE) ==================== -->
+  <!-- ==================== MODAL CAMERA CHỤP ẢNH / QUAY VIDEO TRỰC TIẾP ==================== -->
   <div id="liveCameraModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/85 backdrop-blur-md">
     <div class="glass-card w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
       <div class="header-gradient px-5 py-3.5 text-white flex items-center justify-between">
@@ -755,20 +753,17 @@
         <div class="relative w-full aspect-[4/3] bg-black rounded-2xl overflow-hidden flex items-center justify-center border border-slate-800">
           <video id="liveCameraVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
 
-          <!-- Đồng hồ đếm giờ khi đang quay video -->
           <div id="videoRecTimerBadge" class="hidden absolute top-3 left-3 items-center gap-2 px-3 py-1 rounded-full bg-red-600 text-white font-extrabold text-xs shadow">
             <span class="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
             <span id="videoRecTimerText">00:00</span>
           </div>
 
-          <!-- Nút đổi Camera Trước / Sau -->
           <button type="button" onclick="switchCameraFacing()" title="Đổi Camera Trước / Sau"
                   class="absolute top-3 right-3 w-10 h-10 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center border border-white/20">
             <i class="fa-solid fa-camera-rotate"></i>
           </button>
         </div>
 
-        <!-- Điều khiển Chụp Ảnh -->
         <div id="photoCaptureControls" class="flex flex-col sm:flex-row items-center gap-2.5">
           <button type="button" onclick="snapLivePhoto()"
                   class="w-full py-3.5 rounded-2xl bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg">
@@ -781,7 +776,6 @@
           </button>
         </div>
 
-        <!-- Điều khiển Quay Video -->
         <div id="videoCaptureControls" class="hidden flex-col sm:flex-row items-center gap-2.5">
           <button type="button" id="btnStartStopVideoRec" onclick="toggleLiveVideoRecording()"
                   class="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg">
@@ -982,10 +976,38 @@
 
   <script id="mainAppScript">
     /*************************************************************************
-     * 1. BẢO MẬT MÃ NGUỒN & TỰ ĐỘNG ĐĂNG XUẤT 100% KHI WEB CẬP NHẬT
+     * 1. KHỞI TẠO TOÀN BỘ BIẾN TRẠNG THÁI Ở ĐẦU FILE & BẢO MẬT MÃ NGUỒN
      *************************************************************************/
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSTYrnxaOFaw1-nUEzYV2zL1DAxzhoRCrSXSgKlZYgtEdTIuwoUkK5868d89CLoV-Mfg/exec';
+    const IDB_NAME = 'DL3_Offline_Database';
+    const IDB_STORE = 'offline_queue';
 
+    let cachedPublicIP = localStorage.getItem('dl3_cached_ip') || '';
+    let isSyncingOffline = false;
+    let lastSyncStartTime = 0;
+    let selectedLoginRole = 'member';
+    let currentUserSession = null;
+    let lastMemberModifyTimestamp = 0;
+    let pendingAvatarDataUrl = '';
+    let currentTutorialIndex = 0;
+
+    let studentEvidenceFiles = [];
+    let classEvidenceFiles = [];
+    let pendingPickedFiles = [];
+    let directTargetColumn = null;
+
+    let liveMediaStream = null;
+    let currentCameraFacing = 'environment';
+    let currentCameraMode = 'photo';
+    let mediaRecorderInstance = null;
+    let recordedVideoChunks = [];
+    let videoTimerInterval = null;
+    let videoSecondsElapsed = 0;
+
+    const revealedMemberPasswords = new Set();
+    let revealAllMemberPasswords = false;
+
+    // Chặn phím tắt xem mã nguồn (Ctrl+U, F12, Ctrl+Shift+I/J/C)
     document.addEventListener('keydown', function(e) {
       if (
         e.key === 'F12' ||
@@ -1010,11 +1032,11 @@
       return `${L}-${s1}-${s2}-${s3}`;
     }
 
-    // Tự động tính chữ ký của toàn bộ mã nguồn trang web hiện tại:
-    // Bất cứ khi nào file index.html trên GitHub thay đổi dù chỉ 1 ký tự, chữ ký này sẽ đổi và tự động đăng xuất 100% tài khoản!
+    // Chữ ký mã nguồn chuẩn hóa (Loại bỏ khoảng trắng để khi F5 tải lại trang luôn giữ nguyên 100%,
+    // nhưng chỉ cần bạn sửa bất kỳ nội dung code nào trên GitHub thì chữ ký sẽ đổi và tự động đăng xuất tất cả!)
     const CURRENT_WEB_BUILD_SIGNATURE = (function() {
-      const scriptText = document.getElementById('mainAppScript')?.textContent || document.documentElement.innerHTML.slice(0, 5000);
-      return 'BUILD_V5_' + computeSecurityDigest(scriptText);
+      const rawScript = (document.getElementById('mainAppScript')?.textContent || '').replace(/\s+/g, '');
+      return 'BUILD_V6_' + computeSecurityDigest(rawScript);
     })();
 
     const ADMIN_SECURITY_DIGESTS = {
@@ -1025,8 +1047,6 @@
     /*************************************************************************
      * 2. NHẬN DIỆN THIẾT BỊ VẬT LÝ & ĐỊA CHỈ IP
      *************************************************************************/
-    let cachedPublicIP = localStorage.getItem('dl3_cached_ip') || '';
-
     async function fetchPublicIP() {
       try {
         const controller = new AbortController();
@@ -1137,9 +1157,6 @@
     /*************************************************************************
      * 4. KHO LƯU TRỮ OFFLINE INDEXED-DB & CHỐNG TRÙNG LẶP / CHỐNG KẸT HÀNG ĐỢI
      *************************************************************************/
-    const IDB_NAME = 'DL3_Offline_Database';
-    const IDB_STORE = 'offline_queue';
-
     function openOfflineDB() {
       return new Promise((resolve, reject) => {
         const req = indexedDB.open(IDB_NAME, 1);
@@ -1154,7 +1171,6 @@
       });
     }
 
-    // Tạo khóa nhận diện duy nhất cho mỗi lỗi (Thời gian + Lớp + Họ tên + Lỗi)
     function makeViolationSignatureKey(p) {
       if (!p) return '';
       const t = String(p.thoiGianChiTiet || '').trim().toLowerCase();
@@ -1181,7 +1197,6 @@
       } catch (e) {}
     }
 
-    // Kiểm tra xem lỗi này đã tồn tại trên Google Sheet hoặc đã gửi thành công chưa
     function isAlreadyOnSheetOrSent(payload, cloudLogs) {
       if (!payload) return true;
       const sentSet = getSentRequestIds();
@@ -1200,7 +1215,6 @@
       try {
         const currentItems = await getAllOfflineDB();
         const newSig = makeViolationSignatureKey(payload);
-        // Không lưu trùng vào IndexedDB nếu cùng 1 lỗi đã nằm trong hàng đợi
         const alreadyQueued = currentItems.some(item =>
           (item.payload?.requestId && item.payload.requestId === payload.requestId) ||
           makeViolationSignatureKey(item.payload) === newSig
@@ -1313,11 +1327,7 @@
       }
     }
 
-    let isSyncingOffline = false;
-    let lastSyncStartTime = 0;
-
     async function syncOfflineQueue(showNotification = false) {
-      // Tự động mở khóa nếu lần đồng bộ trước bị treo quá 40 giây
       if (isSyncingOffline && (Date.now() - lastSyncStartTime < 40000)) return;
       if (!navigator.onLine) {
         if (showNotification) showToast('Điện thoại đang không có mạng!', false);
@@ -1338,7 +1348,6 @@
           showToast(`Đang kiểm tra & đồng bộ ${initialItems.length} lỗi chờ gửi...`);
         }
 
-        // Bước 1: Tải danh sách lỗi hiện có trên Google Sheet về trước để lọc bỏ các lỗi thực tế đã lên Sheet rồi
         let latestSheetLogs = [];
         const cloudCheck = await sendDirectToSheetVerified({ action: 'getAdminData' });
         if (cloudCheck.ok && cloudCheck.data && Array.isArray(cloudCheck.data.logs)) {
@@ -1359,7 +1368,6 @@
 
           const sigKey = makeViolationSignatureKey(p);
 
-          // Nếu lỗi này bị trùng ngay trong hàng đợi hoặc đã có mặt trên Google Sheet -> Xóa ngay khỏi hàng đợi, KHÔNG gửi lại!
           if (seenSignaturesInBatch.has(sigKey) || isAlreadyOnSheetOrSent(p, latestSheetLogs)) {
             markRequestIdAsSent(p.requestId, sigKey);
             await deleteFromOfflineDB(item.id);
@@ -1368,7 +1376,6 @@
           }
           seenSignaturesInBatch.add(sigKey);
 
-          // Bước 2: Gửi lỗi lên Google Sheet
           const res = await sendDirectToSheetVerified(p);
           if (res.ok) {
             markRequestIdAsSent(p.requestId, sigKey);
@@ -1377,7 +1384,6 @@
             continue;
           }
 
-          // Bước 3: Nếu trình duyệt báo lỗi Redirect nhưng có thể Sheet đã ghi xong -> Kiểm tra lại trên Sheet ngay!
           const verifyRes = await sendDirectToSheetVerified({ action: 'getAdminData' });
           if (verifyRes.ok && verifyRes.data && Array.isArray(verifyRes.data.logs)) {
             latestSheetLogs = verifyRes.data.logs;
@@ -1390,7 +1396,6 @@
             }
           }
 
-          // Bước 4: Nếu chưa lên được Sheet do file video/ảnh đính kèm quá nặng làm nghẽn mạng -> Tự động gửi bản rút gọn để không bao giờ kẹt hàng đợi!
           item.retryCount = (item.retryCount || 0) + 1;
           if (item.retryCount >= 2 && Array.isArray(p.evidenceFiles) && p.evidenceFiles.length > 0) {
             const lightPayload = { ...p, evidenceFiles: [] };
@@ -1403,7 +1408,6 @@
             }
           }
 
-          // Nếu lỗi hỏng sau 5 lần thử -> Xóa để giải phóng hàng đợi
           if (item.retryCount >= 5) {
             await deleteFromOfflineDB(item.id);
           } else {
@@ -1426,12 +1430,8 @@
     }
 
     /*************************************************************************
-     * 6. ĐĂNG NHẬP, TỰ ĐỘNG ĐĂNG XUẤT KHI WEB CẬP NHẬT & ĐỒNG BỘ TÀI KHOẢN
+     * 6. ĐĂNG NHẬP, LƯU PHIÊN CỐ ĐỊNH & ĐỒNG BỘ TÀI KHOẢN
      *************************************************************************/
-    let selectedLoginRole = 'member';
-    let currentUserSession = null;
-    let lastMemberModifyTimestamp = 0;
-
     function getMaxMemberLimit() {
       return parseInt(localStorage.getItem('dl3_max_member_limit') || '30', 10);
     }
@@ -1471,7 +1471,6 @@
       showToast('Đã xóa lịch sử cảnh báo thiết bị!');
     }
 
-    // Đồng bộ tài khoản với Cloud (Đảm bảo nếu máy mới chưa tải kịp danh sách thì tự lấy từ Sheet về trước, không bao giờ ghi đè rỗng)
     async function syncMembersConfigToCloud(showMsg = false) {
       lastMemberModifyTimestamp = Date.now();
       let currentMembers = getMemberAccounts();
@@ -1640,8 +1639,8 @@
         };
       }
 
-      localStorage.setItem('dl3_saved_session_v5', JSON.stringify(currentUserSession));
-      localStorage.setItem('dl3_last_build_sig', CURRENT_WEB_BUILD_SIGNATURE);
+      localStorage.setItem('dl3_saved_session_v6', JSON.stringify(currentUserSession));
+      localStorage.setItem('dl3_last_build_sig_v6', CURRENT_WEB_BUILD_SIGNATURE);
       applySessionUI();
       showToast(`Xin chào ${currentUserSession.fullName}!`);
 
@@ -1686,44 +1685,15 @@
       localStorage.removeItem('dl3_saved_session');
       localStorage.removeItem('dl3_saved_session_v4');
       localStorage.removeItem('dl3_saved_session_v5');
+      localStorage.removeItem('dl3_saved_session_v6');
       currentUserSession = null;
       document.getElementById('loginPassword').value = '';
       document.getElementById('loginScreen').classList.remove('hidden');
     }
 
-    // KIỂM TRA PHIÊN BẢN WEB KHI MỞ TRANG:
-    // Nếu code trang web vừa có bất kỳ cập nhật/thay đổi nào -> Tự động đăng xuất 100% mọi tài khoản (kể cả Quản trị)
-    (function checkAutoLoginAndEnforceUpdateLogout() {
-      try {
-        // Xóa triệt để các phiên đăng nhập từ bản cũ
-        localStorage.removeItem('dl3_saved_session');
-        localStorage.removeItem('dl3_saved_session_v4');
-
-        const lastBuildSig = localStorage.getItem('dl3_last_build_sig');
-        const saved = JSON.parse(localStorage.getItem('dl3_saved_session_v5') || 'null');
-
-        if (lastBuildSig !== CURRENT_WEB_BUILD_SIGNATURE || !saved || saved.buildSignature !== CURRENT_WEB_BUILD_SIGNATURE) {
-          localStorage.removeItem('dl3_saved_session_v5');
-          localStorage.setItem('dl3_last_build_sig', CURRENT_WEB_BUILD_SIGNATURE);
-          currentUserSession = null;
-          document.getElementById('loginScreen').classList.remove('hidden');
-          return;
-        }
-
-        if (saved && saved.username) {
-          currentUserSession = saved;
-          applySessionUI();
-        }
-      } catch (e) {
-        logoutSystem();
-      }
-    })();
-
     /*************************************************************************
      * 7. HỒ SƠ TÀI KHOẢN CÁ NHÂN
      *************************************************************************/
-    let pendingAvatarDataUrl = '';
-
     function openProfileModal() {
       if (!currentUserSession) return;
       pendingAvatarDataUrl = currentUserSession.avatar || 'logo.jpg';
@@ -1820,7 +1790,8 @@
         currentUserSession.avatar = pendingAvatarDataUrl;
       }
 
-      localStorage.setItem('dl3_saved_session_v5', JSON.stringify(currentUserSession));
+      currentUserSession.buildSignature = CURRENT_WEB_BUILD_SIGNATURE;
+      localStorage.setItem('dl3_saved_session_v6', JSON.stringify(currentUserSession));
       applySessionUI();
 
       btn.disabled = false;
@@ -1859,8 +1830,6 @@
         desc: 'Bấm vào ảnh đại diện và tên của bạn ở góc phải trên cùng để thay đổi Ảnh đại diện, đổi Tên tài khoản, Tên Thành Viên hoặc đổi Mật khẩu riêng!'
       }
     ];
-
-    let currentTutorialIndex = 0;
 
     function startGameTutorial() {
       currentTutorialIndex = 0;
@@ -1996,25 +1965,8 @@
     });
 
     /*************************************************************************
-     * 10. HỆ THỐNG CAMERA CHỤP ẢNH • CAMERA QUAY VIDEO • TẢI LÊN TỪ BỘ SƯU TẬP (HOẠT ĐỘNG 100% CẢ KHI OFFLINE)
+     * 10. HỆ THỐNG CAMERA CHỤP ẢNH • CAMERA QUAY VIDEO • TẢI LÊN TỪ BỘ SƯU TẬP
      *************************************************************************/
-    let studentEvidenceFiles = [];
-    let classEvidenceFiles = [];
-    let pendingPickedFiles = [];
-    let directTargetColumn = null;
-
-    let liveMediaStream = null;
-    let currentCameraFacing = 'environment';
-    let currentCameraMode = 'photo';
-    let mediaRecorderInstance = null;
-    let recordedVideoChunks = [];
-    let videoTimerInterval = null;
-    let videoSecondsElapsed = 0;
-
-    // Phân luồng chính xác 3 nút chức năng:
-    // - 'photo'  -> Mở Camera Chụp Ảnh
-    // - 'video'  -> Mở Camera Quay Video
-    // - 'upload' -> Mở Bộ sưu tập (Ảnh & Video trong điện thoại / máy tính)
     async function openMediaCapture(mode) {
       directTargetColumn = null;
       if (mode === 'upload') {
@@ -2024,7 +1976,6 @@
       await startLiveCameraModal(mode);
     }
 
-    // Khi bấm nút "+ Thêm tệp" ở từng cột -> Mở thẳng Bộ sưu tập Ảnh & Video trong máy
     function triggerDirectAddFile(targetCol) {
       directTargetColumn = targetCol;
       document.getElementById('GalleryUploadInput').click();
@@ -2084,7 +2035,6 @@
         modal.classList.remove('hidden');
         modal.classList.add('flex');
       } catch (err) {
-        // Nếu trình duyệt chặn quyền camera trực tiếp -> Tự động mở Camera gốc của điện thoại
         triggerNativeSystemCamera(mode);
       }
     }
@@ -2464,7 +2414,6 @@
           return;
         }
 
-        // Nếu trình duyệt báo lỗi Redirect nhưng thực tế Sheet đã ghi xong -> Kiểm tra lại trên Sheet
         const verifyRes = await sendDirectToSheetVerified({ action: 'getAdminData' });
         if (verifyRes.ok && verifyRes.data && Array.isArray(verifyRes.data.logs)) {
           localStorage.setItem('dl3_activity_logs', JSON.stringify(verifyRes.data.logs));
@@ -2477,7 +2426,6 @@
         }
       }
 
-      // Lưu vào hàng đợi Offline kèm requestId duy nhất để không bao giờ bị gửi trùng
       await addToOfflineDB(payload);
       saveLocalActivityLog(payload, true);
       showToast(`Đang ngoại tuyến! Đã lưu lỗi lúc ${payload.gioChiTiet}, tự động gửi đúng giờ này khi có mạng.`, false);
@@ -2661,9 +2609,6 @@
     /*************************************************************************
      * 13. BẢNG QUẢN TRỊ VIÊN & ẨN/HIỆN MẬT KHẨU BẰNG DẤU CHẤM TRÒN
      *************************************************************************/
-    const revealedMemberPasswords = new Set();
-    let revealAllMemberPasswords = false;
-
     function toggleSingleMemberPassword(username) {
       const key = String(username || '').toLowerCase();
       if (revealedMemberPasswords.has(key)) revealedMemberPasswords.delete(key);
@@ -2965,7 +2910,6 @@
         const data = res.data;
         if (Array.isArray(data.logs)) {
           localStorage.setItem('dl3_activity_logs', JSON.stringify(data.logs));
-          // Tự động dọn ngay các mục trong hàng đợi Offline nếu thấy đã có mặt trên Sheet
           const queuedItems = await getAllOfflineDB();
           for (const qItem of queuedItems) {
             if (isAlreadyOnSheetOrSent(qItem.payload, data.logs)) {
@@ -2996,6 +2940,45 @@
         if (showMsg) showToast('Đã làm mới dữ liệu!');
       } catch (e) {}
     }
+
+    /*************************************************************************
+     * 14. TỰ ĐỘNG ĐĂNG NHẬP KHI RELOAD & CHỈ ĐĂNG XUẤT KHI WEB CẬP NHẬT CODE MỚI
+     *************************************************************************/
+    (function initSessionAndEnforceUpdateLogout() {
+      let saved = null;
+      try {
+        localStorage.removeItem('dl3_saved_session');
+        localStorage.removeItem('dl3_saved_session_v4');
+        localStorage.removeItem('dl3_saved_session_v5');
+        saved = JSON.parse(localStorage.getItem('dl3_saved_session_v6') || 'null');
+      } catch (parseErr) {
+        saved = null;
+      }
+
+      const lastBuildSig = localStorage.getItem('dl3_last_build_sig_v6');
+
+      // Chỉ khi mã nguồn trang web có sự thay đổi/cập nhật mới so với lần đăng nhập trước thì mới đăng xuất tất cả
+      if (lastBuildSig && lastBuildSig !== CURRENT_WEB_BUILD_SIGNATURE) {
+        localStorage.removeItem('dl3_saved_session_v6');
+        localStorage.setItem('dl3_last_build_sig_v6', CURRENT_WEB_BUILD_SIGNATURE);
+        currentUserSession = null;
+        document.getElementById('loginScreen').classList.remove('hidden');
+        return;
+      }
+
+      localStorage.setItem('dl3_last_build_sig_v6', CURRENT_WEB_BUILD_SIGNATURE);
+
+      if (saved && saved.username && saved.buildSignature === CURRENT_WEB_BUILD_SIGNATURE) {
+        currentUserSession = saved;
+        try {
+          applySessionUI();
+        } catch (uiErr) {
+          console.error(uiErr);
+        }
+      } else {
+        document.getElementById('loginScreen').classList.remove('hidden');
+      }
+    })();
 
     setInterval(() => {
       if (navigator.onLine) {
